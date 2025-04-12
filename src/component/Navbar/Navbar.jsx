@@ -14,7 +14,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="text-2xl font-bold text-blue-600">
-          #Chipsub
+          Chipsub
         </Link>
 
         {/* Desktop nav */}
