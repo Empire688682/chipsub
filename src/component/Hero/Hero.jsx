@@ -38,7 +38,7 @@ export default function Hero() {
             alt="Chipsub Hero"
             width={500}
             height={400}
-            className="w-full h-auto"
+            className="w-full h-auto rounded-lg shadow-lg"
           />
         </div>
       </div>
