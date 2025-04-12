@@ -1,0 +1,47 @@
+import Image from 'next/image';
+import Link from 'next/link';
+
+export default function Hero() {
+  return (
+    <section className="pt-24 pb-16 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-6 flex flex-col-reverse md:flex-row items-center justify-between gap-10">
+        
+        {/* Text Content */}
+        <div className="md:w-1/2">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
+            Buy Cheap Data Instantly with <span className="text-blue-600">#Chipsub</span>
+          </h1>
+          <p className="mt-4 text-gray-600 text-lg">
+            Affordable data, fast delivery, zero stress. Top up anytime, anywhere.
+          </p>
+
+          <div className="mt-6 flex gap-4">
+            <Link
+              href="/buy-data"
+              className="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition"
+            >
+              Get Started
+            </Link>
+            <Link
+              href="/pricing"
+              className="border border-blue-600 text-blue-600 px-6 py-3 rounded-full hover:bg-blue-50 transition"
+            >
+              See Pricing
+            </Link>
+          </div>
+        </div>
+
+        {/* Hero Image */}
+        <div className="md:w-1/2 flex justify-center">
+          <Image
+            src="/hero-data.svg" // Replace with your own SVG/image
+            alt="Chipsub Hero"
+            width={500}
+            height={400}
+            className="w-full h-auto"
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
