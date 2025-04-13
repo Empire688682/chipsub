@@ -3,8 +3,9 @@ import React from 'react'
 
 const Page = () => {
   return (
-    <div>
+    <div className='text-black'>
       <h1>Contact</h1>
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus tempora atque voluptate eveniet eius quaerat quidem placeat, commodi amet aut sequi. Labore pariatur at vero commodi aliquam rerum ea quae!
       <Contact />
     </div>
   )

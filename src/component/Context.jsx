@@ -1,11 +1,16 @@
 "use client";
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react';
 
 const AppContext = React.createContext();
 
 export const AppProvider = ({children}) => {
-  return <AppContext.Provider value={{
+  const [isOpen, setIsOpen] = useState(false);
 
+  const toggleMenu = () => setIsOpen(!isOpen);
+  return <AppContext.Provider value={{
+    isOpen,
+    toggleMenu,
+    setIsOpen
   }}>
     {children}
     </AppContext.Provider>

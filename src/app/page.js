@@ -18,7 +18,6 @@ const page = () => {
       <PricingSec />
       <Testimonials />
       <CTA />
-      <Footer />
     </div>
   )
 }
