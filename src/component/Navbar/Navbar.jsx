@@ -22,12 +22,16 @@ export default function Navbar() {
           <Link href="/" className="text-gray-600 hover:text-blue-600">Home</Link>
           <Link href="/buy-data" className="text-gray-600 hover:text-blue-600">Buy Data</Link>
           <Link href="/pricing" className="text-gray-600 hover:text-blue-600">Pricing</Link>
+          <Link href="/dashboard" className="text-gray-600 hover:text-blue-600">Dashbord</Link>
+          <Link href="/api-docs" className="text-gray-600 hover:text-blue-600">Api Docs</Link>
+          <Link href="/fund-wallet" className="text-gray-600 hover:text-blue-600">Fund Wallet</Link>
           <Link href="/contact" className="text-gray-600 hover:text-blue-600">Contact</Link>
+          <Link href="/blog" className="text-gray-600 hover:text-blue-600">Blog</Link>
         </div>
 
         {/* Mobile hamburger */}
         <button onClick={toggleMenu} className="md:hidden">
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+          {isOpen ? <X size={30} /> : <Menu size={30} />}
         </button>
       </div>
 
@@ -37,7 +41,11 @@ export default function Navbar() {
           <Link href="/" className="block text-gray-600 hover:text-blue-600">Home</Link>
           <Link href="/buy-data" className="block text-gray-600 hover:text-blue-600">Buy Data</Link>
           <Link href="/pricing" className="block text-gray-600 hover:text-blue-600">Pricing</Link>
+          <Link href="/dashboard" className="block text-gray-600 hover:text-blue-600">Dashbord</Link>
+          <Link href="/api-docs" className="block text-gray-600 hover:text-blue-600">Api Docs</Link>
+          <Link href="/fund-wallet" className="block text-gray-600 hover:text-blue-600">Fund Wallet</Link>
           <Link href="/contact" className="block text-gray-600 hover:text-blue-600">Contact</Link>
+          <Link href="/blog" className="block text-gray-600 hover:text-blue-600">Blog</Link>
         </div>
       )}
     </nav>
