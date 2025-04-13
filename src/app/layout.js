@@ -17,9 +17,7 @@ export default function RootLayout({ children }) {
       <body>
         <AppProvider>
           <div className="flex min-h-screen bg-white shadow-md justify-start w-full">
-            <div className="sticky w-full max-w-[200px] block">
-              <Sidebar />
-            </div>
+            <Sidebar />
             <div className="min-h-screen w-full">
                <Topbar />
               {children}
