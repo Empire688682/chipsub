@@ -3,7 +3,7 @@ import React from 'react'
 
 const Page = () => {
   return (
-    <div>
+    <div className='px-6 py-12'>
       <FundWallet />
     </div>
   )
