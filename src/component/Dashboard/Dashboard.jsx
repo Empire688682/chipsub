@@ -3,8 +3,8 @@ import { LayoutDashboard, LogOut, Wallet, Wifi, User } from "lucide-react";
 
 export default function DashboardLayout() {
   return (
-    <div className="min-h-screen flex bg-gray-100">
-
+    <div className="min-h-screen flex">
+      <h1>Dashboard</h1>
     </div>
   );
 }
