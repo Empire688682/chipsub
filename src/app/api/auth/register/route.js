@@ -2,7 +2,10 @@ import UserModel from "@/app/ults/models/UserModel";
 import { connectDb } from "@/app/ults/db/ConnectDb";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
+import validator from "validator";
+import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
+dotenv.config();
 
 const registerUser = async (req) =>{
     const reBody = await req.json();
@@ -14,11 +17,51 @@ const registerUser = async (req) =>{
             return NextResponse.json({success:false, message:"All Filed is require"},{status:400})
         };
 
+        if(!validator.isEmail(email)){
+            return NextResponse.json({success:false, message:"Invalid Email"}, {status:400})
+        }
+
         const userExist = await UserModel.findOne({email:email});
         if(userExist){
             return NextResponse.json({success:false, message:"User already exist"},{status:400})
         }
+
+        if(password.length <= 8){
+            return NextResponse.json({success:false, message:"Password too sort"},{status:400})
+        }
+
+        const hashPassword = await bcrypt.hash(password, 10)
+
+        const newUser = await new UserModel({
+            name,
+            email,
+            password: hashPassword
+        });
+
+        await newUser.save();
+
+        const userId = newUser._id;
+
+        const token = jwt.sign({userId}, process.env.SECRET_KEY);
+
+        const res = NextResponse.json({success:true, message:"User aded", newUser}, {status:200});
+
+        res.cookies.set("UserToken", token,{
+            httpOnly:true,
+            secure: process.env.NODE_ENV === "production" ? true : false,
+            maxAge: 60 * 60 * 24,
+            sameSite: "lax",
+            path:"/"
+        });
+
+        return res
+
     } catch (error) {
-        
+        console.log("Error:" ,error);
+        return NextResponse.json({success:false, message:"Something went wrong"},{status:500})
     }
 }
+
+export async function POST(req) {
+    return registerUser(req);
+};
