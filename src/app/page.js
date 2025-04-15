@@ -1,4 +1,5 @@
 import CTA from '@/component/CTA/CTA'
+import DownloadOurApp from '@/component/DownloadOurApp/DownloadOurApp'
 import Footer from '@/component/Footer/Footer'
 import Hero from '@/component/Hero/Hero'
 import HowItWorks from '@/component/HowItWork/HowItWork'
@@ -18,6 +19,7 @@ const page = () => {
       <PricingSec />
       <Testimonials />
       <CTA />
+      <DownloadOurApp />
     </div>
   )
 }
