@@ -1,7 +1,10 @@
+"use client"
 import Image from 'next/image';
 import Link from 'next/link';
+import { useGlobalContext } from '../Context';
 
 export default function Hero() {
+  const {openModal} = useGlobalContext("register");
   return (
     <section className="pt-24 pb-16 bg-gradient-to-r from-blue-300 to-green-300">
       <div className="max-w-7xl mx-auto px-6 flex flex-col-reverse md:flex-row items-center justify-between gap-10">
@@ -16,14 +19,14 @@ export default function Hero() {
           </p>
 
           <div className="mt-6 flex gap-4">
-            <Link
-              href="/buy-data"
+            <div
+              onClick={()=>openModal("register")}
               className="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition"
             >
               Get Started
-            </Link>
+            </div>
             <Link
-              href="/pricing"
+              href="#pricing"
               className="border border-blue-600 text-blue-600 px-6 py-3 rounded-full hover:bg-blue-50 transition"
             >
               See Pricing

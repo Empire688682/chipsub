@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const DownloadOurApp = () => {
   return (
-    <div className="min-h-screen px-6 py-16 bg-white text-black flex items-center justify-center">
+    <div id='downloadApp' className="min-h-screen px-6 py-16 bg-white text-black flex items-center justify-center">
       <div className="max-w-4xl mx-auto text-center">
         <h1 className="text-4xl font-bold text-blue-600 mb-4">Get the Chipsub App</h1>
         <p className="text-gray-700 mb-8 text-lg">
