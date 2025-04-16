@@ -1,10 +1,10 @@
-import BuyEclectricity from '@/component/BuyEclectricity/BuyEclectricity'
+import BuyElectricity from '@/component/BuyElectricity/BuyElectricity'
 import React from 'react'
 
 const page = () => {
   return (
     <div className='px-6 py-12'>
-      <BuyEclectricity />
+      <BuyElectricity />
     </div>
   )
 }
