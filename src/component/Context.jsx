@@ -49,8 +49,6 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
-  console.log("userData:", userData);
-
   const toggleMenu = () => setIsOpen(!isOpen);
   return <AppContext.Provider value={{
     isOpen,
