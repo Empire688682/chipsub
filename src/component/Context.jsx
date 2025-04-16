@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react';
 
 const AppContext = React.createContext();
@@ -8,20 +9,39 @@ export const AppProvider = ({ children }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [authType, setAuthType] = useState('register');
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
+  const [user, setUser] = useState("");
+  const route = useRouter()
 
   const openModal = (type) => {
     setAuthType(type);
     setIsModalOpen(true);
+    setData({
+      name: "",
+      email: "",
+      password: ""
+    })
   };
 
-  useEffect (()=>{
-    if(isModalOpen){
+  useEffect(() => {
+    if (isModalOpen) {
       document.body.style.overflow = "hidden";
     }
-    else{
+    else {
       document.body.style.overflow = "auto";
     }
-  }, [isModalOpen])
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SavedUser = localStorage.getItem("Username") || "";
+      setUser(SavedUser);
+    }
+  }, [])
 
   const toggleMenu = () => setIsOpen(!isOpen);
   return <AppContext.Provider value={{
@@ -31,7 +51,11 @@ export const AppProvider = ({ children }) => {
     isModalOpen,
     setIsModalOpen,
     authType,
-    openModal
+    openModal,
+    user,
+    data,
+    setData,
+    route
   }}>
     {children}
   </AppContext.Provider>

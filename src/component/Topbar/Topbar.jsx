@@ -21,13 +21,15 @@ const Topbar = () => {
             <Link href="/" className="text-2xl font-bold text-white">
                 Chipsub
             </Link>
-            {
+           <div className='md:block hidden'>
+           {
                 isHomePage && (
                     <a href='#downloadApp' className='text-white'>
                         Download App
                     </a>
                 )
             }
+           </div>
             <div className='flex items-center gap-4'>
                 {
                     isHomePage ? (
@@ -42,8 +44,8 @@ const Topbar = () => {
                                     <Image src="/profile.svg" alt="profile" width={30} height={30} className="rounded-full cursor-pointer" />
                                 ) : (
                                     <div className="flex items-center gap-4">
-                                        <Link href="/login" className="text-white hover:underline">Login</Link>
-                                        <Link href="/register" className="text-white hover:underline">Sign Up</Link>
+                                        <Link href="/login" className="text-white md:text-base text-sm hover:underline">Login</Link>
+                                        <Link href="/register" className="text-white md:text-base text-sm hover:underline">Sign Up</Link>
                                     </div>
                                 )
                             }

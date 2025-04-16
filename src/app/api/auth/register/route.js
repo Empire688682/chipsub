@@ -21,7 +21,7 @@ const registerUser = async (req) =>{
             return NextResponse.json({success:false, message:"Invalid Email"}, {status:400})
         }
 
-        const userExist = await UserModel.findOne({email:email});
+        const userExist = await UserModel.findOne({email});
         if(userExist){
             return NextResponse.json({success:false, message:"User already exist"},{status:400})
         }
@@ -38,13 +38,13 @@ const registerUser = async (req) =>{
             password: hashPassword
         });
 
-        await newUser.save();
+        const userData = await newUser.save();
 
         const userId = newUser._id;
 
         const token = jwt.sign({userId}, process.env.SECRET_KEY);
 
-        const res = NextResponse.json({success:true, message:"User aded", newUser}, {status:200});
+        const res = NextResponse.json({success:true, message:"User aded", userData}, {status:200});
 
         res.cookies.set("UserToken", token,{
             httpOnly:true,

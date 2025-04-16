@@ -11,40 +11,40 @@ export default function SignupPage() {
         isModalOpen,
         setIsModalOpen,
         authType,
-        openModal } = useGlobalContext();
+        openModal,
+        data,
+        setData,
+        route } = useGlobalContext();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("")
-
-    const [data, setData] = useState({
-        name: "",
-        email: "",
-        password: ""
-    });
 
     const handleOnchange = (e) => {
         const { name, value } = e.target;
         setData((prev) => ({ ...prev, [name]: value }));
     }
 
+    const baseUrl = authType === "login" ? "/api/auth/login" : "/api/auth/register"
     const creatUser = async () => {
         setLoading(true)
         try {
-            const response = await axios.post("/api/auth/register", data);
+            const response = await axios.post(baseUrl, data);
             if (response.data.success) {
                 setData({
                     name: "",
                     email: "",
                     password: ""
                 });
-                const username = response.data.newUser.name
+                const username = response.data.userData.name
                 localStorage.setItem("Username", username);
+                setIsModalOpen(false);
+                route.push("/dashboard");
             }
             else {
                 setError(response.data.message);
             }
         } catch (error) {
             console.log("ERROR:", error);
-            setError("An error occured");
+            setError(error.response.data.message);
         }
         finally {
             setLoading(false)
@@ -56,16 +56,16 @@ export default function SignupPage() {
         creatUser();
     }
 
-    useEffect(()=>{
-        setInterval(() => {
+    useEffect(() => {
+        setTimeout(() => {
             setError("")
-        }, 2000);
-    },[error])
+        }, 3000);
+    }, [error])
 
     return (
         <div className="min-h-screen absolute w-full flex items-center justify-center text-black px-4">
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-70">
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center px-6 z-70">
                     <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-8 relative">
                         <button
                             className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
