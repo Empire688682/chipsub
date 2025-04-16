@@ -40,12 +40,12 @@ const Topbar = () => {
                 }
                 {
                     userData && isHomePage && (
-                        <Image src="/profile.svg" alt="profile" width={30} height={30} className="rounded-full cursor-pointer" onClick={()=>route.push("/dashboard")}/>
+                        <Image src="/profile-img.png" alt="profile" width={35} height={50} className="rounded-full cursor-pointer" onClick={()=>route.push("/dashboard")}/>
                     )
                 }
                 {
                     userData && !isHomePage && (
-                        <Image src="/profile.svg" alt="profile" width={30} height={30} className="rounded-full cursor-pointer"/>
+                        <Image src="/profile-img.png" alt="profile" width={35} height={50} className="rounded-full cursor-pointer"/>
                     )
                 }
                 {

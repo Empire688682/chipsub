@@ -37,6 +37,7 @@ export default function SignupPage() {
                 const userData = response.data.userData
                 localStorage.setItem("userData", JSON.stringify(userData));
                 setIsModalOpen(false);
+                window.location.reload();
                 route.push("/dashboard");
             }
             else {

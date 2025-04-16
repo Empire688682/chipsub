@@ -3,6 +3,7 @@ import "./globals.css";
 import { AppProvider } from "@/component/Context";
 import Footer from "@/component/Footer/Footer";
 import Topbar from "@/component/Topbar/Topbar";
+import { Toaster } from 'react-hot-toast';
 
 
 export const metadata = {
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
             <Sidebar />
             <div className="min-h-screen w-full">
                <Topbar />
+               <Toaster position="top-right" />
               {children}
             </div>
           </div>

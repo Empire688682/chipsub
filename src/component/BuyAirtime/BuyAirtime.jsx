@@ -1,20 +1,62 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BuyAirtime = () => {
+  const [data, setData] = useState({
+    network: "",
+    amount: "",
+    number: "",
+    pin: "",
+  });
+
+  const handleChange = (e) => {
+    setData({ ...data, [e.target.name]: e.target.value });
+  };
+
+  const handleFormSubmission = (e) => {
+    e.preventDefault();
+
+    // ✅ Validation
+    if (!data.network) return toast.error("Please select a network");
+    if (!data.amount || parseInt(data.amount) < 50) return toast.error("Amount must be at least ₦50");
+    if (!/^\d{11}$/.test(data.number)) return toast.error("Enter a valid 11-digit phone number");
+    if (data.pin.length < 6) return toast.error("PIN must be at least 6 digits");
+
+    // 🔥 Simulate API success
+    toast.success("Airtime purchase successful!");
+    
+    // Optionally reset form
+    setData({
+      network: "",
+      amount: "",
+      number: "",
+      pin: "",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white px-4 py-10">
+      <ToastContainer />
       <div className="max-w-lg mx-auto bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-blue-100">
         <h1 className="text-3xl font-bold text-center text-blue-700 mb-8 tracking-tight">
           Buy Airtime
         </h1>
 
-        <form className="space-y-6">
+        <form onSubmit={handleFormSubmission} className="space-y-6">
           {/* Network */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Select Network
             </label>
-            <select className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <select
+              name="network"
+              onChange={handleChange}
+              value={data.network}
+              required
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
               <option disabled value="">-- Choose Network --</option>
               <option value="mtn">MTN</option>
               <option value="glo">GLO</option>
@@ -23,17 +65,21 @@ const BuyAirtime = () => {
             </select>
           </div>
 
-          {/* Data Plan */}
+          {/* Amount */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Choose Data Plan
+              Enter Amount
             </label>
-            <select className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400">
-              <option disabled value="">-- Choose Plan --</option>
-              <option value="1gb">1GB - ₦500</option>
-              <option value="2gb">2GB - ₦900</option>
-              <option value="5gb">5GB - ₦2200</option>
-            </select>
+            <input
+              onChange={handleChange}
+              value={data.amount}
+              type="number"
+              name="amount"
+              min="50"
+              required
+              placeholder='Enter Amount / Min: 50'
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
           </div>
 
           {/* Phone Number */}
@@ -42,16 +88,38 @@ const BuyAirtime = () => {
               Phone Number
             </label>
             <input
+              onChange={handleChange}
+              value={data.number}
+              name="number"
               type="tel"
-              placeholder="e.g. 08012345678"
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="e.g. 09154358139"
+              required
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          {/* Pin */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Pin
+            </label>
+            <input
+              name="pin"
+              type="password"
+              onChange={handleChange}
+              value={data.pin}
+              placeholder="Enter Pin"
+              required
+              min={6}
+              max={6}
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 transition duration-300"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300"
           >
             Buy Now
           </button>
