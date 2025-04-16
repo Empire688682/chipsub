@@ -14,17 +14,22 @@ export const AppProvider = ({ children }) => {
     email: "",
     password: ""
   });
-  const [user, setUser] = useState("");
-  const route = useRouter()
+  const [userData, setUserData] = useState("");
+  const route = useRouter();
 
   const openModal = (type) => {
-    setAuthType(type);
+    if(userData){
+      route.push("/dashboard");
+    }
+    else{
+      setAuthType(type);
     setIsModalOpen(true);
     setData({
       name: "",
       email: "",
       password: ""
-    })
+    });
+    }
   };
 
   useEffect(() => {
@@ -38,10 +43,13 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const SavedUser = localStorage.getItem("Username") || "";
-      setUser(SavedUser);
+      const SavedUser = localStorage.getItem("userData") || null;
+      const retrieveData = SavedUser ? JSON.parse(SavedUser) : "";
+      setUserData(retrieveData);
     }
-  }, [])
+  }, []);
+
+  console.log("userData:", userData);
 
   const toggleMenu = () => setIsOpen(!isOpen);
   return <AppContext.Provider value={{
@@ -52,7 +60,7 @@ export const AppProvider = ({ children }) => {
     setIsModalOpen,
     authType,
     openModal,
-    user,
+    userData,
     data,
     setData,
     route

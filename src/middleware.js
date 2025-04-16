@@ -8,7 +8,10 @@ export function middleware(req) {
     "/blog",
     "/buy-data",
     "/contact",
-    "/dashbord",
+    "/dashboard",
+    "/dashboard/buy-data",
+    "/dashboard/buy-airtime",
+    "/dashboard/buy-electricity",
     "/fund-wallet",
     "/api-docs"
   ];
@@ -18,6 +21,8 @@ export function middleware(req) {
   if(!token && isProtected){
     return NextResponse.redirect(new URL('/', req.url));
   }
+
+  return NextResponse.next();
   
 }
  
@@ -27,7 +32,10 @@ export const config = {
     "/blog",
     "/buy-data",
     "/contact",
-    "/dashbord",
+    "/dashboard",
+    "/dashboard/buy-data",
+    "/dashboard/buy-airtime",
+    "/dashboard/buy-electricity",
     "/fund-wallet",
     "/api-docs",
   ],

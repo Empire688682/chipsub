@@ -11,8 +11,7 @@ import { usePathname } from 'next/navigation';
 import SignupPage from '../SignupPage/SignupPage';
 
 const Topbar = () => {
-    const { toggleMenu, isModalOpen, openModal } = useGlobalContext();
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const { toggleMenu, isModalOpen, openModal, userData, route } = useGlobalContext();
     const pathName = usePathname();
 
     const isHomePage = pathName === '/';
@@ -32,24 +31,21 @@ const Topbar = () => {
            </div>
             <div className='flex items-center gap-4'>
                 {
-                    isHomePage ? (
+                    isHomePage && !userData && (
                         <div className='flex gap-3'>
                             <button className='cursor-pointer text-white font-semibold' onClick={() => openModal("login")}>Login</button>
                             <button className='cursor-pointer text-white font-semibold' onClick={() => openModal("register")}>Register</button>
                         </div>
-                    ) : (
-                        <div>
-                            {
-                                isAuthenticated ? (
-                                    <Image src="/profile.svg" alt="profile" width={30} height={30} className="rounded-full cursor-pointer" />
-                                ) : (
-                                    <div className="flex items-center gap-4">
-                                        <Link href="/login" className="text-white md:text-base text-sm hover:underline">Login</Link>
-                                        <Link href="/register" className="text-white md:text-base text-sm hover:underline">Sign Up</Link>
-                                    </div>
-                                )
-                            }
-                        </div>
+                    )
+                }
+                {
+                    userData && isHomePage && (
+                        <Image src="/profile.svg" alt="profile" width={30} height={30} className="rounded-full cursor-pointer" onClick={()=>route.push("/dashboard")}/>
+                    )
+                }
+                {
+                    userData && !isHomePage && (
+                        <Image src="/profile.svg" alt="profile" width={30} height={30} className="rounded-full cursor-pointer"/>
                     )
                 }
                 {

@@ -10,11 +10,33 @@ import {
   Wallet,
   Phone,
   Newspaper,
+  LogOut 
 } from 'lucide-react';
 import { useGlobalContext } from '../Context';
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function Sidebar() {
-  const { isOpen, setIsOpen } = useGlobalContext();
+  const { isOpen, setIsOpen, route } = useGlobalContext();
+
+  const logoutUser = async () => {
+    try {
+      await axios.get("/api/auth/logout");
+      toast.success("Logged out successfully");
+      clearLocalStorage();
+      setIsOpen(false);
+      window.location.reload();
+    } catch (error) {
+      console.log("Logout Error:", error);
+      toast.error("Something went wrong logging out"); 
+    }
+  };
+
+  const clearLocalStorage = () =>{
+    if(typeof window !== "undefined"){
+      localStorage.clear("Username")
+    }
+  }
 
   return (
     <nav
@@ -57,6 +79,10 @@ export default function Sidebar() {
           <Newspaper size={18} className="hidden md:block" />
           Blog
         </Link>
+        <div onClick={logoutUser} className="flex items-center cursor-pointer gap-2 text-gray-600 hover:text-blue-600">
+          <LogOut  size={18} className="hidden md:block" />
+          Logout
+        </div>
       </div>
     </nav>
   );

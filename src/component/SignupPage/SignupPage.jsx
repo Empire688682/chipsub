@@ -34,8 +34,8 @@ export default function SignupPage() {
                     email: "",
                     password: ""
                 });
-                const username = response.data.userData.name
-                localStorage.setItem("Username", username);
+                const userData = response.data.userData
+                localStorage.setItem("userData", JSON.stringify(userData));
                 setIsModalOpen(false);
                 route.push("/dashboard");
             }

@@ -17,7 +17,7 @@ export default function CTA() {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <div
               onClick={()=>openModal("register")}
-              className="bg-white text-blue-600 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition"
+              className="bg-white text-blue-600 cursor-pointer font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition"
             >
               Create Account
             </div>

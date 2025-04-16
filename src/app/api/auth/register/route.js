@@ -38,7 +38,9 @@ const registerUser = async (req) =>{
             password: hashPassword
         });
 
-        const userData = await newUser.save();
+        await newUser.save();
+
+        const { password: _, _id, ...userData } = newUser.toObject();
 
         const userId = newUser._id;
 
