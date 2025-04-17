@@ -68,6 +68,8 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  //Coming soon
+
   const clearLocalStorage = () =>{
     if(typeof window !== "undefined"){
       localStorage.clear("Username")
