@@ -13,8 +13,8 @@ const registerUser = async (req) =>{
         await connectDb();
         const {name, email, phone, password} = reBody;
         
-        if(!name || !email || !password, !phone){
-            return NextResponse.json({success:false, message:"All Filed is require"},{status:400})
+        if(!name || !email || !password || !phone){
+            return NextResponse.json({success:false, message:"All Fields are require"},{status:400})
         };
 
         if(!validator.isEmail(email)){
@@ -26,18 +26,19 @@ const registerUser = async (req) =>{
             return NextResponse.json({success:false, message:"User already exist"},{status:400})
         }
 
-        if(password.length <= 8){
+        if(password.length < 8){
             return NextResponse.json({success:false, message:"Password too sort"},{status:400})
         }
 
         const hashPassword = await bcrypt.hash(password, 10)
 
-        const newUser = await new UserModel({
+        const newUser = await UserModel.create({
             name,
             email,
             phone,
-            password: hashPassword
-        });
+            transactions: [],
+            password: hashedPassword,
+          });
 
         await newUser.save();
 
@@ -45,7 +46,7 @@ const registerUser = async (req) =>{
 
         const userId = newUser._id;
 
-        const token = jwt.sign({userId}, process.env.SECRET_KEY);
+        const token = jwt.sign({userId}, process.env.SECRET_KEY, {expiresIn:"1d"});
 
         const res = NextResponse.json({success:true, message:"User aded", userData}, {status:200});
 

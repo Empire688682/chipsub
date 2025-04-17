@@ -21,7 +21,7 @@ export async function POST(req) {
         }
         const { password: _, _id, ...userData } = userExist.toObject();
 
-        const token = jwt.sign({ userId: userExist._id }, process.env.SECRET_KEY);
+        const token = jwt.sign({ userId: userExist._id }, process.env.SECRET_KEY, {expiresIn:"1d"});
 
         const res = NextResponse.json({success:true, message:"User loging", userData}, {status:200});
         res.cookies.set("UserToken", token, 

@@ -39,7 +39,7 @@ const BuyAirtime = () => {
   };
 
   return (
-    <div className="min-h-screen px-4 py-10">
+    <div className="min-h-screen py-10">
       <ToastContainer />
       <div className='grid md:grid-cols-2 grid-cols-1 gap-6 justify-start '>
         <div className='flex flex-col gap-6'>
