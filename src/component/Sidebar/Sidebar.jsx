@@ -30,7 +30,7 @@ export default function Sidebar() {
           <Home size={18} className="hidden md:block" />
           Home
         </Link>
-        <Link onClick={()=>setIsOpen(false)} href="/buy-data" className="flex items-center gap-2 text-gray-600 hover:text-blue-600">
+        <Link onClick={()=>setIsOpen(false)} href="/dashboard" className="flex items-center gap-2 text-gray-600 hover:text-blue-600">
           <Wifi size={18} className="hidden md:block" />
           Buy Data
         </Link>

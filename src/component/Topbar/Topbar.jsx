@@ -15,6 +15,7 @@ const Topbar = () => {
     const pathName = usePathname();
 
     const isHomePage = pathName === '/';
+    const isProfile = pathName === '/profile';
     return (
         <div className="bg-gradient-to-r relative from-blue-500 to-green-400 shadow-md w-full sticky px-6 py-4 right-0 top-0 z-10 flex items-center justify-between">
             <Link href="/" className="text-2xl font-bold text-white">
@@ -44,8 +45,8 @@ const Topbar = () => {
                     )
                 }
                 {
-                    userData && !isHomePage && (
-                        <Image src="/profile-img.png" alt="profile" width={35} height={50} className="rounded-full cursor-pointer"/>
+                    userData && !isHomePage && !isProfile && (
+                        <Image onClick={()=>route.push("/profile")} src="/profile-img.png" alt="profile" width={35} height={50} className="rounded-full cursor-pointer"/>
                     )
                 }
                 {
