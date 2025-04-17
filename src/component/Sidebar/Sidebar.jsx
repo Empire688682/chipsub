@@ -13,30 +13,9 @@ import {
   LogOut 
 } from 'lucide-react';
 import { useGlobalContext } from '../Context';
-import axios from "axios";
-import { toast } from "sonner";
 
 export default function Sidebar() {
-  const { isOpen, setIsOpen, route } = useGlobalContext();
-
-  const logoutUser = async () => {
-    try {
-      await axios.get("/api/auth/logout");
-      toast.success("Logged out successfully");
-      clearLocalStorage();
-      setIsOpen(false);
-      window.location.reload();
-    } catch (error) {
-      console.log("Logout Error:", error);
-      toast.error("Something went wrong logging out"); 
-    }
-  };
-
-  const clearLocalStorage = () =>{
-    if(typeof window !== "undefined"){
-      localStorage.clear("Username")
-    }
-  }
+  const { isOpen, setIsOpen, logoutUser} = useGlobalContext();
 
   return (
     <nav
@@ -55,9 +34,9 @@ export default function Sidebar() {
           <Wifi size={18} className="hidden md:block" />
           Buy Data
         </Link>
-        <Link onClick={()=>setIsOpen(false)} href="/pricing" className="flex items-center gap-2 text-gray-600 hover:text-blue-600">
+        <Link onClick={()=>setIsOpen(false)} href="/profile" className="flex items-center gap-2 text-gray-600 hover:text-blue-600">
           <DollarSign size={18} className="hidden md:block" />
-          Pricing
+          Profile
         </Link>
         <Link onClick={()=>setIsOpen(false)} href="/dashboard" className="flex items-center gap-2 text-gray-600 hover:text-blue-600">
           <LayoutDashboard size={18} className="hidden md:block" />

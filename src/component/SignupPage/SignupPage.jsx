@@ -32,6 +32,7 @@ export default function SignupPage() {
                 setData({
                     name: "",
                     email: "",
+                    phone: "",
                     password: ""
                 });
                 const userData = response.data.userData
@@ -100,6 +101,18 @@ export default function SignupPage() {
                                 placeholder="Email"
                                 className="w-full border rounded-lg outline-none border-gray-500 px-4 py-2"
                             />
+                            {
+                                authType === "register" &&
+                                <input
+                                    onChange={handleOnchange}
+                                    value={data.phone}
+                                    name="phone"
+                                    type="tel"
+                                    required
+                                    placeholder="Phone"
+                                    className="w-full border rounded-lg outline-none border-gray-500 px-4 py-2"
+                                />
+                            }
                             <input
                                 onChange={handleOnchange}
                                 value={data.password}

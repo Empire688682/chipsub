@@ -11,9 +11,9 @@ const registerUser = async (req) =>{
     const reBody = await req.json();
     try {
         await connectDb();
-        const {name, email, password} = reBody;
+        const {name, email, phone, password} = reBody;
         
-        if(!name || !email || !password){
+        if(!name || !email || !password, !phone){
             return NextResponse.json({success:false, message:"All Filed is require"},{status:400})
         };
 
@@ -35,6 +35,7 @@ const registerUser = async (req) =>{
         const newUser = await new UserModel({
             name,
             email,
+            phone,
             password: hashPassword
         });
 

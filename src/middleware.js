@@ -13,7 +13,8 @@ export function middleware(req) {
     "/dashboard/buy-airtime",
     "/dashboard/buy-electricity",
     "/fund-wallet",
-    "/api-docs"
+    "/api-docs",
+    "/profile"
   ];
   const isProtected = protectedPaths.some((protectedPath)=>
    path.startsWith(protectedPath));
@@ -38,5 +39,6 @@ export const config = {
     "/dashboard/buy-electricity",
     "/fund-wallet",
     "/api-docs",
+    "/profile"
   ],
 }

@@ -1,6 +1,8 @@
 "use client";
 import { useRouter } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react';
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const AppContext = React.createContext();
 
@@ -12,6 +14,7 @@ export const AppProvider = ({ children }) => {
   const [data, setData] = useState({
     name: "",
     email: "",
+    phone: "",
     password: ""
   });
   const [userData, setUserData] = useState("");
@@ -27,6 +30,7 @@ export const AppProvider = ({ children }) => {
     setData({
       name: "",
       email: "",
+      phone: "",
       password: ""
     });
     }
@@ -50,6 +54,26 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen);
+
+  const logoutUser = async () => {
+    try {
+      await axios.get("/api/auth/logout");
+      toast.success("Logged out successfully");
+      clearLocalStorage();
+      setIsOpen(false);
+      window.location.reload();
+    } catch (error) {
+      console.log("Logout Error:", error);
+      toast.error("Something went wrong logging out"); 
+    }
+  };
+
+  const clearLocalStorage = () =>{
+    if(typeof window !== "undefined"){
+      localStorage.clear("Username")
+    }
+  }
+
   return <AppContext.Provider value={{
     isOpen,
     toggleMenu,
@@ -61,7 +85,8 @@ export const AppProvider = ({ children }) => {
     userData,
     data,
     setData,
-    route
+    route,
+    logoutUser
   }}>
     {children}
   </AppContext.Provider>
