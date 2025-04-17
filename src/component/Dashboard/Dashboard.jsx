@@ -2,6 +2,7 @@
 import React from 'react';
 import { useGlobalContext } from '../Context';
 import { Wallet, Phone, Wifi, Zap, Bell, Heart, Copy } from "lucide-react";
+import WalletBalance from '../WalletBalance/WalletBalance';
 
 const Dashboard = () => {
   const walletBalance = 3500.75;
@@ -36,13 +37,7 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <p className="text-gray-500 text-sm">Wallet Balance</p>
-          <div className="flex items-center justify-between mt-2">
-            <p className="text-xl font-bold">₦{userData?.walletBalance?.toFixed(2) || "0.00"}</p>
-            <button className="bg-blue-600 cursor-pointer text-white px-3 py-1 rounded">Fund +</button>
-          </div>
-        </div>
+        <WalletBalance />
 
         <div className="bg-white p-4 rounded-lg shadow-md">
           <p className="text-gray-500 text-sm">Commission Balance</p>

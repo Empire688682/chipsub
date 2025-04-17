@@ -27,7 +27,7 @@ const plans = [
   },
 ];
 
-const Pricing = () => {
+const Profile = () => {
   return (
     <div className="min-h-screen px-6 py-12 bg-gradient-to-br from-blue-50 to-white text-black">
       <div className="max-w-5xl mx-auto">
@@ -56,4 +56,4 @@ const Pricing = () => {
   );
 };
 
-export default Pricing;
+export default Profile;

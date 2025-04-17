@@ -1,7 +1,7 @@
 import BuyElectricity from '@/component/BuyElectricity/BuyElectricity'
 import React from 'react'
 
-const page = () => {
+const Page = () => {
   return (
     <div className='px-6 py-12'>
       <BuyElectricity />
@@ -9,4 +9,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
