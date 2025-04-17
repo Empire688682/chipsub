@@ -23,11 +23,6 @@ const Profile = () => {
     ],
   };
 
-  const handleLogout = () => {
-    logoutUser();
-    toast.success('Logged out successfully!');
-  };
-
   const handlePasswordChange = (e) => {
     e.preventDefault();
     toast.success('Password updated!');
@@ -73,7 +68,7 @@ const Profile = () => {
 
           <div className="mt-6 space-y-3 w-full">
             <button
-              onClick={handleLogout}
+              onClick={logoutUser}
               className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
             >
               <LogOut size={16} /> Logout
