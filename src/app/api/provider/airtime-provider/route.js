@@ -14,9 +14,9 @@ export async function POST(req) {
   const reqBody = await req.json();
 
   try {
-    const { network, amount, phone, pin } = reqBody;
+    const { network, amount, number, pin } = reqBody;
 
-    if (!network || !amount || !phone || !pin) {
+    if (!network || !amount || !number || !pin) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
         { status: 400 }
@@ -32,15 +32,15 @@ export async function POST(req) {
         { status: 401 }
       );
     }
-
-    if (pin === "1234") {
+  
+    if (Number(pin) === 1234) {
       return NextResponse.json(
         { success: false, message: "1234 is not allowed" },
         { status: 400 }
       );
     }
 
-    if (verifyUser.amount < amount) {
+    if (verifyUser.walletBalanc < amount) {
       return NextResponse.json(
         { success: false, message: "Insufficient balance" },
         { status: 400 }
@@ -61,7 +61,7 @@ export async function POST(req) {
     await verifyUser.save();
 
     // ✅ 2. Call Clubkonnect Airtime API
-    const res = await fetch(`https://www.nellobytesystems.com/APIAirtimeV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&MobileNetwork=${network}&Amount=${amount}&MobileNumber=${phone}`, {
+    const res = await fetch(`https://www.nellobytesystems.com/APIAirtimeV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&MobileNetwork=${network}&Amount=${amount}&MobileNumber=${number}`, {
       method: "GET",
     });
 
@@ -82,7 +82,7 @@ export async function POST(req) {
         status:"success",
         metadata: {
           network,
-          phone
+          number
         }
       });
       

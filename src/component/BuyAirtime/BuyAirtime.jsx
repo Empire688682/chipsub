@@ -4,6 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import WalletBalance from '../WalletBalance/WalletBalance';
 import AirtimeHelp from '../AirtimeHelp/AirtimeHelp';
+import axios from 'axios';
 
 const BuyAirtime = () => {
   const [data, setData] = useState({
@@ -12,6 +13,7 @@ const BuyAirtime = () => {
     number: "",
     pin: "",
   });
+  const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -24,19 +26,32 @@ const BuyAirtime = () => {
     if (!data.network) return toast.error("Please select a network");
     if (!data.amount || parseInt(data.amount) < 50) return toast.error("Amount must be at least ₦50");
     if (!/^\d{11}$/.test(data.number)) return toast.error("Enter a valid 11-digit phone number");
-    if (data.pin.length < 6) return toast.error("PIN must be at least 6 digits");
+    if (data.pin.length < 4) return toast.error("PIN must be at least 4 digits");
 
-    // 🔥 Simulate API success
-    toast.success("Airtime purchase successful!");
-
-    // Optionally reset form
-    setData({
-      network: "",
-      amount: "",
-      number: "",
-      pin: "",
-    });
+    buyAirtime();
   };
+
+  const buyAirtime = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post("/api/provider/airtime-provider", data);
+      if (response.data.success) {
+        toast.success(response.data.message);
+        setData({
+          network: "",
+          amount: "",
+          number: "",
+          pin: "",
+        });
+      }
+    } catch (error) {
+      console.log("ERROR:", error.response.data.message);
+      toast.error(error.response.data.message)
+    }
+    finally{
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen py-10">
@@ -117,8 +132,7 @@ const BuyAirtime = () => {
                   value={data.pin}
                   placeholder="Enter Pin"
                   required
-                  min={6}
-                  max={6}
+                  maxLength={4}
                   className="w-full border border-gray-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
@@ -128,7 +142,9 @@ const BuyAirtime = () => {
                 type="submit"
                 className="w-full bg-blue-600 text-white py-3 rounded-lg text-base font-semibold hover:bg-blue-700 transition duration-300"
               >
-                Buy Now
+                {
+                  loading? "Processing...." : "Buy Now"
+                }
               </button>
             </form>
           </div>

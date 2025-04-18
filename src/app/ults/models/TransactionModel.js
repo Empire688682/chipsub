@@ -11,7 +11,7 @@ const TransactionSchema = new mongoose.Schema(
     reference: { type: String, unique: true }, // Optional: you can generate this on create
     metadata: {
       network: { type: String },
-      phone: { type: String },
+      number: { type: String },
     },
   },
   {
