@@ -30,14 +30,16 @@ const registerUser = async (req) =>{
             return NextResponse.json({success:false, message:"Password too sort"},{status:400})
         }
 
-        const hashPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const defaultPin = "1234"
 
         const newUser = await UserModel.create({
             name,
             email,
             phone,
-            transactions: [],
             password: hashedPassword,
+            pin: defaultPin,
+            transactionIds: [],
           });
 
         await newUser.save();

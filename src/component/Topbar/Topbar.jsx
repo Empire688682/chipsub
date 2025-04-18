@@ -50,7 +50,7 @@ const Topbar = () => {
                     )
                 }
                 {
-                    !isHomePage && <Menu onClick={toggleMenu} size={30} className='cursor-pointer' />
+                    !isHomePage && <Menu onClick={toggleMenu} size={30} className='cursor-pointer text-white' />
                 }
             </div>
             {
