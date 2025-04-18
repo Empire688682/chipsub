@@ -4,12 +4,15 @@ const TransactionSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
-    type: { type: String, required: true }, 
+    type: { type: String, required: true }, // e.g., "airtime", "data", "electricity"
     amount: { type: Number, required: true },
     status: { type: String, enum: ["pending", "success", "failed"], default: "pending" },
 
-    reference: { type: String, unique: true },
-    metadata: { type: Object },
+    reference: { type: String, unique: true }, // Optional: you can generate this on create
+    metadata: {
+      network: { type: String },
+      phone: { type: String },
+    },
   },
   {
     timestamps: true,
