@@ -9,7 +9,6 @@ const UserSchema = new mongoose.Schema(
     bvnVerify: { type: Boolean, default: false },
     walletBalance: { type: Number, default: 0 },
     number: { type: String , required: true},
-    transactionIds: [{type: mongoose.Schema.Types.ObjectId, ref:"Transaction"}],
   },
   {
     minimize: true,

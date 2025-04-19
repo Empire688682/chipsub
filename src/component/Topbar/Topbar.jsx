@@ -9,9 +9,10 @@ import { useGlobalContext } from '../Context';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import SignupPage from '../SignupPage/SignupPage';
+import TransactionPin from '../TransactionPin/TransactionPin';
 
 const Topbar = () => {
-    const { toggleMenu, isModalOpen, openModal, userData, route } = useGlobalContext();
+    const { toggleMenu, isModalOpen, openModal, userData, route, pinModal, setPinModal } = useGlobalContext();
     const pathName = usePathname();
 
     const isHomePage = pathName === '/';
@@ -21,15 +22,15 @@ const Topbar = () => {
             <Link href="/" className="text-2xl font-bold text-white">
                 Chipsub
             </Link>
-           <div className='md:block hidden'>
-           {
-                isHomePage && (
-                    <a href='#downloadApp' className='text-white'>
-                        Download App
-                    </a>
-                )
-            }
-           </div>
+            <div className='md:block hidden'>
+                {
+                    isHomePage && (
+                        <a href='#downloadApp' className='text-white'>
+                            Download App
+                        </a>
+                    )
+                }
+            </div>
             <div className='flex items-center gap-4'>
                 {
                     isHomePage && !userData && (
@@ -41,12 +42,12 @@ const Topbar = () => {
                 }
                 {
                     userData && isHomePage && (
-                        <Image src="/profile-img.png" alt="profile" width={35} height={50} className="rounded-full cursor-pointer" onClick={()=>route.push("/dashboard")}/>
+                        <Image src="/profile-img.png" alt="profile" width={35} height={50} className="rounded-full cursor-pointer" onClick={() => route.push("/dashboard")} />
                     )
                 }
                 {
                     userData && !isHomePage && !isProfile && (
-                        <Image onClick={()=>route.push("/profile")} src="/profile-img.png" alt="profile" width={35} height={50} className="rounded-full cursor-pointer"/>
+                        <Image onClick={() => route.push("/profile")} src="/profile-img.png" alt="profile" width={35} height={50} className="rounded-full cursor-pointer" />
                     )
                 }
                 {
@@ -55,6 +56,16 @@ const Topbar = () => {
             </div>
             {
                 isModalOpen && (<SignupPage />)
+            }
+            {
+                pinModal && (
+                    <div className='w-full h-full bg-black/70 flex items-center justify-center fixed top-0 left-0'>
+                        <X size={40} className='text-white absolute top-30 right-[50px] cursor-pointer' onClick={()=>setPinModal(false)} />
+                        <div className=' top-30'>
+                            <TransactionPin />
+                        </div>
+                    </div>
+                )
             }
         </div>
     )

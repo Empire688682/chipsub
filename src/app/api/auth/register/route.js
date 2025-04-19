@@ -11,9 +11,9 @@ const registerUser = async (req) =>{
     const reBody = await req.json();
     try {
         await connectDb();
-        const {name, email, phone, password} = reBody;
+        const {name, email, number, password} = reBody;
         
-        if(!name || !email || !password || !phone){
+        if(!name || !email || !password || !number){
             return NextResponse.json({success:false, message:"All Fields are require"},{status:400})
         };
 
@@ -36,10 +36,9 @@ const registerUser = async (req) =>{
         const newUser = await UserModel.create({
             name,
             email,
-            phone,
+            number,
             password: hashedPassword,
             pin: defaultPin,
-            transactionIds: [],
           });
 
         await newUser.save();

@@ -8,7 +8,7 @@ const TransactionSchema = new mongoose.Schema(
     amount: { type: Number, required: true },
     status: { type: String, enum: ["pending", "success", "failed"], default: "pending" },
 
-    reference: { type: String, unique: true }, // Optional: you can generate this on create
+    reference: { type: String, unique: true, sparse: true }, // Optional: you can generate this on create
     metadata: {
       network: { type: String },
       number: { type: String },

@@ -5,8 +5,10 @@ import "react-toastify/dist/ReactToastify.css";
 import WalletBalance from '../WalletBalance/WalletBalance';
 import AirtimeHelp from '../AirtimeHelp/AirtimeHelp';
 import axios from 'axios';
+import { useGlobalContext } from '../Context';
 
 const BuyAirtime = () => {
+  const {setPinModal} = useGlobalContext();
   const [data, setData] = useState({
     network: "",
     amount: "",
@@ -27,6 +29,13 @@ const BuyAirtime = () => {
     if (!data.amount || parseInt(data.amount) < 50) return toast.error("Amount must be at least ₦50");
     if (!/^\d{11}$/.test(data.number)) return toast.error("Enter a valid 11-digit phone number");
     if (data.pin.length < 4) return toast.error("PIN must be at least 4 digits");
+    if (data.pin === "1234"){
+      toast.error("1234 is not allowed");
+      setTimeout(()=>{
+        setPinModal(true)
+      }, 2000);
+      return  null
+    }
 
     buyAirtime();
   };
@@ -46,7 +55,17 @@ const BuyAirtime = () => {
       }
     } catch (error) {
       console.log("ERROR:", error.response.data.message);
-      toast.error(error.response.data.message)
+      toast.error(error.response.data.message);
+      if(error.response.data.message ===  "1234 is not allowed"){
+        setTimeout(()=>{
+          setPinModal(true)
+        }, 2000)
+      }
+      if(error.response.data.message ===  "Pin not activated yet!"){
+        setTimeout(()=>{
+          setPinModal(true)
+        }, 2000)
+      }
     }
     finally{
       setLoading(false)
@@ -80,10 +99,10 @@ const BuyAirtime = () => {
                   className="w-full border border-gray-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option disabled value="">-- Choose Network --</option>
-                  <option value="mtn">MTN</option>
-                  <option value="glo">GLO</option>
-                  <option value="airtel">Airtel</option>
-                  <option value="9mobile">9Mobile</option>
+                  <option value="01">MTN</option>
+                  <option value="02">GLO</option>
+                  <option value="03">Airtel</option>
+                  <option value="04">9Mobile</option>
                 </select>
               </div>
 
@@ -139,6 +158,7 @@ const BuyAirtime = () => {
 
               {/* Submit Button */}
               <button
+                disabled={loading}
                 type="submit"
                 className="w-full bg-blue-600 text-white py-3 rounded-lg text-base font-semibold hover:bg-blue-700 transition duration-300"
               >

@@ -32,7 +32,7 @@ export default function SignupPage() {
                 setData({
                     name: "",
                     email: "",
-                    phone: "",
+                    number: "",
                     password: ""
                 });
                 const userData = response.data.userData
@@ -105,8 +105,8 @@ export default function SignupPage() {
                                 authType === "register" &&
                                 <input
                                     onChange={handleOnchange}
-                                    value={data.phone}
-                                    name="phone"
+                                    value={data.number}
+                                    name="number"
                                     type="tel"
                                     required
                                     placeholder="Phone"

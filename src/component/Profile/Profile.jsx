@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { LogOut, ShieldAlert, ShieldCheck, Bell, Moon, History } from 'lucide-react';
+import { LogOut, ShieldAlert, ShieldCheck, Bell, Moon, History, Pencil } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Image from 'next/image';
@@ -8,7 +8,7 @@ import { useGlobalContext } from '../Context';
 
 const Profile = () => {
   const [notify, setNotify] = useState(true);
-  const { userData, logoutUser } = useGlobalContext();
+  const { userData, logoutUser, setPinModal } = useGlobalContext();
 
   const user = {
     name: `${userData.name}`|| "",
@@ -72,6 +72,13 @@ const Profile = () => {
               className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
             >
               <LogOut size={16} /> Logout
+            </button>
+
+            <button
+              onClick={()=>setPinModal(true)}
+              className="w-full flex items-center justify-center gap-2 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+            >
+              <Pencil size={16} /> Set Pin
             </button>
           </div>
         </div>

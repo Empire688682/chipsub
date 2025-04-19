@@ -14,11 +14,12 @@ export const AppProvider = ({ children }) => {
   const [data, setData] = useState({
     name: "",
     email: "",
-    phone: "",
+    number: "",
     password: ""
   });
   const [userData, setUserData] = useState("");
   const route = useRouter();
+  const [pinModal, setPinModal] = useState(false);
 
   const openModal = (type) => {
     if(userData){
@@ -30,7 +31,7 @@ export const AppProvider = ({ children }) => {
     setData({
       name: "",
       email: "",
-      phone: "",
+      number: "",
       password: ""
     });
     }
@@ -88,7 +89,9 @@ export const AppProvider = ({ children }) => {
     data,
     setData,
     route,
-    logoutUser
+    logoutUser,
+    pinModal, 
+    setPinModal
   }}>
     {children}
   </AppContext.Provider>
