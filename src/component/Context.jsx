@@ -20,6 +20,8 @@ export const AppProvider = ({ children }) => {
   const [userData, setUserData] = useState("");
   const route = useRouter();
   const [pinModal, setPinModal] = useState(false);
+  const [transactionHistory, setTransactionHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const openModal = (type) => {
     if(userData){
@@ -69,7 +71,20 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  //Coming soon
+  const getUserTransactionHistory = async () =>{
+  setLoading(true)
+    try {
+      const res = await axios.get("/api/transaction-history")
+      if(res.data.success){
+        setTransactionHistory(res.data.transactions)
+      }
+    } catch (error) {
+      console.log("ERROR:", error);
+    }
+    finally{
+      setLoading(false)
+    }
+  }
 
   const clearLocalStorage = () =>{
     if(typeof window !== "undefined"){
@@ -91,7 +106,10 @@ export const AppProvider = ({ children }) => {
     route,
     logoutUser,
     pinModal, 
-    setPinModal
+    setPinModal,
+    getUserTransactionHistory,
+    transactionHistory,
+    loading
   }}>
     {children}
   </AppContext.Provider>

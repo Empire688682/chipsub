@@ -33,6 +33,7 @@ const TransactionPin = () => {
       if (res.ok) {
         setMessage({ type: 'success', text: data.message })
         setTimeout(() => setPinModal(false), 1500);
+        window.location.reload();
       } else {
         setMessage({ type: 'error', text: data.message });
       }

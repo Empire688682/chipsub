@@ -1,12 +1,11 @@
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGlobalContext } from '../Context';
 import { Wallet, Phone, Wifi, Zap, Bell, Heart, Copy } from "lucide-react";
 import WalletBalance from '../WalletBalance/WalletBalance';
 
 const Dashboard = () => {
-  const walletBalance = 3500.75;
-  const { userData, route } = useGlobalContext();
+  const { userData, getUserTransactionHistory, route, transactionHistory, loading } = useGlobalContext();
   const referralLink = `https://yourdomain.com/ref/${userData?.refCode || "123ABC"}`;
 
   const handleCopy = () => {
@@ -26,6 +25,10 @@ const Dashboard = () => {
     { id: 3, date: "2025-04-08", type: "Debit", amount: -300, description: "Data purchase" },
     { id: 4, date: "2025-04-07", type: "Credit", amount: 2000, description: "Referral bonus" },
   ];
+
+  useEffect(()=>{
+    getUserTransactionHistory();
+  },[]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -84,7 +87,9 @@ const Dashboard = () => {
 
       <h3 className="text-md font-medium mb-2 mt-6">Transaction History</h3>
       <div className="bg-white p-4 rounded-lg shadow-md">
-        <div className="space-y-4">
+        {
+          loading ? "Loading...." :
+          <div className="space-y-4">
           {transactions.map((transaction) => (
             <div key={transaction.id} className="flex justify-between items-center">
               <div>
@@ -97,6 +102,7 @@ const Dashboard = () => {
             </div>
           ))}
         </div>
+        }
       </div>
     </div>
   );
