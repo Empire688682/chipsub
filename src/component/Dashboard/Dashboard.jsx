@@ -26,17 +26,20 @@ const Dashboard = () => {
     { id: 4, date: "2025-04-07", type: "Credit", amount: 2000, description: "Referral bonus" },
   ];
 
-  useEffect(()=>{
+  useEffect(() => {
     getUserTransactionHistory();
-  },[]);
+  }, []);
+
+  const fullName = userData?.name || "User";
+  const firstName = fullName.split(" ")[0];
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-gray-700 font-medium text-lg">
-          <Heart /> Welcome back, <span className="font-bold">{userData?.name}</span>
+          <Heart /> Welcome back, <span className="font-bold">{firstName}</span>
         </h2>
-        <Bell className="text-gray-500 cursor-pointer" />
+        <Bell className="text-gray-500 cursor-pointer"  onClick={()=>route.push("/notifications")}/>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -69,17 +72,17 @@ const Dashboard = () => {
           <p className="text-sm font-medium">Fund Wallet</p>
         </div>
 
-        <div onClick={()=>route.push("/dashboard/buy-airtime")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
+        <div onClick={() => route.push("/dashboard/buy-airtime")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
           <Phone className="text-blue-600 mb-2" size={28} />
           <p className="text-sm font-medium">Buy Airtime</p>
         </div>
 
-        <div onClick={()=>route.push("/dashboard/buy-data")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
+        <div onClick={() => route.push("/dashboard/buy-data")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
           <Wifi className="text-blue-600 mb-2" size={28} />
           <p className="text-sm font-medium">Buy Data</p>
         </div>
 
-        <div onClick={()=>route.push("/dashboard/buy-electricity")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
+        <div onClick={() => route.push("/dashboard/buy-electricity")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
           <Zap className="text-blue-600 mb-2" size={28} />
           <p className="text-sm font-medium">Electricity</p>
         </div>
@@ -89,19 +92,26 @@ const Dashboard = () => {
       <div className="bg-white p-4 rounded-lg shadow-md">
         {
           loading ? "Loading...." :
-          <div className="space-y-4">
-          {transactions.map((transaction) => (
-            <div key={transaction.id} className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-gray-500">{transaction.date}</p>
-                <p className="font-medium">{transaction.description}</p>
-              </div>
-              <p className={`text-sm ${transaction.type === 'Credit' ? 'text-green-600' : 'text-red-600'}`}>
-                {transaction.type} ₦{transaction.amount.toFixed(2)}
-              </p>
+            <div className="space-y-4">
+              {
+                transactionHistory.length > 0 ? (
+                  <>
+                    {transactionHistory.map((transaction) => (
+                      <div key={transaction._id} className="flex cursor-pointer justify-between items-center">
+                        <div>
+                          <p className="text-sm text-gray-500">{new Date(transaction.createdAt).toISOString().replace("T", " ").split(".")[0]}</p>
+                          <p className="font-medium">{transaction.description}</p>
+                        </div>
+                        <p className={`text-sm ${transaction.type === 'airtime' ? 'text-green-600' : 'text-red-600'}`}>
+                          {transaction.type} ₦{transaction.amount.toFixed(2)}
+                        </p>
+                      </div>
+                    ))}
+                  </>
+                ) :
+                  <p className="text-gray-500 text-sm">No transaction history found.</p>
+              }
             </div>
-          ))}
-        </div>
         }
       </div>
     </div>

@@ -14,7 +14,8 @@ export function middleware(req) {
     "/dashboard/buy-electricity",
     "/fund-wallet",
     "/api-docs",
-    "/profile"
+    "/profile",
+    "/notifications"
   ];
   const isProtected = protectedPaths.some((protectedPath)=>
    path.startsWith(protectedPath));
@@ -39,6 +40,7 @@ export const config = {
     "/dashboard/buy-electricity",
     "/fund-wallet",
     "/api-docs",
-    "/profile"
+    "/profile",
+    "/notifications"
   ],
 }
