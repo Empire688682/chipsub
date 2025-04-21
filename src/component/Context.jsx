@@ -24,18 +24,18 @@ export const AppProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const openModal = (type) => {
-    if(userData){
+    if (userData) {
       route.push("/dashboard");
     }
-    else{
+    else {
       setAuthType(type);
-    setIsModalOpen(true);
-    setData({
-      name: "",
-      email: "",
-      number: "",
-      password: ""
-    });
+      setIsModalOpen(true);
+      setData({
+        name: "",
+        email: "",
+        number: "",
+        password: ""
+      });
     }
   };
 
@@ -67,30 +67,48 @@ export const AppProvider = ({ children }) => {
       window.location.reload();
     } catch (error) {
       console.log("Logout Error:", error);
-      toast.error("Something went wrong logging out"); 
+      toast.error("Something went wrong logging out");
     }
   };
 
-  const getUserTransactionHistory = async () =>{
-  setLoading(true)
+  const getUserTransactionHistory = async () => {
+    setLoading(true)
     try {
       const res = await axios.get("/api/transaction-history")
-      if(res.data.success){
+      if (res.data.success) {
         setTransactionHistory(res.data.transactions)
       }
     } catch (error) {
       console.log("ERROR:", error);
     }
-    finally{
+    finally {
       setLoading(false)
     }
   }
 
-  const clearLocalStorage = () =>{
-    if(typeof window !== "undefined"){
+  const clearLocalStorage = () => {
+    if (typeof window !== "undefined") {
       localStorage.clear("Username")
     }
-  }
+  };
+
+  const [dataPlan, setDataPlan] = useState([]);
+
+  useEffect(() => {
+    const fetchDataPlan = async () => {
+      try {
+        const res = await axios.get("/api/data-plan");
+        if (res.data.success) {
+          setDataPlan(res.data.data)
+        }
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    }
+    fetchDataPlan();
+  }, [])
+
+  console.log("Dataplan:", dataPlan);
 
   return <AppContext.Provider value={{
     isOpen,
@@ -105,7 +123,7 @@ export const AppProvider = ({ children }) => {
     setData,
     route,
     logoutUser,
-    pinModal, 
+    pinModal,
     setPinModal,
     getUserTransactionHistory,
     transactionHistory,
