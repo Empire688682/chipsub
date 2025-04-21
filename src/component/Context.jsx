@@ -127,7 +127,8 @@ export const AppProvider = ({ children }) => {
     setPinModal,
     getUserTransactionHistory,
     transactionHistory,
-    loading
+    loading,
+    dataPlan
   }}>
     {children}
   </AppContext.Provider>
