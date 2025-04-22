@@ -106,9 +106,7 @@ export const AppProvider = ({ children }) => {
       }
     }
     fetchDataPlan();
-  }, [])
-
-  console.log("Dataplan:", dataPlan);
+  }, []);
 
   return <AppContext.Provider value={{
     isOpen,
