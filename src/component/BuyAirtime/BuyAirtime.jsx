@@ -54,7 +54,6 @@ const BuyAirtime = () => {
         });
       }
     } catch (error) {
-      console.log("ERROR:", error.response.data.message);
       toast.error(error.response.data.message);
       console.log(error.response.data.details);
       if(error.response.data.message ===  "1234 is not allowed"){
