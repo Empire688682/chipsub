@@ -13,13 +13,15 @@ export async function POST(req) {
   await connectDb();
   const reqBody = await req.json();
 
+  console.log("Data:",reqBody )
+
   const session = await mongoose.startSession(); // 👈 Start a session
   session.startTransaction(); // 👈 Begin the transaction
 
   try {
-    const { network, plan, number, pin } = reqBody;
+    const { network, plan, number, amount, pin } = reqBody;
 
-    if (!network || !plan || !number || !pin) {
+    if (!network || !plan || !number || !amount || !pin) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "All fields are required" },
@@ -61,10 +63,20 @@ export async function POST(req) {
         { success: false, message: "Incorrect PIN provided!" },
         { status: 400 }
       );
-    }
+    };
+
+    const validNetwork = {
+      "MTN": "01",
+      "Glo": "02",
+      "Airtel": "04",
+      "9_mobile": "03",
+    };
+
+    const mappedNetwork = validNetwork[network];
+    console.log(mappedNetwork);
 
     // 👉 Call external API
-    const res = await fetch(`https://www.nellobytesystems.com/APIAirtimeV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&MobileNetwork=${network}&Amount=${amount}&MobileNumber=${number}`, {
+    const res = await fetch(`https://www.nellobytesystems.com/APIDatabundleV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&MobileNetwork=${mappedNetwork}&DataPlan=${plan}&MobileNumber=${number}`, {
       method: "GET",
     });
 
@@ -85,7 +97,7 @@ export async function POST(req) {
     const newTransaction = await TransactionModel.create(
       [{
         userId,
-        type: "airtime",
+        type: "data",
         amount,
         status: "success",
         reference: result.orderid,
@@ -101,7 +113,7 @@ export async function POST(req) {
     session.endSession();
 
     return NextResponse.json(
-      { success: true, message: "Airtime Purchase Successful", transaction: newTransaction[0] },
+      { success: true, message: "Data Purchase Successful", transaction: newTransaction[0] },
       { status: 200 }
     );
 

@@ -99,7 +99,7 @@ export const AppProvider = ({ children }) => {
       try {
         const res = await axios.get("/api/data-plan");
         if (res.data.success) {
-          setDataPlan(res.data.data)
+          setDataPlan(res.data.data);
         }
       } catch (error) {
         console.log("Error:", error);

@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import DataHelp from '../DataHelp/DataHelp';
 import WalletBalance from '../WalletBalance/WalletBalance';
 import { useGlobalContext } from '../Context';
+import axios from 'axios';
 
 const PROFIT_TYPE = "flat"; // "flat" or "percent"
 const PROFIT_VALUE = 50; // ₦50 flat or 10%
@@ -21,6 +22,7 @@ const BuyData = () => {
   });
 
   const [availablePlans, setAvailablePlans] = useState([]);
+  const [loading, setLoading] = useState(false)
 
   const handleNetworkChange = (e) => {
     const selected = e.target.value;
@@ -57,17 +59,21 @@ const BuyData = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.network) return toast.error("Please select a network");
     if (!form.plan) return toast.error("Please choose a data plan");
     if (!/^\d{11}$/.test(form.number)) return toast.error("Enter a valid 11-digit phone number");
-    if (form.pin.length < 6) return toast.error("PIN must be at least 6 digits");
+    if (form.pin.length < 4) return toast.error("PIN must be 4 digits");
 
-    // 🔥 Submit the purchase logic here
-
-    toast.success("Data purchase successful!");
+    try {
+      setLoading(true)
+      // 🔥 Submit the purchase logic here
+    const res = await axios.post("/api/provider/data-provider", form)
+    if(res.data.success){
+      console.log("Data:", res.data.transaction);
+      toast.success("Data purchase successful!");
 
     setForm({
       network: "",
@@ -77,6 +83,14 @@ const BuyData = () => {
       pin: ""
     });
     setAvailablePlans([]);
+    }
+    } catch (error) {
+      console.log("Error:", error);
+      toast.error(error.response.data.message);
+    }
+    finally{
+      setLoading(false);
+    }
   };
 
   return (
@@ -162,18 +176,19 @@ const BuyData = () => {
                     type="password"
                     onChange={handleChange}
                     value={form.pin}
-                    placeholder="6 digit PIN"
+                    placeholder="4 digit PIN"
                     required
-                    maxLength={6}
+                    maxLength={4}
                     className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
 
                 <button
                   type="submit"
+                  disabled={loading}
                   className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 transition duration-300"
                 >
-                  Buy Now
+                  {loading? "Proccessing" : "Buy Now"}
                 </button>
               </form>
             </div>
