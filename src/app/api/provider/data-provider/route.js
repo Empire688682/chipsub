@@ -13,8 +13,6 @@ export async function POST(req) {
   await connectDb();
   const reqBody = await req.json();
 
-  console.log("Data:",reqBody )
-
   const session = await mongoose.startSession(); // 👈 Start a session
   session.startTransaction(); // 👈 Begin the transaction
 
@@ -73,10 +71,12 @@ export async function POST(req) {
     };
 
     const mappedNetwork = validNetwork[network];
-    console.log(mappedNetwork);
+
+    // To remove the service cost before sending to third party API
+    const validAmount = Number(amount) - 50;
 
     // 👉 Call external API
-    const res = await fetch(`https://www.nellobytesystems.com/APIDatabundleV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&MobileNetwork=${mappedNetwork}&DataPlan=${plan}&MobileNumber=${number}`, {
+    const res = await fetch(`https://www.nellobytesystems.com/APIDatabundleV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&MobileNetwork=${mappedNetwork}&DataPlan=${validAmount}&MobileNumber=${number}`, {
       method: "GET",
     });
 

@@ -21,6 +21,8 @@ const BuyData = () => {
     pin: ""
   });
 
+  console.log("Data:",dataPlan);
+
   const [availablePlans, setAvailablePlans] = useState([]);
   const [loading, setLoading] = useState(false)
 
@@ -31,7 +33,7 @@ const BuyData = () => {
     const plans = dataPlan?.MOBILE_NETWORK?.[selected]?.[0]?.PRODUCT || [];
 
     const enhancedPlans = plans.map(item => {
-      const basePrice = Number(item.PRODUCT_AMOUNT);
+      const basePrice = Number(item.PRODUCT_ID);
       const finalPrice = PROFIT_TYPE === "flat"
         ? basePrice + PROFIT_VALUE
         : Math.ceil(basePrice + (basePrice * PROFIT_VALUE / 100));
