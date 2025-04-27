@@ -21,8 +21,6 @@ const BuyData = () => {
     pin: ""
   });
 
-  console.log("Data:",dataPlan);
-
   const [availablePlans, setAvailablePlans] = useState([]);
   const [loading, setLoading] = useState(false)
 
