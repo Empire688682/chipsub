@@ -61,7 +61,6 @@ export const AppProvider = ({ children }) => {
           console.log("❌ Expired. Removed from localStorage");
         } else {
           setUserData(parsedData);
-          console.log("✅ User loaded from localStorage:", parsedData);
         }
       }
     }
