@@ -25,27 +25,31 @@ export default function SignupPage() {
 
     const baseUrl = authType === "login" ? "/api/auth/login" : "/api/auth/register"
     const userAuthHandler = async () => {
-        setLoading(true)
+        setLoading(true);
         try {
             const response = await axios.post(baseUrl, data);
-            if (response.data.success) {
-                setData({
-                    name: "",
-                    email: "",
-                    number: "",
-                    password: ""
-                });
-                const userData = response.data.userData
-                localStorage.setItem("userData", JSON.stringify(userData));
-                setIsModalOpen(false);
-                window.location.reload();
+            const { success, message, userData } = response.data;
+
+            if (!success) {
+                setError(message || "Authentication failed");
+                return;
             }
-            else {
-                setError(response.data.message);
-            }
+
+            const now = new Date().getTime();
+            console.log("Now:", now);
+            const userDataWithTimestamp = {... userData, timestamp:now};
+            localStorage.setItem("userData", JSON.stringify(userDataWithTimestamp));
+            setData({
+                name: "",
+                email: "",
+                number: "",
+                password: ""
+            });
+            setIsModalOpen(false);
+            window.location.reload();
         } catch (error) {
-            console.log("ERROR:", error);
-            setError(error.response.data.message);
+            console.error("Auth Error:", error);
+        setError(error?.response?.data?.message || "An error occurred during authentication");
         }
         finally {
             setLoading(false)

@@ -50,11 +50,23 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const SavedUser = localStorage.getItem("userData") || null;
-      const retrieveData = SavedUser ? JSON.parse(SavedUser) : "";
-      setUserData(retrieveData);
+      const storedData = localStorage.getItem("userData");
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        const twentyFourHours = 24 * 60 * 60 * 1000;
+        const now = new Date().getTime();
+  
+        if (now - parsedData.timestamp > twentyFourHours) {
+          localStorage.removeItem("userData");
+          console.log("❌ Expired. Removed from localStorage");
+        } else {
+          setUserData(parsedData);
+          console.log("✅ User loaded from localStorage:", parsedData);
+        }
+      }
     }
   }, []);
+  
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
