@@ -24,7 +24,7 @@ export default function SignupPage() {
     }
 
     const baseUrl = authType === "login" ? "/api/auth/login" : "/api/auth/register"
-    const creatUser = async () => {
+    const userAuthHandler = async () => {
         setLoading(true)
         try {
             const response = await axios.post(baseUrl, data);
@@ -39,7 +39,6 @@ export default function SignupPage() {
                 localStorage.setItem("userData", JSON.stringify(userData));
                 setIsModalOpen(false);
                 window.location.reload();
-                route.push("/dashboard");
             }
             else {
                 setError(response.data.message);
@@ -55,12 +54,12 @@ export default function SignupPage() {
 
     const handleFormSubmission = (e) => {
         e.preventDefault();
-        creatUser();
+        userAuthHandler();
     }
 
     useEffect(() => {
         setTimeout(() => {
-            setError("")
+            setError("");
         }, 3000);
     }, [error])
 

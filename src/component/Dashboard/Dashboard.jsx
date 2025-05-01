@@ -67,7 +67,7 @@ const Dashboard = () => {
 
       <h3 className="text-md font-medium mb-2">Quick Links</h3>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
+        <div onClick={() => route.push("/fund-wallet")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
           <Wallet className="text-blue-600 mb-2" size={28} />
           <p className="text-sm font-medium">Fund Wallet</p>
         </div>
