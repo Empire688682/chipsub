@@ -1,24 +1,38 @@
 import axios from "axios";
 import { NextResponse } from "next/server";
 import dotenv from "dotenv";
-import { connectDb } from "../ults/db/ConnectDb";
-import UserModel from "../ults/models/UserModel";
-import PaymentModel from "../ults/models/PaymentModel";
-import { verifyToken } from "./helper/VerifyToken";
+import { connectDb } from "../../ults/db/ConnectDb";
+import UserModel from "../../ults/models/UserModel";
+import PaymentModel from "../../ults/models/PaymentModel";
+import { verifyToken } from "../helper/VerifyToken";
 dotenv.config();
 
-export default async function handler(req) {
+export async function POST(req) {
   if (req.method !== "POST") return NextResponse.json({ success: false, message:"Method not allowed"}, { status: 405 });
 
   const reqBody = await req.json();
-  const { amount, customerName, email } = reqBody;
+  const { amount, customerName, email, method } = reqBody;
+
+  const methodMap = {
+    CARD: "CARD",
+    ACCOUNT_TRANSFER: "ACCOUNT_TRANSFER",
+    USSD: "USSD",
+  };
+  
+  const monnifyMethod = methodMap[method];
+  
+  if (!monnifyMethod) {
+    return NextResponse.json({ success: false, message: "Invalid payment method" }, { status: 400 });
+  }
 
   const basicAuth = Buffer.from(
     `${process.env.MONNIFY_APIKEY}:${process.env.MONNIFY_SECRETKEY}`
   ).toString("base64");
 
+  await connectDb();
+
   try {
-    const userId = await verifyToken();
+    const userId = await verifyToken(req);
     const user = await UserModel.findById({_id:userId});
 
     if(!user){
@@ -36,7 +50,7 @@ export default async function handler(req) {
         currencyCode: "NGN",
         contractCode: process.env.MONNIFY_CONTRACT_CODE,
         redirectUrl: process.env.REDIRECT_URL,
-        paymentMethods: ["CARD", "ACCOUNT_TRANSFER"],
+        paymentMethods: [monnifyMethod],
       },
       {
         headers: {
@@ -46,7 +60,8 @@ export default async function handler(req) {
       }
     );
 
-    await connectDb();
+    console.log("Response:", response, user);
+
     if (response.status === 200) {
       const { data } = response;
       const payment = new PaymentModel({ ...data, userId: reqBody.userId });

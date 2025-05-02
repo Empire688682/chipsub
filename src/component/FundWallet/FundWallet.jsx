@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useGlobalContext } from "../Context";
@@ -32,7 +32,7 @@ const FundWallet = () => {
     toast.info("Initializing payment...");
 
     try {
-      const res = await fetch("/api/payment", {
+      const res = await fetch("/api/initiate-payment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -51,6 +51,7 @@ const FundWallet = () => {
         toast.success("Redirecting...");
         window.location.href = data.data.checkoutUrl;
       } else {
+        console.log(data);
         toast.error(data.message || "Payment failed");
       }
     } catch (err) {
