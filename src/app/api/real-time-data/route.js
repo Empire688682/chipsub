@@ -16,7 +16,8 @@ export async function GET(req) {
             return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
         }
         const transactions = await TransactionModel.find({ userId });
-        return NextResponse.json({ success: true, message: "Transaction history", transactions }, { status: 200 });
+        const walletBalance = user.walletBalance || 0;
+        return NextResponse.json({ success: true, message: "Transaction history", data:{walletBalance, transactions} }, { status: 200 });
     } catch (error) {
         console.log("ERROR:", error);
         return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 });

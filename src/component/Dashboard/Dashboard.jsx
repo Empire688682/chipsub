@@ -5,7 +5,7 @@ import { Wallet, Phone, Wifi, Zap, Bell, Heart, Copy } from "lucide-react";
 import WalletBalance from '../WalletBalance/WalletBalance';
 
 const Dashboard = () => {
-  const { userData, getUserTransactionHistory, route, transactionHistory, loading } = useGlobalContext();
+  const { userData, getUserRealTimeData, route, transactionHistory, loading } = useGlobalContext();
   const referralLink = `https://yourdomain.com/ref/${userData?.refCode || "123ABC"}`;
 
   const handleCopy = () => {
@@ -27,7 +27,7 @@ const Dashboard = () => {
   ];
 
   useEffect(() => {
-    getUserTransactionHistory();
+    getUserRealTimeData();
   }, []);
 
   const fullName = userData?.name || "User";

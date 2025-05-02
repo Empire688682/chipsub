@@ -22,6 +22,7 @@ export const AppProvider = ({ children }) => {
   const [pinModal, setPinModal] = useState(false);
   const [transactionHistory, setTransactionHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userWallet, setUserWallet] = useState(0);
 
   const openModal = (type) => {
     if (userData) {
@@ -58,7 +59,6 @@ export const AppProvider = ({ children }) => {
   
         if (now - parsedData.timestamp > twentyFourHours) {
           localStorage.removeItem("userData");
-          console.log("❌ Expired. Removed from localStorage");
         } else {
           setUserData(parsedData);
         }
@@ -82,18 +82,19 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const getUserTransactionHistory = async () => {
+  const getUserRealTimeData = async () => {
     setLoading(true)
     try {
-      const res = await axios.get("/api/transaction-history")
+      const res = await axios.get("/api/real-time-data");
       if (res.data.success) {
-        setTransactionHistory(res.data.transactions)
+        setTransactionHistory(res.data.data.transactions)
+        setUserWallet(res.data.data.walletBalance);
       }
     } catch (error) {
       console.log("ERROR:", error);
     }
     finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -134,10 +135,11 @@ export const AppProvider = ({ children }) => {
     logoutUser,
     pinModal,
     setPinModal,
-    getUserTransactionHistory,
+    getUserRealTimeData,
     transactionHistory,
     loading,
-    dataPlan
+    dataPlan,
+    userWallet
   }}>
     {children}
   </AppContext.Provider>

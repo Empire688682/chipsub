@@ -11,7 +11,7 @@ const PROFIT_TYPE = "flat"; // "flat" or "percent"
 const PROFIT_VALUE = 50; // ₦50 flat or 10%
 
 const BuyData = () => {
-  const { dataPlan } = useGlobalContext();
+  const { dataPlan, getUserRealTimeData } = useGlobalContext();
 
   const [form, setForm] = useState({
     network: "",
@@ -72,6 +72,7 @@ const BuyData = () => {
       // 🔥 Submit the purchase logic here
     const res = await axios.post("/api/provider/data-provider", form)
     if(res.data.success){
+      getUserRealTimeData();
       console.log("Data:", res.data.transaction);
       toast.success("Data purchase successful!");
 

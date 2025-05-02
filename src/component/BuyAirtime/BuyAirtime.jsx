@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useGlobalContext } from '../Context';
 
 const BuyAirtime = () => {
-  const {setPinModal} = useGlobalContext();
+  const {setPinModal, getUserRealTimeData} = useGlobalContext();
   const [data, setData] = useState({
     network: "",
     amount: "",
@@ -45,6 +45,7 @@ const BuyAirtime = () => {
     try {
       const response = await axios.post("/api/provider/airtime-provider", data);
       if (response.data.success) {
+        getUserRealTimeData();
         toast.success(response.data.message);
         setData({
           network: "",
