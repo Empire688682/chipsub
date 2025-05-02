@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { connectDb } from "../ults/db/ConnectDb";
 import UserModel from "../ults/models/UserModel";
 import PaymentModel from "../ults/models/PaymentModel";
+import { verifyToken } from "./helper/VerifyToken";
 dotenv.config();
 
 export default async function handler(req) {
@@ -17,6 +18,13 @@ export default async function handler(req) {
   ).toString("base64");
 
   try {
+    const userId = await verifyToken();
+    const user = await UserModel.findById({_id:userId});
+
+    if(!user){
+        return NextResponse.json({success:false, message:"User not allowed"}, {status:400})
+    }
+
     const response = await axios.post(
       "https://api.monnify.com/api/v1/merchant/transactions/init-transaction",
       {
@@ -38,9 +46,15 @@ export default async function handler(req) {
       }
     );
 
-    res.status(200).json(response.data.responseBody);
+    await connectDb();
+    if (response.status === 200) {
+      const { data } = response;
+      const payment = new PaymentModel({ ...data, userId: reqBody.userId });
+      await payment.save();
+      return NextResponse.json({ success: true, message: "Payment initiated", data }, { status: 200 });
+    }
   } catch (error) {
     console.error("Monnify Error:", error.response?.data);
-    res.status(500).json({ error: "Payment initiation failed" });
+    return NextResponse.json({ success: false, message: "Payment initiation failed"}, { status: 500 });
   }
 }

@@ -15,7 +15,8 @@ export function middleware(req) {
     "/fund-wallet",
     "/api-docs",
     "/profile",
-    "/notifications"
+    "/notifications",
+    "/payment-success"
   ];
   const isProtected = protectedPaths.some((protectedPath)=>
    path.startsWith(protectedPath));
@@ -41,6 +42,7 @@ export const config = {
     "/fund-wallet",
     "/api-docs",
     "/profile",
-    "/notifications"
+    "/notifications",
+    "/payment-success"
   ],
 }

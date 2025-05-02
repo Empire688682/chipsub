@@ -1,19 +1,22 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useGlobalContext } from "../Context";
 
 const FundWallet = () => {
+  const {userData} = useGlobalContext();
   const [form, setForm] = useState({
-    amount: "",
-    method: "",
-  });
+     amount: "", 
+     method: "" 
+    });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const amount = parseInt(form.amount);
@@ -25,8 +28,37 @@ const FundWallet = () => {
       return toast.error("Please select a payment method");
     }
 
-    toast.success("Redirecting to payment gateway...");
-    // Redirect logic goes here
+    setLoading(true);
+    toast.info("Initializing payment...");
+
+    try {
+      const res = await fetch("/api/payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          amount,
+          method: form.method,
+          email: userData.email,  
+          customerName: userData.name
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.data.checkoutUrl) {
+        toast.success("Redirecting...");
+        window.location.href = data.data.checkoutUrl;
+      } else {
+        toast.error(data.message || "Payment failed");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,18 +102,19 @@ const FundWallet = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
               <option value="">-- Select Method --</option>
-              <option value="transfer">Virtual Bank Transfer</option>
-              <option value="card">Card Payment</option>
-              <option value="ussd">USSD</option>
+              <option value="ACCOUNT_TRANSFER">Virtual Bank Transfer</option>
+              <option value="CARD">Card Payment</option>
+              <option value="USSD">USSD</option>
             </select>
           </div>
 
           {/* Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg text-base font-semibold hover:bg-blue-700 transition duration-300 shadow-md"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-2 rounded-lg text-base font-semibold hover:bg-blue-700 transition duration-300 shadow-md disabled:opacity-50"
           >
-            Proceed to Payment
+            {loading ? "Processing..." : "Proceed to Payment"}
           </button>
         </form>
 
@@ -103,7 +136,6 @@ const FundWallet = () => {
             </a>
           </div>
         </div>
-
       </div>
     </div>
   );
