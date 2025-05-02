@@ -1,9 +1,8 @@
-// app/success/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
 
 const PaymentSuccess = () => {
   const searchParams = useSearchParams();
