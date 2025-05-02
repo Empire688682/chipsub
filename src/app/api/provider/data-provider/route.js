@@ -76,7 +76,7 @@ export async function POST(req) {
     const validAmount = Number(amount) - 50;
 
     // 👉 Call external API
-    const res = await fetch(`https://www.nellobytesystems.com/APIDatabundleV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKey}&MobileNetwork=${mappedNetwork}&DataPlan=${validAmount}&MobileNumber=${number}`, {
+    const res = await fetch(`https://www.nellobytesystems.com/APIDatabundleV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&MobileNetwork=${mappedNetwork}&DataPlan=${validAmount}&MobileNumber=${number}`, {
       method: "GET",
     });
 
