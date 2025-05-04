@@ -1,44 +1,35 @@
-import axios from "axios";
 import { NextResponse } from "next/server";
-import dotenv from "dotenv";
-import { connectDb } from "../../ults/db/ConnectDb";
-import UserModel from "../../ults/models/UserModel";
-import PaymentModel from "../../ults/models/PaymentModel";
-import { verifyToken } from "../helper/VerifyToken";
-dotenv.config();
+import axios from "axios";
 
 export async function POST(req) {
-  const reqBody = await req.json();
-  const { amount, email, name } = reqBody;
-
   try {
-    await connectDb();
+    const body = await req.json();
+    const { amount, email, name } = body;
 
+    // Check if any required parameters are missing
     if (!amount || !email || !name) {
-      return NextResponse.json({ success: false, message: "All fields are required" }, { status: 400 });
-    }
-
-    const userId = await verifyToken(req);
-    const user = await UserModel.findById(userId);
-
-    if (!user) {
-      return NextResponse.json({ success: false, message: "User not found" }, { status: 401 });
+      console.error("Required parameters missing:", { amount, email, name });
+      return NextResponse.json(
+        { success: false, message: "One or more required parameters missing" },
+        { status: 400 }
+      );
     }
 
     const response = await axios.post(
       "https://api.flutterwave.com/v3/payments",
       {
-        tx_ref: `TX-${Date.now()}`,
+        tx_ref: `tx-${Date.now()}`,
         amount,
         currency: "NGN",
-        redirect_url: "http://localhost:3000/payment-success",
+        redirect_url: "https://yourdomain.com/payment-success", // Make sure this is correct
+        payment_options: "card,banktransfer,ussd",
         customer: {
           email,
           name,
         },
         customizations: {
-          title: "Chipsub",
-          description: "Wallet Funding",
+          title: "ChipSub Wallet Top-Up",
+          logo: "https://yourdomain.com/logo.png",
         },
       },
       {
@@ -49,24 +40,14 @@ export async function POST(req) {
       }
     );
 
-    if (response.status === 200) {
-      const paymentData = response.data.data;
+    console.log("Flutterwave response:", response.data);
 
-      await PaymentModel.create({
-        userId,
-        amount,
-        currency: "NGN",
-        reference: paymentData.tx_ref,
-        status: "pending", // mark pending until verified
-        paymentLink: paymentData.link,
-      });
-
-      return NextResponse.json({ success: true, message: "Payment initiated", data: paymentData }, { status: 200 });
-    }
-
-    return NextResponse.json({ success: false, message: "Payment creation failed" }, { status: 500 });
-  } catch (err) {
-    console.error(err.response?.data || err.message);
-    return NextResponse.json({ success: false, message: "Payment initiation failed" }, { status: 500 });
+    return NextResponse.json({ success: true, data: response.data });
+  } catch (error) {
+    console.error("Flutterwave error:", error.message || error);
+    return NextResponse.json(
+      { success: false, message: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
