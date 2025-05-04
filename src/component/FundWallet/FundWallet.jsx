@@ -5,11 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { useGlobalContext } from "../Context";
 
 const FundWallet = () => {
-  const {userData} = useGlobalContext();
-  const [form, setForm] = useState({
-     amount: "", 
-     method: "" 
-    });
+  const { userData } = useGlobalContext();
+  const [form, setForm] = useState({ amount: "" });
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -18,14 +15,10 @@ const FundWallet = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const amount = parseInt(form.amount);
+
     if (!form.amount || isNaN(amount) || amount < 100) {
       return toast.error("Enter a valid amount (min ₦100)");
-    }
-
-    if (!form.method) {
-      return toast.error("Please select a payment method");
     }
 
     setLoading(true);
@@ -39,17 +32,16 @@ const FundWallet = () => {
         },
         body: JSON.stringify({
           amount,
-          method: form.method,
-          email: userData.email,  
-          customerName: userData.name
+          email: userData.email,
+          name: userData.name
         })
       });
 
       const data = await res.json();
 
-      if (data.success && data.data.checkoutUrl) {
-        toast.success("Redirecting...");
-        window.location.href = data.data.checkoutUrl;
+      if (data.success && data.data.data && data.data.data.link) {
+        toast.success("Redirecting to Flutterwave...");
+        window.location.href = data.data.data.link;
       } else {
         console.log(data);
         toast.error(data.message || "Payment failed");
@@ -66,14 +58,12 @@ const FundWallet = () => {
     <div className="min-h-screen px-4 py-10 bg-gradient-to-br from-blue-50 to-white">
       <ToastContainer />
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 grid-cols-1 gap-10 items-center">
-        {/* Left Panel - Form */}
         <form
           onSubmit={handleSubmit}
           className="bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-[rgba(0,_0,_0,_0.1)_0px_10px_20px] border border-blue-100 flex flex-col gap-6"
         >
           <h3 className="text-xl font-semibold text-blue-600 mb-2">Top-Up Form</h3>
 
-          {/* Amount */}
           <div>
             <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
               Amount (₦)
@@ -90,26 +80,6 @@ const FundWallet = () => {
             />
           </div>
 
-          {/* Method */}
-          <div>
-            <label htmlFor="method" className="block text-sm font-medium text-gray-700 mb-1">
-              Payment Method
-            </label>
-            <select
-              name="method"
-              id="method"
-              value={form.method}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="">-- Select Method --</option>
-              <option value="ACCOUNT_TRANSFER">Virtual Bank Transfer</option>
-              <option value="CARD">Card Payment</option>
-              <option value="USSD">USSD</option>
-            </select>
-          </div>
-
-          {/* Button */}
           <button
             type="submit"
             disabled={loading}
@@ -119,19 +89,16 @@ const FundWallet = () => {
           </button>
         </form>
 
-        {/* Right Panel - Info & Support */}
         <div className="bg-white/70 backdrop-blur-md p-8 rounded-2xl shadow-[rgba(0,_0,_0,_0.1)_0px_10px_20px] border border-blue-100 flex flex-col gap-6">
           <h2 className="text-3xl font-bold text-blue-700 mb-2">Fund Your Wallet</h2>
           <p className="text-gray-700 leading-relaxed text-sm">
-            Easily top-up your Chipsub wallet using multiple payment options. Your wallet allows you to buy airtime, data, electricity, and more — all in one place.
+            Easily top-up your Chipsub wallet using Flutterwave. Your wallet allows you to buy airtime, data, electricity, and more — all in one place.
           </p>
-
           <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 text-sm text-blue-800">
-            🔒 All transactions are secured using end-to-end encryption.
+            🔐 All transactions are secured using end-to-end encryption.
           </div>
-
           <div className="text-sm text-gray-600 mt-4">
-            Need help? Reach out to{" "}
+            Need help? Reach out to {" "}
             <a href="mailto:support@chipsub.com" className="text-blue-600 underline font-medium">
               support@chipsub.com
             </a>

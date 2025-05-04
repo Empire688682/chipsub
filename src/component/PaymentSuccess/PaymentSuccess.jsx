@@ -1,45 +1,38 @@
-"use client";
+"useclient";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useSearchParams } from "next/navigation";
-
-const PaymentSuccess = () => {
-  const searchParams = useSearchParams();
-  const [status, setStatus] = useState("Verifying...");
+export default function PaymentSuccess() {
+  const router = useRouter();
+  const { transaction_id } = router.query;
+  const [status, setStatus] = useState('Verifying payment...');
 
   useEffect(() => {
-    const verifyPayment = async () => {
-      const paymentRef = searchParams.get("paymentReference");
-
-      if (!paymentRef) {
-        return setStatus("Invalid request. No reference provided.");
-      }
-
-      try {
-        const res = await axios.post("/api/verify-payment", {
-          paymentReference: paymentRef,
-        });
-
-        if (res.data.success) {
-          setStatus("✅ Payment successful!");
-        } else {
-          setStatus("❌ Payment failed or not verified.");
-        }
-      } catch (err) {
-        setStatus("⚠️ Error verifying payment.");
-        console.error(err);
-      }
-    };
-
-    verifyPayment();
-  }, [searchParams]);
+    if (transaction_id) {
+      fetch('/api/verify-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ transaction_id }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setStatus('✅ Payment verified successfully!');
+          } else {
+            setStatus('❌ Verification failed');
+          }
+        })
+        .catch(() => setStatus('❌ Error verifying payment'));
+    }
+  }, [transaction_id]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <h1 className="text-2xl font-bold text-center">{status}</h1>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-6 rounded-2xl shadow-md text-center max-w-md">
+        <h2 className="text-2xl font-semibold text-gray-800">{status}</h2>
+      </div>
     </div>
   );
-};
-
-export default PaymentSuccess;
+}
