@@ -1,10 +1,11 @@
-"useclient";
+'use client';
+
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export default function PaymentSuccess() {
-  const router = useRouter();
-  const { transaction_id } = router.query;
+  const searchParams = useSearchParams();
+  const transaction_id = searchParams.get('transaction_id');
   const [status, setStatus] = useState('Verifying payment...');
 
   useEffect(() => {
