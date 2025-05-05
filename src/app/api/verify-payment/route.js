@@ -10,6 +10,8 @@ dotenv.config();
 export async function POST(req) {
   const { transaction_id } = await req.json();
 
+  console.log("ID:", transaction_id)
+
   if (!transaction_id) {
     return NextResponse.json({ success: false, message: 'No transaction ID provided' }, { status: 400 });
   }
@@ -23,6 +25,8 @@ export async function POST(req) {
         Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`,
       },
     });
+
+    console.log("VerifyUrl:", verifyUrl);
 
     const { status, amount, currency, customer, tx_ref } = response.data.data;
 
