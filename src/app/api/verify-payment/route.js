@@ -33,22 +33,24 @@ export async function POST(req) {
     const { status, amount, tx_ref } = response.data.data;
 
     if (status === 'successful') {
-      // 1. Update payment record
-      const payment = await PaymentModel.findOneAndUpdate(
-        { reference: tx_ref },
-        { status: 'PAID' },
-        { new: true }
-      );
+      // Check if payment already marked as PAID
+      const existingPayment = await PaymentModel.findOne({ reference: tx_ref });
 
-      console.log("payment:", payment);
-
-      if (payment) {
-        await UserModel.findByIdAndUpdate(userId, { $inc: { walletBalance: amount } });
-
-        return NextResponse.json({ success: true, message: 'Payment verified and wallet updated' }, { status: 200 });
-      } else {
+      if (!existingPayment) {
         return NextResponse.json({ success: false, message: 'Payment not found in DB' }, { status: 404 });
       }
+
+      if (existingPayment.status === 'PAID') {
+        return NextResponse.json({ success: true, message: 'Payment already verified' }, { status: 200 });
+      }
+
+      // Update payment to PAID and add to wallet
+      existingPayment.status = 'PAID';
+      await existingPayment.save();
+
+      await UserModel.findByIdAndUpdate(userId, { $inc: { walletBalance: amount } });
+
+      return NextResponse.json({ success: true, message: 'Payment verified and wallet updated' }, { status: 200 });
     } else {
       return NextResponse.json({ success: false, message: 'Transaction not successful' }, { status: 400 });
     }

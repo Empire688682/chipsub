@@ -22,7 +22,7 @@ export default function PaymentSuccess() {
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            setStatus('✅ Payment verified successfully!');
+            setStatus(data.message);
           } else {
             setStatus('❌ Verification failed');
           }
