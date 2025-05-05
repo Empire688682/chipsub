@@ -5,10 +5,8 @@ import { Suspense } from 'react';
 
 const page = () => {
   return (
-    <div className='flex items-center justify-center min-h-[60vh]'>
-        <Suspense fallback={<div>Verifying payment........</div>}>
-      <PaymentSuccess />
-    </Suspense>
+    <div className='flex items-center justify-center h-[90vh]'>
+        <PaymentSuccess />
     </div>
   )
 }

@@ -37,11 +37,13 @@ const FundWallet = () => {
         })
       });
 
-      const data = await res.json();
+      const response = await res.json();
 
-      if (data.success && data.data.data && data.data.data.link) {
+      console.log("response:", response)
+
+      if (response.success && response.link) {
         toast.success("Redirecting to Flutterwave...");
-        window.location.href = data.data.data.link;
+        window.location.href = response.link;
       } else {
         console.log(data);
         toast.error(data.message || "Payment failed");

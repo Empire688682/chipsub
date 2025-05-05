@@ -3,7 +3,6 @@ import "./globals.css";
 import { AppProvider } from "@/component/Context";
 import Footer from "@/component/Footer/Footer";
 import Topbar from "@/component/Topbar/Topbar";
-import { Toaster } from 'react-hot-toast';
 
 
 export const metadata = {
@@ -17,11 +16,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <AppProvider>
-          <div className="flex min-h-screen bg-white shadow-md justify-start w-full">
+          <div className="flex items-center bg-white shadow-md justify-start w-full">
             <Sidebar />
-            <div className="min-h-screen w-full">
+            <div className=" w-full">
                <Topbar />
-               <Toaster position="top-right" />
               {children}
             </div>
           </div>

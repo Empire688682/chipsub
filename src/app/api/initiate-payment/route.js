@@ -61,7 +61,7 @@ export async function POST(req) {
       },
     });
 
-    return NextResponse.json({ link: checkoutLink }, { status: 200 });
+    return NextResponse.json({success:true, link: checkoutLink }, { status: 200 });
   } catch (error) {
     console.error("Flutterwave error:", error?.response?.data || error.message);
     return NextResponse.json(
