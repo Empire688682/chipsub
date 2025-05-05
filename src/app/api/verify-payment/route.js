@@ -48,7 +48,10 @@ export async function POST(req) {
       existingPayment.status = 'PAID';
       await existingPayment.save();
 
-      await UserModel.findByIdAndUpdate(userId, { $inc: { walletBalance: amount } });
+      const cleanAmount = Number(amount);
+      if (isNaN(cleanAmount)) throw new Error('Invalid amount');
+
+      await UserModel.findByIdAndUpdate(userId, { $inc: { walletBalance: cleanAmount } });
 
       return NextResponse.json({ success: true, message: 'Payment verified and wallet updated' }, { status: 200 });
     } else {
