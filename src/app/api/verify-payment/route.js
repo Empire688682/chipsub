@@ -4,13 +4,12 @@ import { NextResponse } from 'next/server';
 import { connectDb } from '../../ults/db/ConnectDb';
 import PaymentModel from '../../ults/models/PaymentModel';
 import UserModel from '../../ults/models/UserModel';
+import { verifyToken } from '../helper/VerifyToken';
 
 dotenv.config();
 
 export async function POST(req) {
   const { transaction_id } = await req.json();
-
-  console.log("ID:", transaction_id)
 
   if (!transaction_id) {
     return NextResponse.json({ success: false, message: 'No transaction ID provided' }, { status: 400 });
@@ -26,17 +25,22 @@ export async function POST(req) {
       },
     });
 
-    console.log("VerifyUrl:", verifyUrl);
+    const userId = await verifyToken(req);
+    if (!userId) {
+      return NextResponse.json({ success: false, message: 'User not authorized' }, { status: 401 });
+    }
 
-    const { status, amount, currency, customer, tx_ref } = response.data.data;
+    const { status, amount, tx_ref } = response.data.data;
 
     if (status === 'successful') {
       // 1. Update payment record
       const payment = await PaymentModel.findOneAndUpdate(
         { reference: tx_ref },
-        { status: 'successful' },
+        { status: 'PAID' },
         { new: true }
       );
+
+      console.log("payment:", payment);
 
       if (payment) {
         await UserModel.findByIdAndUpdate(userId, { $inc: { walletBalance: amount } });
