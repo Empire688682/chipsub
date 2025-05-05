@@ -29,7 +29,7 @@ export async function POST(req) {
       tx_ref,
       amount,
       currency: "NGN",
-      redirect_url: "http://localhost:3000/payment-success",
+      redirect_url: process.env.REDIRECT_URL,
       payment_options: "card,banktransfer,ussd",
       customer: { email, name },
       customizations: {
