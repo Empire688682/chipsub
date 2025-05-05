@@ -21,7 +21,7 @@ export async function POST(req) {
         tx_ref: `tx-${Date.now()}`,
         amount,
         currency: "NGN",
-        redirect_url: "https://yourdomain.com/payment-success", // Make sure this is correct
+        redirect_url: process.env.REDIRECT_URL,
         payment_options: "card,banktransfer,ussd",
         customer: {
           email,
@@ -29,7 +29,7 @@ export async function POST(req) {
         },
         customizations: {
           title: "ChipSub Wallet Top-Up",
-          logo: "https://yourdomain.com/logo.png",
+          logo: "https://chipsub.vercel.app/favicon.ico",
         },
       },
       {
@@ -39,8 +39,6 @@ export async function POST(req) {
         },
       }
     );
-
-    console.log("Flutterwave response:", response.data);
 
     return NextResponse.json({ success: true, data: response.data });
   } catch (error) {
