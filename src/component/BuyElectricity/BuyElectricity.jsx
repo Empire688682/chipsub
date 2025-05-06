@@ -1,10 +1,32 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from "react-toastify";
 import WalletBalance from '../WalletBalance/WalletBalance';
 import ElectricityHelp from '../ElectricityHelp/ElectricityHelp';
 
 const BuyElectricity = () => {
+  const [electricityCompany, setElectricityCompany] = useState({});
+
+  const electricityUrl = "https://www.nellobytesystems.com/APIElectricityDiscosV1.asp"
+
+  useEffect(() => {
+    const getElectricityCompany = async () => {
+      try {
+        const response = await fetch(electricityUrl, {
+          method: "GET",
+        });
+        const data = await response.json();
+
+        if (data?.ELECTRIC_COMPANY) {
+          setElectricityCompany(data.ELECTRIC_COMPANY);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getElectricityCompany();
+  }, []);
+
   const [formData, setFormData] = useState({
     disco: '',
     meterNumber: '',
@@ -59,11 +81,11 @@ const BuyElectricity = () => {
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option disabled value="">-- Choose Provider --</option>
-                  <option value="ikeja">Ikeja Electric</option>
-                  <option value="eko">Eko Electric</option>
-                  <option value="abuja">Abuja Electric</option>
-                  <option value="ibadan">Ibadan Electric</option>
-                  <option value="portharcourt">Port Harcourt Electric</option>
+                  {
+                    electricityCompany && Object.keys(electricityCompany)?.map((company, index) => (
+                      <option key={index} value={company}>{company}</option>
+                    ))
+                  }
                 </select>
               </div>
 
