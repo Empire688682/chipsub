@@ -148,7 +148,7 @@ const BuyElectricity = () => {
                   maxLength={11}
                 />
                 {
-                  verifyingMeter && <span className="absolute">
+                  verifyingMeter && <span className="absolute right-[10px] top-[10px]">
                     <FaSpinner className="animate-spin text-blue-600 text-2xl"/>
                   </span>
                 }
