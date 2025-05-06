@@ -17,6 +17,8 @@ export async function POST(req) {
       if (!disco || !meterNumber || !amount || !phone || !pin) {
         return NextResponse.json({ success: false, message: "All fields required" }, { status: 400 });
       }
+
+      console.log("Body:", body);
   
       const availableDiscos = {
         "EKO_ELECTRIC": "01",

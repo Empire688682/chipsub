@@ -3,9 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from "react-toastify";
 import WalletBalance from '../WalletBalance/WalletBalance';
 import ElectricityHelp from '../ElectricityHelp/ElectricityHelp';
+import axios from 'axios';
+import { FaSpinner } from "react-icons/fa";
 
 const BuyElectricity = () => {
   const [electricityCompany, setElectricityCompany] = useState({});
+  const [isMeterVerified, setIsMeterVerified] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [verifyingMeter, setVerifyingMeter] = useState(true);
 
   const electricityUrl = "https://www.nellobytesystems.com/APIElectricityDiscosV1.asp"
 
@@ -39,7 +45,39 @@ const BuyElectricity = () => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const verifyMeterNumber = async (meterNumber, disco) => {
+
+    if (meterNumber.length === 11 && disco) {
+      setVerifyingMeter(true);
+      try {
+        const response = await axios.post('/api/verify-meter-number',
+          { meterNumber, disco },
+        );
+
+        console.log("Verify Meter Number Response:", response);
+
+        if (response.data.success) {
+          setIsMeterVerified(true);
+          setCustomerName(response.data.data);
+        }
+      } catch (error) {
+        console.log("Verify Meter Number Error:", error);
+        setCustomerName("Invalid provider or meter number");
+        setIsMeterVerified(false);
+      }
+      finally{
+        setVerifyingMeter(false);
+      }
+    }
+
+  };
+
+  useEffect(()=>{
+    verifyMeterNumber(formData.meterNumber, formData.disco);
+  }, [handleChange]);
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const { disco, meterNumber, amount, phone, pin } = formData;
@@ -52,8 +90,15 @@ const BuyElectricity = () => {
       return toast.error("Minimum amount is ₦100");
     }
 
-    toast.success("Electricity purchase submitted!");
-    // TODO: Send data to backend
+    setLoading(true)
+    try {
+      
+    } catch (error) {
+      conslole.log("Elect-Error:", error)
+    }
+    finally{
+      setLoading(false);
+    }
   };
 
   return (
@@ -91,7 +136,7 @@ const BuyElectricity = () => {
 
               {/* Meter Number */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Meter Number</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1 relative">Meter Number</label>
                 <input
                   type="text"
                   name="meterNumber"
@@ -100,7 +145,18 @@ const BuyElectricity = () => {
                   placeholder="e.g. 1234567890"
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   required
+                  maxLength={11}
                 />
+                {
+                  verifyingMeter && <span className="absolute">
+                    <FaSpinner className="animate-spin text-blue-600 text-2xl"/>
+                  </span>
+                }
+                {
+                  customerName && customerName !== "Invalid provider or meter number"? <p className='text-xs pt-2 font-bold text-green-500'>{customerName}</p>
+                  :
+                  <p className='text-xs pt-2 font-bold text-red-500'>{customerName}</p>
+                }
               </div>
 
               {/* Amount */}
@@ -145,12 +201,21 @@ const BuyElectricity = () => {
                 />
               </div>
 
-              <button
+              {
+                isMeterVerified ? <button
                 type="submit"
-                className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 transition duration-300"
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 cursor-pointer transition duration-300"
               >
                 Buy Now
               </button>
+              :
+              <p
+                className="w-full bg-blue-200 text-white py-3 text-center rounded-xl text-lg font-semibold "
+              >
+                Buy Now
+              </p>
+              }
             </form>
           </div>
 
