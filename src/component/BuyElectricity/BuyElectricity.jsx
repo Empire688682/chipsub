@@ -55,8 +55,6 @@ const BuyElectricity = () => {
           { meterNumber, disco },
         );
 
-        console.log("Verify Meter Number Response:", response);
-
         if (response.data.success) {
           setIsMeterVerified(true);
           setCustomerName(response.data.data);
@@ -103,14 +101,15 @@ const BuyElectricity = () => {
 
     setLoading(true)
     try {
-      const response = await axios.post("/api/electricity-provider", formData);
+      const response = await axios.post("/api/provider/electricity-provider", formData);
       console.log("Response:", response);
       if(response.data.success){
         console.log("Response:", response.data.data);
         setPurchasedToken(response.data.data);
       }
     } catch (error) {
-      conslole.log("Elect-Error:", error)
+      console.log("Elect-Error:", error)
+      toast.error(error.response.data.message);
     }
     finally{
       setLoading(false);
