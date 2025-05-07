@@ -49,8 +49,10 @@ export async function POST(req) {
   
       const electricityUrl = `https://www.nellobytesystems.com/APIElectricityV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&ElectricCompany=${availableDiscos[disco]}&MeterType=01&MeterNo=${meterNumber}&Amount=${saveAmount}&PhoneNo=${phone}`;
   
-      const response = await fetch(electricityUrl, { method: "GET" });
+      const response = await fetch(electricityUrl, { method: "POST" });
       const result = await response.json();
+
+      console.log("Response:", response);
   
       if (result?.status === "ORDER_RECEIVED") {
          await UserModel.findOneAndUpdate(

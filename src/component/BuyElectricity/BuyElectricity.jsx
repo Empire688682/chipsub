@@ -11,7 +11,8 @@ const BuyElectricity = () => {
   const [isMeterVerified, setIsMeterVerified] = useState(false);
   const [loading, setLoading] = useState(false);
   const [customerName, setCustomerName] = useState("");
-  const [verifyingMeter, setVerifyingMeter] = useState(true);
+  const [verifyingMeter, setVerifyingMeter] = useState(false);
+  const [purchasedToken, setPurchasedToken] = useState(null);
 
   const electricityUrl = "https://www.nellobytesystems.com/APIElectricityDiscosV1.asp"
 
@@ -72,9 +73,15 @@ const BuyElectricity = () => {
 
   };
 
-  useEffect(()=>{
-    verifyMeterNumber(formData.meterNumber, formData.disco);
-  }, [handleChange]);
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (formData.meterNumber.length === 11 && formData.disco) {
+        verifyMeterNumber(formData.meterNumber, formData.disco);
+      }
+    }, 800); // 800ms delay
+  
+    return () => clearTimeout(timeoutId); // cleanup on every key press
+  }, [formData.meterNumber, formData.disco]);
 
 
   const handleSubmit = async (e) => {
@@ -90,9 +97,18 @@ const BuyElectricity = () => {
       return toast.error("Minimum amount is ₦100");
     }
 
+    if(pin.length < 4){
+      return toast.error("Pin most be 4 digit");
+    }
+
     setLoading(true)
     try {
-      
+      const response = await axios.post("/api/electricity-provider", formData);
+      console.log("Response:", response);
+      if(response.data.success){
+        console.log("Response:", response.data.data);
+        setPurchasedToken(response.data.data);
+      }
     } catch (error) {
       conslole.log("Elect-Error:", error)
     }
@@ -100,6 +116,12 @@ const BuyElectricity = () => {
       setLoading(false);
     }
   };
+
+  useEffect(()=>{
+    if(loading){
+      toast.info("Proccessing....")
+    }
+  })
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-10">
@@ -135,8 +157,8 @@ const BuyElectricity = () => {
               </div>
 
               {/* Meter Number */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1 relative">Meter Number</label>
+              <div className='relative'>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Meter Number</label>
                 <input
                   type="text"
                   name="meterNumber"
@@ -148,7 +170,7 @@ const BuyElectricity = () => {
                   maxLength={11}
                 />
                 {
-                  verifyingMeter && <span className="absolute right-[10px] top-[10px]">
+                  verifyingMeter && <span className="absolute right-[10px] top-[40px]">
                     <FaSpinner className="animate-spin text-blue-600 text-2xl"/>
                   </span>
                 }
@@ -195,6 +217,7 @@ const BuyElectricity = () => {
                   name="pin"
                   value={formData.pin}
                   onChange={handleChange}
+                  maxLength={4}
                   placeholder="Enter your PIN"
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   required
@@ -207,7 +230,9 @@ const BuyElectricity = () => {
                 disabled={loading}
                 className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 cursor-pointer transition duration-300"
               >
-                Buy Now
+                {
+                  loading ? "Proccessing..." :"Buy Now"
+                }
               </button>
               :
               <p
