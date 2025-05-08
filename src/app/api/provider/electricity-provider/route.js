@@ -60,7 +60,9 @@ export async function POST(req) {
     const electricityUrl = `https://www.nellobytesystems.com/APIElectricityV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&ElectricCompany=${availableDiscos[disco]}&MeterType=01&MeterNo=${meterNumber}&Amount=${saveAmount}&PhoneNo=${phone}&RequestID=${requestId}`;
 
     // Fetch with GET method
-    const response = await fetch(electricityUrl, { method: "GET" });
+    const response = await fetch(electricityUrl, { method: "GET",  headers: {
+      Accept: "application/json"
+    } });
     const result = await response.json();
 
     console.log("Response:", result);

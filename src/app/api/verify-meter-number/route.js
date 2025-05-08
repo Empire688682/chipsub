@@ -21,8 +21,6 @@ export async function POST(req) {
         "ABA_ELECTRIC": "12",
       };
 
-      console.log("bpdy:", availableDiscos[disco], meterNumber )
-
     const verifyUrl = `https://www.nellobytesystems.com/APIVerifyElectricityV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&ElectricCompany=${availableDiscos[disco]}&MeterNo=${meterNumber}`
     try {
         const res = await fetch(verifyUrl, {method: "POST"});
