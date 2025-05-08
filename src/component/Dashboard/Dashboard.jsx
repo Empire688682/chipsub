@@ -18,14 +18,6 @@ const Dashboard = () => {
       });
   };
 
-  // Sample transaction data (can be replaced with dynamic data)
-  const transactions = [
-    { id: 1, date: "2025-04-10", type: "Debit", amount: -500, description: "Airtime purchase" },
-    { id: 2, date: "2025-04-09", type: "Credit", amount: 1000, description: "Wallet fund" },
-    { id: 3, date: "2025-04-08", type: "Debit", amount: -300, description: "Data purchase" },
-    { id: 4, date: "2025-04-07", type: "Credit", amount: 2000, description: "Referral bonus" },
-  ];
-
   useEffect(() => {
     getUserRealTimeData();
   }, []);
@@ -85,6 +77,11 @@ const Dashboard = () => {
         <div onClick={() => route.push("/dashboard/buy-electricity")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
           <Zap className="text-blue-600 mb-2" size={28} />
           <p className="text-sm font-medium">Electricity</p>
+        </div>
+
+        <div className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
+          <Zap className="text-blue-600 mb-2" size={28} />
+          <p className="text-sm font-medium">TV Subscription</p>
         </div>
       </div>
 
