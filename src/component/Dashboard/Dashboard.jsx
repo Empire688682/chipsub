@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useGlobalContext } from '../Context';
-import { Wallet, Phone, Wifi, Zap, Bell, Heart, Copy } from "lucide-react";
+import { Wallet, Phone, Wifi, Zap, Bell, Heart, Copy, Tv } from "lucide-react";
 import WalletBalance from '../WalletBalance/WalletBalance';
 
 const Dashboard = () => {
@@ -79,8 +79,8 @@ const Dashboard = () => {
           <p className="text-sm font-medium">Electricity</p>
         </div>
 
-        <div className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
-          <Zap className="text-blue-600 mb-2" size={28} />
+        <div onClick={() => route.push("/dashboard/buy-tv")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
+          <Tv className="text-blue-600 mb-2" size={28} />
           <p className="text-sm font-medium">TV Subscription</p>
         </div>
       </div>
