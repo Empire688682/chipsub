@@ -1,140 +1,186 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
+import WalletBalance from '../WalletBalance/WalletBalance';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import TvHelp from "../TvHelp/TvHelp";
 
 const BuyTv = () => {
-  const [tvPackages, setTvPackages] = useState([]);
-  const [selectedProvider, setSelectedProvider] = useState("");
-  const [availablePackages, setAvailablePackages] = useState([]);
-  const [formData, setFormData] = useState({
+  const allTvPackagesUrl = "https://www.nellobytesystems.com/APICableTVPackagesV2.asp";
+  const [form, setForm] = useState({
     provider: "",
     smartcardNumber: "",
     packageCode: "",
     phone: "",
-    pin: "",
+    pin: ""
   });
+  const [packagesData, setPackagesData] = useState({});
 
-  const allTvPackagesUrl = "https://www.nellobytesystems.com/APICableTVPackagesV2.asp";
-
-  useEffect(() => {
-    const fetchTvPackages = async () => {
+  useEffect(()=>{
+    const fetchPackages = async ()=>{
       try {
-        const res = await fetch(allTvPackagesUrl);
+        const res = await fetch(allTvPackagesUrl, {method:"GET"});
         const data = await res.json();
-        setTvPackages(data);
+        if(data){
+          setPackagesData(data.TV_ID || [])
+        }
+        console.log("data:", data)
       } catch (error) {
-        console.error("Failed to load TV packages", error);
+        console.log("Fetching-Error:", error);
       }
-    };
-
-    fetchTvPackages();
+    }
+    fetchPackages();
   }, []);
-
-  // Update available packages when provider changes
+  
+  const [availablePackages, setAvailablePackages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  
   useEffect(() => {
-    const filtered = tvPackages.filter((pkg) => pkg.provider === selectedProvider);
-    setAvailablePackages(filtered);
-    setFormData((prev) => ({ ...prev, packageCode: "" }));
-  }, [selectedProvider, tvPackages]);
+    if (form.provider) {
+      const providerPackage = packagesData[form.provider];
+      if(providerPackage){
+        setAvailablePackages(providerPackage[0].PRODUCT);
+      }
+    }
+  }, [form.provider]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitted data:", formData);
+    const { provider, smartcardNumber, packageCode, phone, pin } = form;
 
-    // Add fetch POST call here to your backend if needed
+    if (!provider || !smartcardNumber || !packageCode || !phone || pin.length < 4) {
+      toast.error("Please fill all fields correctly");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      // Submit logic here
+      console.log("Submitted TV Subscription:", form);
+      toast.success("TV subscription successful!");
+
+      setForm({
+        provider: "",
+        smartcardNumber: "",
+        packageCode: "",
+        phone: "",
+        pin: ""
+      });
+      setAvailablePackages([]);
+    } catch (error) {
+      toast.error("Subscription failed");
+      console.error("TV Subscription Error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-md mt-10">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Buy TV Subscription</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">TV Provider</label>
-          <select
-            name="provider"
-            className="w-full border rounded px-3 py-2"
-            onChange={(e) => {
-              setSelectedProvider(e.target.value);
-              handleChange(e);
-            }}
-            value={formData.provider}
-            required
-          >
-            <option value="">Select Provider</option>
-            {[...new Set(tvPackages.map((pkg) => pkg.provider))].map((provider, idx) => (
-              <option key={idx} value={provider}>
-                {provider}
-              </option>
-            ))}
-          </select>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-10">
+      <ToastContainer />
+      <div className='grid md:grid-cols-2 grid-cols-1 gap-6 justify-start'>
+        <div className='flex flex-col gap-6'>
+          <WalletBalance />
+          <div className="max-w-2xl bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-blue-100">
+            <h1 className="text-2xl font-bold text-center text-blue-700 mb-8 tracking-tight">Buy TV Subscription</h1>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Smartcard / Decoder Number</label>
-          <input
-            type="text"
-            name="smartcardNumber"
-            className="w-full border rounded px-3 py-2"
-            value={formData.smartcardNumber}
-            onChange={handleChange}
-            required
-          />
-        </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Provider */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">TV Provider</label>
+                <select
+                  name="provider"
+                  onChange={handleChange}
+                  value={form.provider}
+                  required
+                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="">-- Select Provider --</option>
+                  {Object.keys(packagesData || {}).map((p, i) => (
+                    <option key={i} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">TV Package</label>
-          <select
-            name="packageCode"
-            className="w-full border rounded px-3 py-2"
-            onChange={handleChange}
-            value={formData.packageCode}
-            required
-          >
-            <option value="">Select Package</option>
-            {availablePackages.map((pkg, idx) => (
-              <option key={idx} value={pkg.code}>
-                {pkg.name} - ₦{pkg.amount}
-              </option>
-            ))}
-          </select>
-        </div>
+              {/* Smartcard */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Smartcard / Decoder Number</label>
+                <input
+                  name="smartcardNumber"
+                  type="text"
+                  onChange={handleChange}
+                  value={form.smartcardNumber}
+                  required
+                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-          <input
-            type="tel"
-            name="phone"
-            className="w-full border rounded px-3 py-2"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-          />
-        </div>
+              {/* Package */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">TV Package</label>
+                <select
+                  name="packageCode"
+                  onChange={handleChange}
+                  value={form.packageCode}
+                  required
+                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="">-- Select Package --</option>
+                  {availablePackages.map((pkg, i) => (
+                    <option key={i} value={pkg.PACKAGE_AMOUNT}>
+                      {pkg.PACKAGE_NAME} - ₦{pkg.PACKAGE_AMOUNT}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Transaction PIN</label>
-          <input
-            type="password"
-            name="pin"
-            className="w-full border rounded px-3 py-2"
-            value={formData.pin}
-            onChange={handleChange}
-            required
-          />
-        </div>
+              {/* Phone Number */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
+                <input
+                  name="phone"
+                  type="tel"
+                  onChange={handleChange}
+                  value={form.phone}
+                  placeholder="e.g. 08012345678"
+                  required
+                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-        >
-          Submit
-        </button>
-      </form>
+              {/* PIN */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Transaction PIN</label>
+                <input
+                  name="pin"
+                  type="password"
+                  onChange={handleChange}
+                  value={form.pin}
+                  placeholder="4 digit PIN"
+                  required
+                  maxLength={4}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 transition duration-300"
+              >
+                {loading ? "Processing..." : "Subscribe Now"}
+              </button>
+            </form>
+          </div>
+        </div>
+        
+        <TvHelp data={form} />
+      </div>
     </div>
   );
 };
