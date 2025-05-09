@@ -7,9 +7,16 @@ import { useGlobalContext } from '../Context';
 export default function PaymentSuccess() {
   const searchParams = useSearchParams();
   const transaction_id = searchParams.get('transaction_id');
+  const transactionStatus = searchParams.get('status');
   const [status, setStatus] = useState('Verifying payment...');
   const { route } = useGlobalContext();
   const [loading, setLoading] = useState(true);
+
+  useEffect(()=>{
+    if(transactionStatus === "cancelled");
+    setStatus('❌ Verification failed');
+    setLoading(false);
+  },[]);
 
   useEffect(() => {
     if (transaction_id) {
