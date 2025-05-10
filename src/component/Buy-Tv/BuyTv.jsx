@@ -19,7 +19,6 @@ const BuyTv = () => {
   const [packagesData, setPackagesData] = useState({});
   const [customerName, setCustomerName] = useState("");
   const [verifyingSmartcardNumber, setVerifyingSmartcardNumber] = useState(false);
-   const [isSmartcardVerified, setIsSmartcardVerified] = useState(false);
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -54,92 +53,81 @@ const BuyTv = () => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const { provider, smartcardNumber, packageCode, phone, pin } = form;
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * Verifies a given smartcard number and provider combination, and updates
+ * the customerName state variable with the result.
+ *
+ * @param {string} smartcardNumber - Smartcard number to verify.
+ * @param {string} provider - TV provider to verify against.
+ * @returns {boolean} True if verification succeeds, false otherwise.
+ */
+/*******  5f6311f1-72ed-4eef-8f9c-06fcd02994ab  *******/
+  const verifySmartcardNumber = async (smartcardNumber, provider) => {
+  setVerifyingSmartcardNumber(true);
 
-    if (!provider || !smartcardNumber || !packageCode || !phone || pin.length < 4) {
-      toast.error("Please fill all fields correctly");
-      return;
-    }
+  try {
+    const response = await axios.post('/api/verify-uic-tv-number', {
+      smartcardNumber,
+      provider,
+    });
 
-    try {
-      setLoading(true);
-      // Submit logic here
-      console.log("Submitted TV Subscription:", form);
-      toast.success("TV subscription successful!");
-
-      setForm({
-        provider: "",
-        smartcardNumber: "",
-        packageCode: "",
-        phone: "",
-        pin: ""
-      });
-      setAvailablePackages([]);
-    } catch (error) {
-      toast.error("Subscription failed");
-      console.error("TV Subscription Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const isValidSmartcardLength = (provider, number) => {
-  if (!number || !provider) return false;
-
-  const length = number.length;
-
-  switch (provider.toLowerCase()) {
-    case "dstv":
-      return length >= 10 && length <= 12;
-    case "gotv":
-      return length === 10;
-    case "startimes":
-      return length === 11;
-    default:
+    if (response.data.success) {
+      (true);
+      setCustomerName(response.data.data); // Assuming 'data' contains the customer name
+      return true;
+    } else {
+      setCustomerName("Verification failed");
       return false;
-  }
-};
-
-const verifySmartcardNumber = async (smartcardNumber, provider) => {
-  if (isValidSmartcardLength(provider, smartcardNumber)) {
-    setVerifyingSmartcardNumber(true);
-
-    try {
-      const response = await axios.post('/api/verify-uic-tv-number', {
-        smartcardNumber,
-        provider,
-      });
-
-      if (response.data.success) {
-        setIsSmartcardVerified(true);
-        setCustomerName(response.data.data); // Assuming 'data' contains the customer name
-      } else {
-        setIsSmartcardVerified(false);
-        setCustomerName("Verification failed");
-      }
-    } catch (error) {
-      console.log("Verify SmartcardNumber Error:", error);
-      setCustomerName("Invalid provider or Smartcard Number");
-      setIsSmartcardVerified(false);
-    } finally {
-      setVerifyingSmartcardNumber(false);
     }
-  } else {
-    toast.error("Invalid smartcard number for selected provider");
+  } catch (error) {
+    console.log("Verify SmartcardNumber Error:", error);
+    setCustomerName("Invalid provider or Smartcard Number");
+    return false;
+  } finally {
+    setVerifyingSmartcardNumber(false);
   }
 };
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (form.smartcardNumber.length === 11 && form.provider) {
-        verifySmartcardNumber(form.smartcardNumber, form.provider);
-      }
-    }, 800);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const { provider, smartcardNumber, packageCode, phone, pin } = form;
 
-    return () => clearTimeout(timeoutId);
-  }, [form.smartcardNumber, form.provider]);
+  if (!provider || !smartcardNumber || !packageCode || !phone || pin.length < 4) {
+    toast.error("Please fill all fields correctly");
+    return;
+  }
+
+  const isVerified = await verifySmartcardNumber(smartcardNumber, provider);
+
+  if (!isVerified) {
+    toast.error("Smartcard verification failed");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    // Submit logic here
+    console.log("Submitted TV Subscription:", form);
+    toast.success("TV subscription successful!");
+
+    setForm({
+      provider: "",
+      smartcardNumber: "",
+      packageCode: "",
+      phone: "",
+      pin: ""
+    });
+    setAvailablePackages([]);
+    setCustomerName("");
+  } catch (error) {
+    toast.error("Subscription failed");
+    console.error("TV Subscription Error:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-10">
@@ -181,7 +169,7 @@ const verifySmartcardNumber = async (smartcardNumber, provider) => {
                   className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
                 {
-                  verifyingSmartcardNumber && <span className="absolute right-[10px] top-[40px]">
+                  verifyingSmartcardNumber && <span className="absolute right-[10px] top-[30px]">
                     <FaSpinner className="animate-spin text-blue-600 text-2xl" />
                   </span>
                 }
@@ -240,23 +228,16 @@ const verifySmartcardNumber = async (smartcardNumber, provider) => {
                 />
               </div>
 
-              {
-                isSmartcardVerified ? <button
+               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || verifyingSmartcardNumber}
                 className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 cursor-pointer transition duration-300"
               >
                 {
                   loading ? "Proccessing..." :"Subcribe"
                 }
               </button>
-              :
-              <p
-                className="w-full bg-blue-200 text-white py-3 text-center rounded-xl text-lg font-semibold "
-              >
-                Subcribe
-              </p>
-              }
+
             </form>
           </div>
         </div>
