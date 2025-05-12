@@ -19,7 +19,6 @@ export async function POST(req) {
         const data = await res.json();
 
         console.log("data:", data);
-        console.log("res:", res);
 
         if(data.status !== "00") {
             return NextResponse.json({ success: false, message: "An error occurred" }, { status: 500 });

@@ -28,7 +28,6 @@ const BuyTv = () => {
         if (data) {
           setPackagesData(data.TV_ID || [])
         }
-        console.log("data:", data)
       } catch (error) {
         console.log("Fetching-Error:", error);
       }
@@ -63,11 +62,9 @@ const BuyTv = () => {
     });
 
     if (response.data.success) {
-      (true);
-      setCustomerName(response.data.data); // Assuming 'data' contains the customer name
+      setCustomerName(response.data.data);
       return true;
     } else {
-      setCustomerName("Verification failed");
       return false;
     }
   } catch (error) {
@@ -98,7 +95,6 @@ const handleSubmit = async (e) => {
   try {
     setLoading(true);
     // Submit logic here
-    console.log("Submitted TV Subscription:", form);
     toast.success("TV subscription successful!");
 
     setForm({
@@ -108,8 +104,6 @@ const handleSubmit = async (e) => {
       phone: "",
       pin: ""
     });
-    setAvailablePackages([]);
-    setCustomerName("");
   } catch (error) {
     toast.error("Subscription failed");
     console.error("TV Subscription Error:", error);

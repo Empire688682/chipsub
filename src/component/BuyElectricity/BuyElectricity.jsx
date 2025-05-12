@@ -58,6 +58,10 @@ const BuyElectricity = () => {
         if (response.data.success) {
           setIsMeterVerified(true);
           setCustomerName(response.data.data);
+          return true
+        }
+        else{
+          return false
         }
       } catch (error) {
         console.log("Verify Meter Number Error:", error);
@@ -88,8 +92,9 @@ const BuyElectricity = () => {
       return toast.error("Pin most be 4 digit");
     }
 
-    const isVerifiedMeter = await verifyMeterNumber(meterNumber, disco);
-    if(!isVerifiedMeter){
+   const isMeterVerified = await verifyMeterNumber(meterNumber, disco);
+
+    if(!isMeterVerified){
       return toast.error("Meter verification failed");
     }
 
