@@ -71,17 +71,6 @@ const BuyElectricity = () => {
 
   };
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (formData.meterNumber.length === 11 && formData.disco) {
-        verifyMeterNumber(formData.meterNumber, formData.disco);
-      }
-    }, 800); // 800ms delay
-  
-    return () => clearTimeout(timeoutId); // cleanup on every key press
-  }, [formData.meterNumber, formData.disco]);
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -97,6 +86,11 @@ const BuyElectricity = () => {
 
     if(pin.length < 4){
       return toast.error("Pin most be 4 digit");
+    }
+
+    const isVerifiedMeter = await verifyMeterNumber(meterNumber, disco);
+    if(!isVerifiedMeter){
+      return toast.error("Meter verification failed");
     }
 
     setLoading(true)
@@ -223,23 +217,15 @@ const BuyElectricity = () => {
                 />
               </div>
 
-              {
-                isMeterVerified ? <button
+              <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || verifyingMeter}
                 className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 cursor-pointer transition duration-300"
               >
                 {
                   loading ? "Proccessing..." :"Buy Now"
                 }
               </button>
-              :
-              <p
-                className="w-full bg-blue-200 text-white py-3 text-center rounded-xl text-lg font-semibold "
-              >
-                Buy Now
-              </p>
-              }
             </form>
           </div>
 

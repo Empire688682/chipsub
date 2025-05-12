@@ -53,16 +53,6 @@ const BuyTv = () => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * Verifies a given smartcard number and provider combination, and updates
- * the customerName state variable with the result.
- *
- * @param {string} smartcardNumber - Smartcard number to verify.
- * @param {string} provider - TV provider to verify against.
- * @returns {boolean} True if verification succeeds, false otherwise.
- */
-/*******  5f6311f1-72ed-4eef-8f9c-06fcd02994ab  *******/
   const verifySmartcardNumber = async (smartcardNumber, provider) => {
   setVerifyingSmartcardNumber(true);
 
