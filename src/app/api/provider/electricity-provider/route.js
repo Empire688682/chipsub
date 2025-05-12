@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { connectDb } from "@/app/ults/db/ConnectDb";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
+import TransactionModel from "@/app/ults/models/TransactionModel";
 
 dotenv.config();
 
@@ -36,7 +37,7 @@ export async function POST(req) {
     };
 
     // Auth and funds check
-    const userId = verifyToken(req);
+    const userId = await verifyToken(req);
     const user = await UserModel.findById(userId);
 
     if (!user) {
@@ -60,9 +61,11 @@ export async function POST(req) {
     const electricityUrl = `https://www.nellobytesystems.com/APIElectricityV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&ElectricCompany=${availableDiscos[disco]}&MeterType=01&MeterNo=${meterNumber}&Amount=${saveAmount}&PhoneNo=${phone}&RequestID=${requestId}`;
 
     // Fetch with GET method
-    const response = await fetch(electricityUrl, { method: "GET",  headers: {
-      Accept: "application/json"
-    } });
+    const response = await fetch(electricityUrl, {
+      method: "GET", headers: {
+        Accept: "application/json"
+      }
+    });
     const result = await response.json();
 
     console.log("Response:", result);
@@ -75,8 +78,32 @@ export async function POST(req) {
         { new: true }
       );
 
+      await TransactionModel.create({
+        userId,
+        type: "electricity",
+        amount: saveAmount,
+        status: "success",
+        reference: requestId,
+        metadata: {
+          network: disco,
+          number: meterNumber
+        }
+      });
+
       return NextResponse.json({ success: true, message: "Order successful", data: result }, { status: 200 });
     } else {
+      await TransactionModel.create({
+        userId,
+        type: "electricity",
+        amount: saveAmount,
+        status: "failed",
+        reference: requestId,
+        metadata: {
+          network: disco,
+          number: meterNumber
+        }
+      });
+
       return NextResponse.json({ success: false, message: "Order failed", data: result }, { status: 400 });
     }
 

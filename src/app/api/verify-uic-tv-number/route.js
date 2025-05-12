@@ -18,8 +18,6 @@ export async function POST(req) {
         const res = await fetch(verifyUrl, {method: "POST"});
         const data = await res.json();
 
-        console.log("data:", data);
-
         if(data.status !== "00") {
             return NextResponse.json({ success: false, message: "An error occurred" }, { status: 500 });
         } else {
