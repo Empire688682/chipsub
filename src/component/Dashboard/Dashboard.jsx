@@ -7,6 +7,7 @@ import WalletBalance from '../WalletBalance/WalletBalance';
 const Dashboard = () => {
   const { userData, getUserRealTimeData, route, transactionHistory, loading } = useGlobalContext();
   const referralLink = `https://yourdomain.com/ref/${userData?.refCode || "123ABC"}`;
+  console.log("Transaction History:", transactionHistory);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink)
@@ -31,7 +32,7 @@ const Dashboard = () => {
         <h2 className="text-gray-700 font-medium text-lg">
           <Heart /> Welcome back, <span className="font-bold">{firstName}</span>
         </h2>
-        <Bell className="text-gray-500 cursor-pointer"  onClick={()=>route.push("/notifications")}/>
+        <Bell className="text-gray-500 cursor-pointer" onClick={() => route.push("/notifications")} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -99,9 +100,17 @@ const Dashboard = () => {
                           <p className="text-sm text-gray-500">{new Date(transaction.createdAt).toISOString().replace("T", " ").split(".")[0]}</p>
                           <p className="font-medium">{transaction.description}</p>
                         </div>
-                        <p className={`text-sm ${transaction.type === 'airtime' ? 'text-green-600' : 'text-red-600'}`}>
-                          {transaction.type} ₦{transaction.amount.toFixed(2)}
-                        </p>
+                        <div className='flex flex-col md:flex-row md:gap-4 justify-center'>
+                          <p className={`text-sm ${transaction.status === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                            {transaction.status === 'success' ? `₦${transaction.amount}` : `₦${transaction.amount}`}
+                          </p>
+                          <p className={`text-sm ${transaction.status === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                            {transaction.type}
+                          </p>
+                          <p className={`text-sm ${transaction.status === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                            {transaction.status === 'success' ? 'Success' : 'Failed'}
+                          </p>
+                        </div>
                       </div>
                     ))}
                   </>
