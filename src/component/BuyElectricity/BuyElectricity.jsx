@@ -7,8 +7,8 @@ import axios from 'axios';
 import { FaSpinner } from "react-icons/fa";
 
 const BuyElectricity = () => {
+  const {getUserRealTimeData} = useGlobalContext();
   const [electricityCompany, setElectricityCompany] = useState({});
-  const [isMeterVerified, setIsMeterVerified] = useState(false);
   const [loading, setLoading] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [verifyingMeter, setVerifyingMeter] = useState(false);
@@ -56,7 +56,6 @@ const BuyElectricity = () => {
         );
 
         if (response.data.success) {
-          setIsMeterVerified(true);
           setCustomerName(response.data.data);
           return true
         }
@@ -66,7 +65,6 @@ const BuyElectricity = () => {
       } catch (error) {
         console.log("Verify Meter Number Error:", error);
         setCustomerName("Invalid provider or meter number");
-        setIsMeterVerified(false);
       }
       finally{
         setVerifyingMeter(false);
@@ -103,6 +101,7 @@ const BuyElectricity = () => {
       const response = await axios.post("/api/provider/electricity-provider", formData);
       console.log("Response:", response);
       if(response.data.success){
+        getUserRealTimeData()
         console.log("Response:", response.data.data);
         setPurchasedToken(response.data.data);
       }

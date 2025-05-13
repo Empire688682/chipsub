@@ -14,8 +14,8 @@ export async function POST(req) {
   const body = await req.json();
   const { provider, smartcardNumber, amount, tvPackage, phone, pin } = body;
 
-  const amountToBuy = Number(amount);
-  if (isNaN(amountToBuy)) {
+  const savedAmount = Number(amount);
+  if (isNaN(savedAmount)) {
     return NextResponse.json({ success: false, message: "Invalid package amount" }, { status: 400 });
   }
 
@@ -36,7 +36,7 @@ export async function POST(req) {
       return NextResponse.json({ success: false, message: "Pin not correct" }, { status: 401 });
     }
 
-    if (user.walletBalance < amountToBuy) {
+    if (user.walletBalance < savedAmount) {
       return NextResponse.json({ success: false, message: "Insufficient funds" }, { status: 400 });
     }
 
@@ -57,14 +57,14 @@ export async function POST(req) {
     if (result?.status === "ORDER_RECEIVED") {
       await UserModel.findByIdAndUpdate(
         userId,
-        { walletBalance: user.walletBalance - amountToBuy },
+        { walletBalance: user.walletBalance - savedAmount },
         { new: true }
       );
 
       await TransactionModel.create({
         userId,
         type: "tv",
-        amount: amountToBuy,
+        amount: savedAmount,
         status: "success",
         reference: requestId,
         metadata: {
@@ -78,7 +78,7 @@ export async function POST(req) {
       await TransactionModel.create({
         userId,
         type: "tv",
-        amount: amountToBuy,
+        amount: savedAmount,
         status: "failed",
         reference: requestId,
         metadata: {

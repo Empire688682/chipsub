@@ -8,6 +8,7 @@ import axios from "axios";
 import { FaSpinner } from "react-icons/fa";
 
 const BuyTv = () => {
+  const {getUserRealTimeData} = useGlobalContext();
   const allTvPackagesUrl = "https://www.nellobytesystems.com/APICableTVPackagesV2.asp";
 
   const initialFormState = {
@@ -114,7 +115,7 @@ const BuyTv = () => {
       setLoading(true);
       toast.info("Processing...");
 
-      const response = await axios.post("/api/tv/subscribe", {
+      const response = await axios.post("/api/provider/tv-subscribe-provider", {
         provider,
         smartcardNumber,
         amount: packageAmount,
@@ -124,6 +125,7 @@ const BuyTv = () => {
       });
 
       if (response.data.success) {
+        getUserRealTimeData();
         toast.success("TV subscription successful!");
         setForm(initialFormState);
         setCustomerName("");
