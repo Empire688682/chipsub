@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import TvHelp from "../TvHelp/TvHelp";
 import axios from "axios";
 import { FaSpinner } from "react-icons/fa";
+import { useGlobalContext } from "../Context";
 
 const BuyTv = () => {
   const {getUserRealTimeData} = useGlobalContext();
