@@ -1,231 +1,294 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import WalletBalance from '../WalletBalance/WalletBalance';
+import WalletBalance from "../WalletBalance/WalletBalance";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TvHelp from "../TvHelp/TvHelp";
-import axios from 'axios';
+import axios from "axios";
 import { FaSpinner } from "react-icons/fa";
 
 const BuyTv = () => {
   const allTvPackagesUrl = "https://www.nellobytesystems.com/APICableTVPackagesV2.asp";
-  const [form, setForm] = useState({
+
+  const initialFormState = {
     provider: "",
     smartcardNumber: "",
-    packageCode: "",
+    tvPackage: "",
     phone: "",
-    pin: ""
-  });
+    pin: "",
+  };
+
+  const [form, setForm] = useState(initialFormState);
   const [packagesData, setPackagesData] = useState({});
+  const [packageAmount, setPackageAmount] = useState(null);
+  const [availablePackages, setAvailablePackages] = useState([]);
   const [customerName, setCustomerName] = useState("");
+  const [loading, setLoading] = useState(false);
   const [verifyingSmartcardNumber, setVerifyingSmartcardNumber] = useState(false);
 
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const res = await fetch(allTvPackagesUrl, { method: "GET" });
+        const res = await fetch(allTvPackagesUrl);
         const data = await res.json();
-        if (data) {
-          setPackagesData(data.TV_ID || [])
+        if (data && data.TV_ID) {
+          setPackagesData(data.TV_ID);
         }
       } catch (error) {
-        console.log("Fetching-Error:", error);
+        console.error("Failed to fetch packages:", error);
       }
-    }
+    };
+
     fetchPackages();
   }, []);
 
-  const [availablePackages, setAvailablePackages] = useState([]);
-  const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     if (form.provider) {
-      const providerPackage = packagesData[form.provider];
-      if (providerPackage) {
-        setAvailablePackages(providerPackage[0].PRODUCT);
+      const providerData = packagesData[form.provider];
+      if (providerData && providerData[0]?.PRODUCT) {
+        setAvailablePackages(providerData[0].PRODUCT);
+      } else {
+        setAvailablePackages([]);
       }
+
+      // Reset smartcard and package if provider changes
+      setForm((prev) => ({ ...prev, smartcardNumber: "", tvPackage: "" }));
+      setCustomerName("");
     }
   }, [form.provider]);
 
+  useEffect(() => {
+    if (!availablePackages.length || !form.tvPackage) return;
+
+    const data = availablePackages.find((pk) => form.tvPackage === pk.PACKAGE_ID);
+    if (data) {
+      setPackageAmount(data.PACKAGE_AMOUNT);
+    }
+  }, [form.tvPackage, availablePackages]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const verifySmartcardNumber = async (smartcardNumber, provider) => {
-  setVerifyingSmartcardNumber(true);
+    setVerifyingSmartcardNumber(true);
+    try {
+      const response = await axios.post("/api/verify-uic-tv-number", {
+        smartcardNumber,
+        provider,
+      });
 
-  try {
-    const response = await axios.post('/api/verify-uic-tv-number', {
-      smartcardNumber,
-      provider,
-    });
-
-    if (response.data.success) {
-      setCustomerName(response.data.data);
-      return true;
-    } else {
+      if (response.data.success) {
+        setCustomerName(response.data.data);
+        return true;
+      } else {
+        setCustomerName("Verification failed.");
+        return false;
+      }
+    } catch (error) {
+      console.error("Verification error:", error);
+      setCustomerName("Verification error occurred.");
       return false;
+    } finally {
+      setVerifyingSmartcardNumber(false);
     }
-  } catch (error) {
-    console.log("Verify SmartcardNumber Error:", error);
-    setCustomerName("Invalid provider or Smartcard Number");
-    return false;
-  } finally {
-    setVerifyingSmartcardNumber(false);
-  }
-};
+  };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const { provider, smartcardNumber, packageCode, phone, pin } = form;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { provider, smartcardNumber, tvPackage, phone, pin } = form;
 
-  if (!provider || !smartcardNumber || !packageCode || !phone || pin.length < 4) {
-    toast.error("Please fill all fields correctly");
-    return;
-  }
+    if (!provider || !smartcardNumber || !phone || !tvPackage || !pin) {
+      toast.error("Please fill all fields correctly.");
+      return;
+    }
 
-  const isVerified = await verifySmartcardNumber(smartcardNumber, provider);
+    const isVerified = await verifySmartcardNumber(smartcardNumber, provider);
+    if (!isVerified) {
+      toast.error("Smartcard verification failed.");
+      return;
+    }
 
-  if (!isVerified) {
-    toast.error("Smartcard verification failed");
-    return;
-  }
+    try {
+      setLoading(true);
+      toast.info("Processing...");
 
-  try {
-    setLoading(true);
-    // Submit logic here
-    toast.success("TV subscription successful!");
+      const response = await axios.post("/api/tv/subscribe", {
+        provider,
+        smartcardNumber,
+        amount: packageAmount,
+        tvPackage,
+        phone,
+        pin,
+      });
 
-    setForm({
-      provider: "",
-      smartcardNumber: "",
-      packageCode: "",
-      phone: "",
-      pin: ""
-    });
-  } catch (error) {
-    toast.error("Subscription failed");
-    console.error("TV Subscription Error:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      if (response.data.success) {
+        toast.success("TV subscription successful!");
+        setForm(initialFormState);
+        setCustomerName("");
+        setAvailablePackages([]);
+      } else {
+        toast.error(response.data.message || "Subscription failed.");
+      }
+    } catch (error) {
+      console.error("Subscription error:", error);
+      toast.error(error?.response?.data?.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-10">
       <ToastContainer />
-      <div className='grid md:grid-cols-2 grid-cols-1 gap-6 justify-start'>
-        <div className='flex flex-col gap-6'>
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
+        <div className="flex flex-col gap-6">
           <WalletBalance />
           <div className="max-w-2xl bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-blue-100">
-            <h1 className="text-2xl font-bold text-center text-blue-700 mb-8 tracking-tight">Buy TV Subscription</h1>
+            <h1 className="text-2xl font-bold text-center text-blue-700 mb-8">
+              Buy TV Subscription
+            </h1>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Provider */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">TV Provider</label>
+                <label className="block mb-1 text-sm font-semibold text-gray-700">
+                  TV Provider
+                </label>
                 <select
                   name="provider"
-                  onChange={handleChange}
                   value={form.provider}
+                  onChange={handleChange}
                   required
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400"
                 >
                   <option value="">-- Select Provider --</option>
-                  {Object.keys(packagesData || {}).map((p, i) => (
-                    <option key={i} value={p}>{p}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Smartcard */}
-              <div className="relative">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Smartcard / Decoder Number</label>
-                <input
-                  name="smartcardNumber"
-                  type="text"
-                  onChange={handleChange}
-                  value={form.smartcardNumber}
-                  maxLength={12}
-                  required
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-                {
-                  verifyingSmartcardNumber && <span className="absolute right-[10px] top-[30px]">
-                    <FaSpinner className="animate-spin text-blue-600 text-2xl" />
-                  </span>
-                }
-                {
-                  customerName && customerName !== "Invalid provider or Smartcard Number" ? <p className='text-xs pt-2 font-bold text-green-500'>{customerName}</p>
-                    :
-                    <p className='text-xs pt-2 font-bold text-red-500'>{customerName}</p>
-                }
-              </div>
-
-              {/* Package */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">TV Package</label>
-                <select
-                  name="packageCode"
-                  onChange={handleChange}
-                  value={form.packageCode}
-                  required
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                  <option value="">-- Select Package --</option>
-                  {availablePackages.map((pkg, i) => (
-                    <option key={i} value={pkg.PACKAGE_AMOUNT}>
-                      {pkg.PACKAGE_NAME} - ₦{pkg.PACKAGE_AMOUNT}
+                  {Object.keys(packagesData).map((p, i) => (
+                    <option key={i} value={p}>
+                      {p}
                     </option>
                   ))}
                 </select>
               </div>
 
+              {/* Smartcard Number */}
+              <div className="relative">
+                <label className="block mb-1 text-sm font-semibold text-gray-700">
+                  Smartcard Number
+                </label>
+                <input
+                  type="text"
+                  name="smartcardNumber"
+                  value={form.smartcardNumber}
+                  onChange={handleChange}
+                  maxLength={12}
+                  required
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400"
+                />
+                {verifyingSmartcardNumber && (
+                  <span className="absolute right-3 top-9">
+                    <FaSpinner className="animate-spin text-blue-600 text-2xl" />
+                  </span>
+                )}
+                {customerName && (
+                  <p
+                    className={`text-xs pt-2 font-bold ${
+                      customerName.includes("fail") ? "text-red-500" : "text-green-500"
+                    }`}
+                  >
+                    {customerName}
+                  </p>
+                )}
+              </div>
+
+              {/* Package */}
+              <div>
+                <label className="block mb-1 text-sm font-semibold text-gray-700">
+                  TV Package
+                </label>
+                <select
+                  name="tvPackage"
+                  value={form.tvPackage}
+                  onChange={handleChange}
+                  required
+                  disabled={!availablePackages.length}
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="" disabled>
+                    -- Select Package --
+                  </option>
+                  {availablePackages.map((pkg, i) => (
+                    <option key={i} value={pkg.PACKAGE_ID}>
+                      {pkg.PACKAGE_NAME}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Amount */}
+              {form.tvPackage && (
+                <div>
+                  <label className="block mb-1 text-sm font-semibold text-gray-700">
+                    Amount
+                  </label>
+                  <p className="w-full border border-gray-300 rounded-xl px-4 py-2 text-gray-700">
+                    {packageAmount}
+                  </p>
+                </div>
+              )}
+
               {/* Phone Number */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
+                <label className="block mb-1 text-sm font-semibold text-gray-700">
+                  Phone Number
+                </label>
                 <input
-                  name="phone"
                   type="tel"
-                  onChange={handleChange}
+                  name="phone"
                   value={form.phone}
-                  placeholder="e.g. 08012345678"
+                  onChange={handleChange}
                   required
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="e.g. 08012345678"
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400"
                 />
               </div>
 
               {/* PIN */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Transaction PIN</label>
+                <label className="block mb-1 text-sm font-semibold text-gray-700">
+                  Transaction PIN
+                </label>
                 <input
-                  name="pin"
                   type="password"
-                  onChange={handleChange}
+                  name="pin"
                   value={form.pin}
-                  placeholder="4 digit PIN"
+                  onChange={handleChange}
                   required
                   maxLength={4}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="4-digit PIN"
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-400"
                 />
               </div>
 
-               <button
+              <button
                 type="submit"
                 disabled={loading || verifyingSmartcardNumber}
-                className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 cursor-pointer transition duration-300"
+                className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 transition duration-300 flex items-center justify-center gap-2"
               >
-                {
-                  loading ? "Proccessing..." :"Subcribe"
-                }
+                {loading ? (
+                  <>
+                    <FaSpinner className="animate-spin" /> Processing...
+                  </>
+                ) : (
+                  "Subscribe"
+                )}
               </button>
-
             </form>
           </div>
         </div>
 
+        {/* Right column help/info */}
         <TvHelp data={form} />
       </div>
     </div>

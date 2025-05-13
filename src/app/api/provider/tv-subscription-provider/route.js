@@ -12,24 +12,18 @@ dotenv.config();
 export async function POST(req) {
   await connectDb();
   const body = await req.json();
-  const { provider, smartcardNumber, packageCode, phone, pin } = body;
+  const { provider, smartcardNumber, amount, tvPackage, phone, pin } = body;
 
-  const amountToBuy = Number(packageCode);
+  const amountToBuy = Number(amount);
   if (isNaN(amountToBuy)) {
     return NextResponse.json({ success: false, message: "Invalid package amount" }, { status: 400 });
   }
 
   try {
-    if (!provider || !smartcardNumber || !packageCode || !phone || !pin) {
+    if (!provider || !smartcardNumber || !amount || !phone || !tvPackage || !pin) {
       return NextResponse.json({ success: false, message: "All fields required" }, { status: 400 });
     }
 
-    const availableTvProviders = {
-      DStv: "01",
-      GOtv: "02",
-      Startimes: "03",
-      Showmax: "04",
-    };
 
     const userId = await verifyToken(req);
     const user = await UserModel.findById(userId);
@@ -48,7 +42,7 @@ export async function POST(req) {
 
     const requestId = crypto.randomUUID();
 
-    const TvUrl = `https://www.nellobytesystems.com/APIElectricityV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&ElectricCompany=${availableTvProviders[provider]}&MeterType=01&MeterNo=${smartcardNumber}&Amount=${amountToBuy}&PhoneNo=${phone}&RequestID=${requestId}`;
+    const TvUrl = `https://www.nellobytesystems.com/APICableTVV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&CableTV=${provider.toLowerCase()}&Package=${tvPackage}&SmartCardNo=${smartcardNumber}&PhoneNo=${phone}`
 
     const response = await fetch(TvUrl, {
       method: "GET",
