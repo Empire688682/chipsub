@@ -6,7 +6,7 @@ const ApiDocs = () => {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-blue-600 mb-4">Chipsub API Documentation</h1>
         <p className="text-gray-700 mb-8">
-          Welcome to Chipsub developer docs. Use the endpoints below to integrate airtime, data, wallet, and payment features.
+          Welcome to the Chipsub developer docs. Use the endpoints below to integrate airtime, data, wallet, and payment features.
         </p>
 
         {/* Authentication */}
