@@ -14,7 +14,7 @@ export default function SignupPage() {
         openModal,
         data,
         setData,
-        route } = useGlobalContext();
+        refHostId } = useGlobalContext();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("")
 
@@ -27,7 +27,7 @@ export default function SignupPage() {
     const userAuthHandler = async () => {
         setLoading(true);
         try {
-            const response = await axios.post(baseUrl, data);
+            const response = await axios.post(baseUrl, {...data, refHostId});
             const { success, message, finalUserData } = response.data;
 
             if (!success) {
@@ -42,7 +42,8 @@ export default function SignupPage() {
                 name: "",
                 email: "",
                 number: "",
-                password: ""
+                password: "",
+                refId: ""
             });
             setIsModalOpen(false);
             window.location.reload();
