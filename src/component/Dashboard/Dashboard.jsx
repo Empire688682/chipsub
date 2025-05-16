@@ -6,9 +6,8 @@ import WalletBalance from '../WalletBalance/WalletBalance';
 
 const Dashboard = () => {
   const { userData, getUserRealTimeData, route, transactionHistory, loading } = useGlobalContext();
-  const referralLink = `https://yourdomain.com/ref/${userData?.refCode || "123ABC"}`;
-  console.log("Transaction History:", transactionHistory);
-
+  const referralLink = `https://yourdomain.com?ref=${refId} || ""}`;
+console.log("userData:", userData)
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink)
       .then(() => {

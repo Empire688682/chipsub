@@ -102,7 +102,7 @@ const BuyData = () => {
           <div className='flex flex-col gap-6'>
             <WalletBalance />
             <div className="max-w-2xl bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-blue-100">
-              <h1 className="text-2xl font-bold text-center text-blue-700 mb-8 tracking-tight">Buy Data</h1>
+              <h1 className="text-2xl font-bold text-center text-blue-700 mb-8 tracking-tight">Buy your Data</h1>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Network */}

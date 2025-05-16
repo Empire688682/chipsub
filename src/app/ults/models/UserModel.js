@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema(
     pin: { type: String, required: true },
     bvnVerify: { type: Boolean, default: false },
     walletBalance: { type: Number, default: 0 },
+    commisionBalance: { type: Number, default: 0 },
     number: { type: String , required: true},
   },
   {

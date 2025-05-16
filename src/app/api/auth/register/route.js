@@ -43,13 +43,14 @@ const registerUser = async (req) =>{
 
         await newUser.save();
 
-        const { password: _, _id, ...userData } = newUser.toObject();
-
+        const { password: _, ...userData } = newUser.toObject();
         const userId = newUser._id;
+
+        const finalUserData = { ...userData, userId };
 
         const token = jwt.sign({userId}, process.env.SECRET_KEY, {expiresIn:"1d"});
 
-        const res = NextResponse.json({success:true, message:"User aded", userData}, {status:200});
+        const res = NextResponse.json({success:true, message:"User aded", finalUserData}, {status:200});
 
         res.cookies.set("UserToken", token,{
             httpOnly:true,
