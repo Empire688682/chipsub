@@ -19,11 +19,14 @@ export async function POST(req) {
         if(!paswordMatch){
             return NextResponse.json({success:false, message:"Incorrect password"}, {status:400})
         }
-        const { password: _, _id, ...userData } = userExist.toObject();
+        const { password: _, pin: __, ...userData } = userExist.toObject();
+        const userId = userExist._id;
+
+        const finalUserData = {...userData, userId}
 
         const token = jwt.sign({ userId: userExist._id }, process.env.SECRET_KEY, {expiresIn:"1d"});
 
-        const res = NextResponse.json({success:true, message:"User loging", userData}, {status:200});
+        const res = NextResponse.json({success:true, message:"User loging", finalUserData}, {status:200});
         res.cookies.set("UserToken", token, 
             {
                 httpOnly: true,

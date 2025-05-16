@@ -5,29 +5,30 @@ import bcrypt from "bcryptjs";
 import validator from "validator";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
+import ReferralModel from "@/app/ults/models/ReferralModel";
 dotenv.config();
 
-const registerUser = async (req) =>{
+const registerUser = async (req) => {
     const reBody = await req.json();
     try {
         await connectDb();
-        const {name, email, number, password} = reBody;
-        
-        if(!name || !email || !password || !number){
-            return NextResponse.json({success:false, message:"All Fields are require"},{status:400})
+        const { name, email, number, password, refId } = reBody;
+
+        if (!name || !email || !password || !number) {
+            return NextResponse.json({ success: false, message: "All Fields are required" }, { status: 400 })
         };
 
-        if(!validator.isEmail(email)){
-            return NextResponse.json({success:false, message:"Invalid Email"}, {status:400})
+        if (!validator.isEmail(email)) {
+            return NextResponse.json({ success: false, message: "Invalid Email" }, { status: 400 })
         }
 
-        const userExist = await UserModel.findOne({email});
-        if(userExist){
-            return NextResponse.json({success:false, message:"User already exist"},{status:400})
+        const userExist = await UserModel.findOne({ email });
+        if (userExist) {
+            return NextResponse.json({ success: false, message: "User already exist" }, { status: 400 })
         }
 
-        if(password.length < 8){
-            return NextResponse.json({success:false, message:"Password too sort"},{status:400})
+        if (password.length < 8) {
+            return NextResponse.json({ success: false, message: "Password too short" }, { status: 400 })
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -39,32 +40,39 @@ const registerUser = async (req) =>{
             number,
             password: hashedPassword,
             pin: defaultPin,
-          });
+        });
 
-        await newUser.save();
+        const refHost = await UserModel.findById(refId);
 
-        const { password: _, ...userData } = newUser.toObject();
+        if (refHost) {
+            await ReferralModel.create({
+                referrer: refHost._id,
+                referredUser: newUser._id,
+            });
+        }
+
+        const { password: _, pin: __, ...userData } = newUser.toObject();
         const userId = newUser._id;
 
         const finalUserData = { ...userData, userId };
 
-        const token = jwt.sign({userId}, process.env.SECRET_KEY, {expiresIn:"1d"});
+        const token = jwt.sign({ userId }, process.env.SECRET_KEY, { expiresIn: "1d" });
 
-        const res = NextResponse.json({success:true, message:"User aded", finalUserData}, {status:200});
+        const res = NextResponse.json({ success: true, message: "User added", finalUserData }, { status: 200 });
 
-        res.cookies.set("UserToken", token,{
-            httpOnly:true,
+        res.cookies.set("UserToken", token, {
+            httpOnly: true,
             secure: process.env.NODE_ENV === "production" ? true : false,
             maxAge: 60 * 60 * 24,
             sameSite: "lax",
-            path:"/"
+            path: "/"
         });
 
         return res
 
     } catch (error) {
-        console.log("Error:" ,error);
-        return NextResponse.json({success:false, message:"Something went wrong"},{status:500})
+        console.log("Error:", error);
+        return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 })
     }
 }
 

@@ -23,6 +23,7 @@ export const AppProvider = ({ children }) => {
   const [transactionHistory, setTransactionHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userWallet, setUserWallet] = useState(0);
+  const [refHostId, setRefHostId] = useState(null);
 
   const openModal = (type) => {
     if (userData) {
@@ -120,6 +121,23 @@ export const AppProvider = ({ children }) => {
     fetchDataPlan();
   }, []);
 
+  useEffect(()=>{
+    if(typeof window !== "undefined"){
+      const storedId = localStorage.getItem("ReferralID");
+      const now = new Date().getTime();
+      if(storedId){
+        const parsedId = JSON.parse(storedId);
+        const expiresAt = Number(parsedId.expireIn);
+        if(expiresAt > now){
+          setRefHostId(parsedId.refId);
+        }
+        else {
+          localStorage.removeItem("ReferralID");
+        }
+      }
+    }
+  });
+
   return <AppContext.Provider value={{
     isOpen,
     toggleMenu,
@@ -139,7 +157,9 @@ export const AppProvider = ({ children }) => {
     transactionHistory,
     loading,
     dataPlan,
-    userWallet
+    userWallet,
+    setRefHostId, 
+    refHostId
   }}>
     {children}
   </AppContext.Provider>

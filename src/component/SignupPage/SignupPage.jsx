@@ -28,7 +28,7 @@ export default function SignupPage() {
         setLoading(true);
         try {
             const response = await axios.post(baseUrl, data);
-            const { success, message, userData } = response.data;
+            const { success, message, finalUserData } = response.data;
 
             if (!success) {
                 setError(message || "Authentication failed");
@@ -36,8 +36,7 @@ export default function SignupPage() {
             }
 
             const now = new Date().getTime();
-            console.log("Now:", now);
-            const userDataWithTimestamp = {... userData, timestamp:now};
+            const userDataWithTimestamp = {...finalUserData, timestamp:now};
             localStorage.setItem("userData", JSON.stringify(userDataWithTimestamp));
             setData({
                 name: "",
