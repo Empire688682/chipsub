@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { connectDb } from '../../ults/db/ConnectDb';
 import PaymentModel from '../../ults/models/PaymentModel';
 import UserModel from '../../ults/models/UserModel';
+import ReferralModel from '../../ults/models/ReferralModel'; // ✅ import this
 import { verifyToken } from '../helper/VerifyToken';
 
 dotenv.config();
@@ -33,7 +34,6 @@ export async function POST(req) {
     const { status, amount, tx_ref } = response.data.data;
 
     if (status === 'successful') {
-      // Check if payment already marked as PAID
       const existingPayment = await PaymentModel.findOne({ reference: tx_ref });
 
       if (!existingPayment) {
@@ -44,7 +44,6 @@ export async function POST(req) {
         return NextResponse.json({ success: true, message: 'Payment already verified' }, { status: 200 });
       }
 
-      // Update payment to PAID and add to wallet
       existingPayment.status = 'PAID';
       await existingPayment.save();
 
@@ -52,6 +51,16 @@ export async function POST(req) {
       if (isNaN(cleanAmount)) throw new Error('Invalid amount');
 
       await UserModel.findByIdAndUpdate(userId, { $inc: { walletBalance: cleanAmount } });
+
+      // ✅ REFERRAL SETTLEMENT SECTION
+      const referral = await ReferralModel.findOne({ referredUser: userId, rewardGiven: false });
+
+      if (referral) {
+        const bonusAmount = cleanAmount >= 1000 ? 50 : 10;
+        await UserModel.findByIdAndUpdate(referral.referrer, { $inc: { commisionBalance: bonusAmount } });
+        referral.rewardGiven = true;
+        await referral.save();
+      }
 
       return NextResponse.json({ success: true, message: 'Payment verified and wallet updated' }, { status: 200 });
     } else {
