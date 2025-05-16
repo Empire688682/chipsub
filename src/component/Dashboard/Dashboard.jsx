@@ -1,6 +1,7 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useGlobalContext } from '../Context';
+import { PiHandWithdraw } from "react-icons/pi";
 import { Wallet, Phone, Wifi, Zap, Bell, Heart, Copy, Tv } from "lucide-react";
 import WalletBalance from '../WalletBalance/WalletBalance';
 
@@ -37,9 +38,13 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <WalletBalance />
 
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <p className="text-gray-500 text-sm">Commission Balance</p>
-          <p className="text-xl font-bold mt-2">₦{userCommision?.toFixed(2) || "**.**"}</p>
+         <div className="bg-white max-h-[100px] p-4 rounded-lg shadow-md"
+        >
+            <p className="text-gray-500 text-sm">Commission Balance</p>
+            <div className="flex items-center justify-between mt-2">
+                <p className="text-xl font-bold">₦{userCommision?.toFixed(2) || "**.**"}</p>
+                <button className="bg-blue-600 flex gap-2 itmens-center cursor-pointer text-white flex-wrap px-3 py-1 rounded">Withdraw <PiHandWithdraw className='text-[20px]' /></button>
+            </div>
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow-md">
