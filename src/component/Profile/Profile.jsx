@@ -39,7 +39,7 @@ const Profile = () => {
           </div>
           <h2 className="text-xl font-bold text-blue-700">{user.name}</h2>
           <p className="text-sm text-gray-600">{user.email}</p>
-          <p className="text-sm text-gray-600">{user.number}</p>
+          <p className="text-sm text-gray-600">{user.phone}</p>
 
           <div className="mt-3">
             {user.bvnVerified ? (
