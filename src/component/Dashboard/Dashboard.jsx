@@ -39,7 +39,7 @@ const Dashboard = () => {
 
         <div className="bg-white p-4 rounded-lg shadow-md">
           <p className="text-gray-500 text-sm">Commission Balance</p>
-          <p className="text-xl font-bold mt-2">{userCommision?.toFixed(2) || "**.**"}</p>
+          <p className="text-xl font-bold mt-2">₦{userCommision?.toFixed(2) || "**.**"}</p>
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow-md">

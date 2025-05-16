@@ -8,19 +8,14 @@ import { useGlobalContext } from '../Context';
 
 const Profile = () => {
   const [notify, setNotify] = useState(true);
-  const { userData, logoutUser, setPinModal } = useGlobalContext();
+  const { userData, logoutUser, setPinModal, transactionHistory } = useGlobalContext();
 
   const user = {
     name: `${userData.name}`|| "",
     email: `${userData.email}` || "",
-    phone: `${userData.phone}` || "",
+    phone: `${userData.number}` || "",
     bvnVerified: userData.bvnVerify,
     avatar: '/profile-img.png',
-    transactions: [
-      { id: 1, type: 'Airtime Purchase', amount: '₦500', date: '2025-04-16' },
-      { id: 2, type: 'Electricity', amount: '₦2000', date: '2025-04-14' },
-      { id: 3, type: 'Data Bundle', amount: '₦1000', date: '2025-04-12' },
-    ],
   };
 
   const handlePasswordChange = (e) => {
@@ -44,7 +39,7 @@ const Profile = () => {
           </div>
           <h2 className="text-xl font-bold text-blue-700">{user.name}</h2>
           <p className="text-sm text-gray-600">{user.email}</p>
-          <p className="text-sm text-gray-600">{user.phone}</p>
+          <p className="text-sm text-gray-600">{user.number}</p>
 
           <div className="mt-3">
             {user.bvnVerified ? (
@@ -131,7 +126,7 @@ const Profile = () => {
             <History size={20} /> Transaction History
           </h3>
           <ul className="space-y-3 text-sm text-gray-700 max-h-72 overflow-y-auto">
-            {user.transactions.map((tx) => (
+            {transactionHistory.map((tx) => (
               <li key={tx.id} className="border-b pb-2">
                 <p className="font-medium">{tx.type}</p>
                 <div className="flex justify-between text-xs text-gray-500">
