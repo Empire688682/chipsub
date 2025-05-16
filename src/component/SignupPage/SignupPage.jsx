@@ -27,7 +27,7 @@ export default function SignupPage() {
     const userAuthHandler = async () => {
         setLoading(true);
         try {
-            const response = await axios.post(baseUrl, {...data, refHostId});
+            const response = await axios.post(baseUrl, {...data, refId:refHostId});
             const { success, message, finalUserData } = response.data;
 
             if (!success) {
@@ -49,7 +49,7 @@ export default function SignupPage() {
             window.location.reload();
         } catch (error) {
             console.error("Auth Error:", error);
-        setError(error?.response?.data?.message || "An error occurred during authentication");
+        setError(error?.response?.data?.message);
         }
         finally {
             setLoading(false)
