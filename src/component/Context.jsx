@@ -23,6 +23,7 @@ export const AppProvider = ({ children }) => {
   const [transactionHistory, setTransactionHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userWallet, setUserWallet] = useState(0);
+  const [userCommision, setUserCommision] = useState(0);
   const [refHostId, setRefHostId] = useState(null);
 
   const openModal = (type) => {
@@ -90,6 +91,7 @@ export const AppProvider = ({ children }) => {
       if (res.data.success) {
         setTransactionHistory(res.data.data.transactions)
         setUserWallet(res.data.data.walletBalance);
+        setUserCommision(res.data.data.commisionBalance);
       }
     } catch (error) {
       console.log("ERROR:", error);
@@ -158,6 +160,7 @@ export const AppProvider = ({ children }) => {
     loading,
     dataPlan,
     userWallet,
+    userCommision,
     setRefHostId, 
     refHostId
   }}>

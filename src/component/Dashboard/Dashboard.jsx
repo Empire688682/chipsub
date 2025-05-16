@@ -5,7 +5,7 @@ import { Wallet, Phone, Wifi, Zap, Bell, Heart, Copy, Tv } from "lucide-react";
 import WalletBalance from '../WalletBalance/WalletBalance';
 
 const Dashboard = () => {
-  const { userData, getUserRealTimeData, route, transactionHistory, loading } = useGlobalContext();
+  const { userData, userCommision, getUserRealTimeData, route, transactionHistory, loading } = useGlobalContext();
   const referralLink = `http://localhost:3000?ref=${userData.userId}`;
   console.log("userData:", userData);
   const handleCopy = () => {
@@ -39,7 +39,7 @@ const Dashboard = () => {
 
         <div className="bg-white p-4 rounded-lg shadow-md">
           <p className="text-gray-500 text-sm">Commission Balance</p>
-          <p className="text-xl font-bold mt-2">₦0.00</p>
+          <p className="text-xl font-bold mt-2">{userCommision?.toFixed(2) || "**.**"}</p>
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow-md">
