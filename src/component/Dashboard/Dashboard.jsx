@@ -6,7 +6,7 @@ import WalletBalance from '../WalletBalance/WalletBalance';
 
 const Dashboard = () => {
   const { userData, userCommision, getUserRealTimeData, route, transactionHistory, loading } = useGlobalContext();
-  const referralLink = `http://localhost:3000?ref=${userData.userId}`;
+  const referralLink = `https://chipsub.vercel.app?ref=${userData.userId}`;
   console.log("userData:", userData);
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink)
