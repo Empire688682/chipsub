@@ -5,6 +5,7 @@ import WalletBalance from '../WalletBalance/WalletBalance';
 import ElectricityHelp from '../ElectricityHelp/ElectricityHelp';
 import axios from 'axios';
 import { FaSpinner } from "react-icons/fa";
+import { useGlobalContext } from '../Context';
 
 const BuyElectricity = () => {
   const {getUserRealTimeData} = useGlobalContext();
