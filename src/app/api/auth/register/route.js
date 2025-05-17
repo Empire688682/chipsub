@@ -14,8 +14,6 @@ const registerUser = async (req) => {
         await connectDb();
         const { name, email, number, password, refId } = reBody;
 
-        console.log("refId:", refId);
-
         if (!name || !email || !password || !number) {
             return NextResponse.json({ success: false, message: "All Fields are required" }, { status: 400 })
         };

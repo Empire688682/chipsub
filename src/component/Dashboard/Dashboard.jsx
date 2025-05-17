@@ -1,14 +1,18 @@
 "use client";
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGlobalContext } from '../Context';
 import { PiHandWithdraw } from "react-icons/pi";
 import { Wallet, Phone, Wifi, Zap, Bell, Heart, Copy, Tv } from "lucide-react";
 import WalletBalance from '../WalletBalance/WalletBalance';
+import { FaSpinner } from 'react-icons/fa';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const Dashboard = () => {
   const { userData, userCommision, getUserRealTimeData, route, transactionHistory, loading } = useGlobalContext();
   const referralLink = `https://chipsub.vercel.app?ref=${userData.userId}`;
-  console.log("userData:", userData);
+
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink)
       .then(() => {
@@ -26,8 +30,33 @@ const Dashboard = () => {
   const fullName = userData?.name || "User";
   const firstName = fullName.split(" ")[0];
 
+  const [withdrawLoading, setWithrawLoading] = useState(false);
+  const withdrawCommision = async () =>{
+    if(!userData.userId){
+      toast.error("No Id found")
+      return
+    }
+
+    setWithrawLoading(true)
+    try {
+      const userId = userData.userId
+      const response = await axios.post("/api/withdraw-commission", {userId});
+      if(response.data.success){
+        getUserRealTimeData();
+        toast.success("Commission added to wallet balance");
+      }
+    } catch (error) {
+      console.log("WithdrawError:", error);
+      toast.error(error.response.data.message);
+    }
+    finally{
+      setWithrawLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
+      <ToastContainer />
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-gray-700 font-medium text-lg">
           <Heart /> Welcome back, <span className="font-bold">{firstName}</span>
@@ -42,8 +71,12 @@ const Dashboard = () => {
         >
             <p className="text-gray-500 text-sm">Commission Balance</p>
             <div className="flex items-center justify-between mt-2">
-                <p className="text-xl font-bold">₦{userCommision?.toFixed(2) || "**.**"}</p>
-                <button className="bg-blue-600 flex gap-2 itmens-center cursor-pointer text-white flex-wrap px-3 py-1 rounded">Withdraw <PiHandWithdraw className='text-[20px]' /></button>
+                {
+                  withdrawLoading? <FaSpinner className='text-2xl animate-spin'/> 
+                  :
+                  <p className="text-xl font-bold">₦{userCommision?.toFixed(2) || "**.**"}</p>
+                }
+                <button onClick={withdrawCommision} className="bg-blue-600 flex gap-2 itmens-center cursor-pointer text-white flex-wrap px-3 py-1 rounded">Withdraw <PiHandWithdraw className='text-[20px]' /></button>
             </div>
         </div>
 
