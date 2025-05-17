@@ -52,7 +52,7 @@ const Profile = () => {
                   <ShieldAlert size={16} /> BVN Not Verified
                 </span>
                 <button
-                  onClick={() => toast.info('Redirecting to BVN verification...')}
+                  onClick={() => toast.info('Comming soon...')}
                   className="bg-yellow-400 mt-2 px-3 py-1 rounded-md text-xs text-black hover:bg-yellow-500"
                 >
                   Verify Now
