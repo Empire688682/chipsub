@@ -31,8 +31,8 @@ const Dashboard = () => {
   const firstName = fullName.split(" ")[0];
 
   const [withdrawLoading, setWithrawLoading] = useState(false);
-  const withdrawCommision = async () =>{
-    if(!userData.userId){
+  const withdrawCommision = async () => {
+    if (!userData.userId) {
       toast.error("No Id found")
       return
     }
@@ -40,8 +40,8 @@ const Dashboard = () => {
     setWithrawLoading(true)
     try {
       const userId = userData.userId
-      const response = await axios.post("/api/withdraw-commission", {userId});
-      if(response.data.success){
+      const response = await axios.post("/api/withdraw-commission", { userId });
+      if (response.data.success) {
         getUserRealTimeData();
         toast.success("Commission added to wallet balance");
       }
@@ -49,7 +49,7 @@ const Dashboard = () => {
       console.log("WithdrawError:", error);
       toast.error(error.response.data.message);
     }
-    finally{
+    finally {
       setWithrawLoading(false);
     }
   }
@@ -67,17 +67,17 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <WalletBalance />
 
-         <div className="bg-white max-h-[100px] p-4 rounded-lg shadow-md"
+        <div className="bg-white max-h-[100px] p-4 rounded-lg shadow-md"
         >
-            <p className="text-gray-500 text-sm">Commission Balance</p>
-            <div className="flex items-center justify-between mt-2">
-                {
-                  withdrawLoading? <FaSpinner className='text-2xl animate-spin'/> 
-                  :
-                  <p className="text-xl font-bold">₦{userCommision?.toFixed(2) || "**.**"}</p>
-                }
-                <button onClick={withdrawCommision} className="bg-blue-600 flex gap-2 itmens-center cursor-pointer text-white flex-wrap px-3 py-1 rounded">Withdraw <PiHandWithdraw className='text-[20px]' /></button>
-            </div>
+          <p className="text-gray-500 text-sm">Commission Balance</p>
+          <div className="flex items-center justify-between mt-2">
+            {
+              withdrawLoading ? <FaSpinner className='text-2xl animate-spin' />
+                :
+                <p className="text-xl font-bold">₦{userCommision?.toFixed(2) || "**.**"}</p>
+            }
+            <button onClick={withdrawCommision} className="bg-blue-600 flex gap-2 itmens-center cursor-pointer text-white flex-wrap px-3 py-1 rounded">Withdraw <PiHandWithdraw className='text-[20px]' /></button>
+          </div>
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow-md">

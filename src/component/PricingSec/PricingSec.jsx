@@ -1,3 +1,7 @@
+"use client"
+
+import { useGlobalContext } from "../Context";
+
 export default function PricingSec() {
     return (
       <section id="pricing" className="py-16 bg-gray-100">
@@ -47,6 +51,7 @@ export default function PricingSec() {
   }
   
   function PlanCard({ network, price, size, validity, color }) {
+    const {route} = useGlobalContext();
     return (
       <div className="bg-white p-6 rounded-xl shadow hover:shadow-md transition text-left">
         <div className={`px-3 py-1 text-sm font-semibold rounded-full w-fit mb-4 ${color}`}>
@@ -55,7 +60,7 @@ export default function PricingSec() {
         <h3 className="text-2xl font-bold text-gray-800 mb-2">{price}</h3>
         <p className="text-gray-600">{size} Data Plan</p>
         <p className="text-gray-500 text-sm mb-4">Valid for {validity}</p>
-        <button className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">
+        <button onClick={()=>route.push("/dashboard")}  className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">
           Get Started
         </button>
       </div>
