@@ -59,6 +59,7 @@ export async function POST(req) {
         const bonusAmount = cleanAmount >= 1000 ? 50 : 10;
         await UserModel.findByIdAndUpdate(referral.referrer, { $inc: { commisionBalance: bonusAmount } });
         referral.rewardGiven = true;
+        referral.fundedAmount = bonusAmount
         await referral.save();
       }
 

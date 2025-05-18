@@ -4,6 +4,7 @@ import { verifyToken } from "../helper/VerifyToken";
 import { NextResponse } from "next/server";
 import { connectDb } from "@/app/ults/db/ConnectDb";
 import PaymentModel from "@/app/ults/models/PaymentModel";
+import ReferralModel from "@/app/ults/models/ReferralModel";
 
 export async function GET(req) {
     await connectDb();
@@ -18,12 +19,12 @@ export async function GET(req) {
             return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 401 });
         }
 
-        //const refRewardedSum = await ReferralModel.aggregate([
-        //    { $match: { rewardGiven: true } },
-       //     { $group: { _id: null, total: { $sum: "$rewardAmount" } } }
-       // ]);
+        const refRewardedSum = await ReferralModel.aggregate([
+         { $match: { rewardGiven: true } },
+         { $group: { _id: null, total: { $sum: "$rewardAmount" } } }
+         ]);
 
-       // const totalReward = refRewardedSum[0]?.total || 0;
+        const totalReward = refRewardedSum[0]?.total || 0;
 
        const successfulFunding = await PaymentModel.aggregate([
         {$match: {status: "PAID"}},
@@ -31,9 +32,6 @@ export async function GET(req) {
        ]);
 
        const walletsTotal = successfulFunding[0]?.total || 0
-
-       console.log("totalAmount:", successfulFunding);
-
 
         const [users, allTransactions, airtime, data, tv, electricity, wallet] = await Promise.all([
             UserModel.countDocuments(),
@@ -53,7 +51,8 @@ export async function GET(req) {
                 data,
                 tv,
                 electricity,
-                walletsTotal
+                walletsTotal,
+                totalReward
             },
             message: "All data fetched"
         }, { status: 200 });

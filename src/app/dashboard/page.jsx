@@ -36,7 +36,7 @@ const Page = () => {
           📺 TV Subscriptions: {allData.tv} &nbsp;·&nbsp;
           ⚡ Electricity Tokens: {allData.electricity} &nbsp;·&nbsp;
           💰 Wallet Fundings: ₦{allData.walletsTotal} &nbsp;·&nbsp;
-          🎁 Commissions Paid: ₦800
+          🎁 Commissions Paid: ₦{allData.totalReward}
         </div>
       </div>
       <DashboardLayout />
