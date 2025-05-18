@@ -21,7 +21,6 @@ body {
   color: rgba(7, 7, 7, 0.5);
   font-family: Arial, Helvetica, sans-serif;
 }
-
 @keyframes scroll {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
@@ -29,4 +28,10 @@ body {
 
 .animate-scroll {
   animation: scroll 20s linear infinite;
+}
+
+@media screen and (max-width: 500px) {
+  .animate-scroll {
+    animation: scroll 20s linear infinite;
+  }
 }
