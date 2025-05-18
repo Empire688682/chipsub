@@ -73,8 +73,9 @@ export async function POST(req) {
     const mappedNetwork = validNetwork[network];
 
     // To remove the service cost before sending to third party API
-    const validAmount = Number(amount) - 50;
-
+    const profitPercentage = 3.5;
+    const validAmount = Math.floor(Number(amount) / (1 + profitPercentage / 100));
+    console.log("validAmount:", validAmount);
     // 👉 Call external API
     const res = await fetch(`https://www.nellobytesystems.com/APIDatabundleV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&MobileNetwork=${mappedNetwork}&DataPlan=${validAmount}&MobileNumber=${number}`, {
       method: "GET",
@@ -91,7 +92,7 @@ export async function POST(req) {
     }
 
     // ✅ Deduct wallet and log transaction (within session)
-    verifyUser.walletBalance -= amount;
+    verifyUser.walletBalance -= Number(amount);
     await verifyUser.save({ session });
 
     const newTransaction = await TransactionModel.create(

@@ -1,17 +1,15 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import DataHelp from '../DataHelp/DataHelp';
-import WalletBalance from '../WalletBalance/WalletBalance';
-import { useGlobalContext } from '../Context';
-import axios from 'axios';
-
-const PROFIT_TYPE = "flat"; // "flat" or "percent"
-const PROFIT_VALUE = 50; // ₦50 flat or 10%
+import DataHelp from "../DataHelp/DataHelp";
+import WalletBalance from "../WalletBalance/WalletBalance";
+import { useGlobalContext } from "../Context";
+import axios from "axios";
+import { applyMarkup } from "../utils/helper";
 
 const BuyData = () => {
-  const { dataPlan, getUserRealTimeData } = useGlobalContext();
+  const { dataPlan, getUserRealTimeData, profitConfig } = useGlobalContext();
 
   const [form, setForm] = useState({
     network: "",
@@ -21,8 +19,23 @@ const BuyData = () => {
     pin: ""
   });
 
+  const handleChange = (e) => {
+  setForm({ ...form, [e.target.name]: e.target.value });
+};
+
+
   const [availablePlans, setAvailablePlans] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+
+  // Helper function for your rounding rule (nearest 10, rounding .5 and up)
+  function roundToNearestTen(num) {
+    const remainder = num % 10;
+    if (remainder >= 5) {
+      return num + (10 - remainder); // round up
+    } else {
+      return num - remainder; // round down
+    }
+  }
 
   const handleNetworkChange = (e) => {
     const selected = e.target.value;
@@ -30,17 +43,16 @@ const BuyData = () => {
 
     const plans = dataPlan?.MOBILE_NETWORK?.[selected]?.[0]?.PRODUCT || [];
 
-    const enhancedPlans = plans.map(item => {
-      const basePrice = Number(item.PRODUCT_ID);
-      const finalPrice = PROFIT_TYPE === "flat"
-        ? basePrice + PROFIT_VALUE
-        : Math.ceil(basePrice + (basePrice * PROFIT_VALUE / 100));
+    const enhancedPlans = plans.map((item) => {
+      const basePrice = Number(item.PRODUCT_AMOUNT);
+      const priceWithMarkup = applyMarkup(basePrice, profitConfig.type, profitConfig.value);
+      const roundedPrice = roundToNearestTen(priceWithMarkup);
 
       return {
         name: item.PRODUCT_NAME,
-        code: item.PRODUCT_ID, // in case you need to send ID
+        code: item.PRODUCT_ID,
         price: basePrice,
-        sellingPrice: Math.ceil(finalPrice),
+        sellingPrice: roundedPrice,
       };
     });
 
@@ -49,14 +61,10 @@ const BuyData = () => {
 
   const handlePlanChange = (e) => {
     const selected = e.target.value;
-    const plan = availablePlans.find(p => p.name === selected);
+    const plan = availablePlans.find((p) => p.name === selected);
     if (plan) {
-      setForm({ ...form, plan: selected, amount: plan.sellingPrice });
+      setForm({ ...form, plan: selected, amount: plan.sellingPrice.toString() });
     }
-  };
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -68,28 +76,26 @@ const BuyData = () => {
     if (form.pin.length < 4) return toast.error("PIN must be 4 digits");
 
     try {
-      setLoading(true)
-      // 🔥 Submit the purchase logic here
-    const res = await axios.post("/api/provider/data-provider", form)
-    if(res.data.success){
-      getUserRealTimeData();
-      console.log("Data:", res.data.transaction);
-      toast.success("Data purchase successful!");
+      setLoading(true);
+      const res = await axios.post("/api/provider/data-provider", form);
 
-    setForm({
-      network: "",
-      plan: "",
-      amount: "",
-      number: "",
-      pin: ""
-    });
-    setAvailablePlans([]);
-    }
+      if (res.data.success) {
+        getUserRealTimeData();
+        toast.success("Data purchase successful!");
+
+        setForm({
+          network: "",
+          plan: "",
+          amount: "",
+          number: "",
+          pin: ""
+        });
+        setAvailablePlans([]);
+      }
     } catch (error) {
       console.log("Error:", error);
-      toast.error(error.response.data.message);
-    }
-    finally{
+      toast.error(error.response?.data?.message || "Something went wrong");
+    } finally {
       setLoading(false);
     }
   };
@@ -98,16 +104,20 @@ const BuyData = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-10">
       <ToastContainer />
       {dataPlan ? (
-        <div className='grid md:grid-cols-2 grid-cols-1 gap-6 justify-start'>
-          <div className='flex flex-col gap-6'>
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-6 justify-start">
+          <div className="flex flex-col gap-6">
             <WalletBalance />
             <div className="max-w-2xl bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-blue-100">
-              <h1 className="text-2xl font-bold text-center text-blue-700 mb-8 tracking-tight">Buy your Data</h1>
+              <h1 className="text-2xl font-bold text-center text-blue-700 mb-8 tracking-tight">
+                Buy your Data
+              </h1>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Network */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Select Network</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Select Network
+                  </label>
                   <select
                     name="network"
                     onChange={handleNetworkChange}
@@ -115,18 +125,22 @@ const BuyData = () => {
                     required
                     className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   >
-                    <option disabled value="">-- Choose Network --</option>
-                    {
-                      Object.keys(dataPlan?.MOBILE_NETWORK || {}).map((net, i) => (
-                        <option value={net} key={i}>{net}</option>
-                      ))
-                    }
+                    <option disabled value="">
+                      -- Choose Network --
+                    </option>
+                    {Object.keys(dataPlan?.MOBILE_NETWORK || {}).map((net, i) => (
+                      <option value={net} key={i}>
+                        {net}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 {/* Data Plan */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Choose Data Plan</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Choose Data Plan
+                  </label>
                   <select
                     name="plan"
                     onChange={handlePlanChange}
@@ -134,12 +148,14 @@ const BuyData = () => {
                     required
                     className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   >
-                    <option disabled value="">-- Choose Plan --</option>
-                    {
-                      availablePlans.map((p, i) => (
-                        <option key={i} value={p.name}>{p.name} - ₦{p.sellingPrice}</option>
-                      ))
-                    }
+                    <option disabled value="">
+                      -- Choose Plan --
+                    </option>
+                    {availablePlans.map((p, i) => (
+                      <option key={i} value={p.name}>
+                        {p.name} - ₦{p.sellingPrice}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -189,7 +205,7 @@ const BuyData = () => {
                   disabled={loading}
                   className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 transition duration-300"
                 >
-                  {loading? "Proccessing" : "Buy Now"}
+                  {loading ? "Processing..." : "Buy Now"}
                 </button>
               </form>
             </div>

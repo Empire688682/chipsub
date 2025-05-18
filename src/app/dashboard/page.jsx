@@ -21,9 +21,13 @@ const Page = () => {
   
       const interval = setInterval(()=>{
         fetchAllData();
-      },30000);
+      },180000);
   
       return ()=> clearInterval(interval);
+    }, []);
+
+    useEffect(()=>{
+      fetchAllData();
     }, []);
 
   return (
