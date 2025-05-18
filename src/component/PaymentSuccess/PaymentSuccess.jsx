@@ -32,8 +32,6 @@ export default function PaymentSuccess() {
         .then(data => {
           if (data.success) {
             setStatus("✅ " + data.message);
-          } else {
-            setStatus('❌ Verification failed');
           }
         })
         .catch(() => setStatus('❌ Error verifying payment'))

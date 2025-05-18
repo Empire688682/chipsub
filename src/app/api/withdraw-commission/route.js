@@ -1,11 +1,11 @@
 import { connectDb } from "@/app/ults/db/ConnectDb";
 import UserModel from "@/app/ults/models/UserModel";
 import { NextResponse } from "next/server";
+import { verifyToken } from "../helper/VerifyToken";
 
 
 export async function POST(req) {
-    const reqBody = await req.json();
-    const { userId } = reqBody;
+    const  userId  = await verifyToken(req);
     if (!userId) {
         return NextResponse.json({ success: false, message: "No Id provided" }, { status: 401 })
     }

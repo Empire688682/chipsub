@@ -39,8 +39,7 @@ const Dashboard = () => {
 
     setWithrawLoading(true)
     try {
-      const userId = userData.userId
-      const response = await axios.post("/api/withdraw-commission", { userId });
+      const response = await axios.post("/api/withdraw-commission");
       if (response.data.success) {
         getUserRealTimeData();
         toast.success("Commission added to wallet balance");
@@ -51,8 +50,8 @@ const Dashboard = () => {
     }
     finally {
       setWithrawLoading(false);
-    }
-  }
+    };
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
