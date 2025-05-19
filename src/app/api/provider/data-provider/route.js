@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import crypto from "crypto";
 import TransactionModel from "@/app/ults/models/TransactionModel";
 import UserModel from "@/app/ults/models/UserModel";
 import dotenv from "dotenv";
@@ -17,9 +18,9 @@ export async function POST(req) {
   session.startTransaction(); // 👈 Begin the transaction
 
   try {
-    const { network, plan, number, amount, pin } = reqBody;
+    const { network, plan, planId, number, amount, pin } = reqBody;
 
-    if (!network || !plan || !number || !amount || !pin) {
+    if (!network || !plan || !planId || !number || !amount || !pin) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "All fields are required" },
@@ -67,21 +68,46 @@ export async function POST(req) {
       "MTN": "01",
       "Glo": "02",
       "Airtel": "04",
-      "9_mobile": "03",
+      "m_9mobile": "03",
     };
 
     const mappedNetwork = validNetwork[network];
+    // To fetch data plan and remove the service cost before sending to third party API
+    const dataRes = await fetch(process.env.DATA_PLAN);
 
-    // To remove the service cost before sending to third party API
-    const profitPercentage = 3.5;
-    const validAmount = Math.floor(Number(amount) / (1 + profitPercentage / 100));
-    console.log("validAmount:", validAmount);
+    const availablePlan = await dataRes.json();
+    if (!availablePlan) {
+      return NextResponse.json({ success: false, message: "Invalid Data plan" }, { status: 401 })
+    }
+
+    const networkPlans = availablePlan?.MOBILE_NETWORK[network]?.[0]?.PRODUCT;
+    if (!networkPlans) {
+      await session.abortTransaction(); session.endSession();
+      return NextResponse.json(
+        { success: false, message: "No data plans found for selected network" },
+        { status: 400 }
+      );
+    };
+
+    const validAmount = networkPlans.find((plan) => planId === plan.PRODUCT_ID);
+    if (!validAmount) {
+      await session.abortTransaction(); session.endSession();
+      return NextResponse.json(
+        { success: false, message: "Invalid data plan ID" },
+        { status: 400 }
+      );
+    };
+
+    const baseAmount = validAmount?.PRODUCT_ID;
+    const generatedRef = crypto.randomUUID();
+
     // 👉 Call external API
-    const res = await fetch(`https://www.nellobytesystems.com/APIDatabundleV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&MobileNetwork=${mappedNetwork}&DataPlan=${validAmount}&MobileNumber=${number}`, {
+    const res = await fetch(`https://www.nellobytesystems.com/APIDatabundleV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&MobileNetwork=${mappedNetwork}&DataPlan=${baseAmount}&MobileNumber=${number}&RequestID=${generatedRef}`, {
       method: "GET",
     });
 
     const result = await res.json();
+    console.log("result:", result);
 
     if (result.status !== "ORDER_RECEIVED") {
       await session.abortTransaction(); session.endSession();

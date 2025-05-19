@@ -14,6 +14,7 @@ const BuyData = () => {
   const [form, setForm] = useState({
     network: "",
     plan: "",
+    planId:"",
     amount: "",
     number: "",
     pin: ""
@@ -63,9 +64,11 @@ const BuyData = () => {
     const selected = e.target.value;
     const plan = availablePlans.find((p) => p.name === selected);
     if (plan) {
-      setForm({ ...form, plan: selected, amount: plan.sellingPrice.toString() });
+      setForm({ ...form, plan: selected, planId:plan.code, amount: plan.sellingPrice.toString() });
     }
   };
+
+  console.log("form:", form);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

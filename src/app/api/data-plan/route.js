@@ -2,11 +2,9 @@ import dotenv from "dotenv";
 import { NextResponse } from "next/server";
 dotenv.config();
 
-const dataPlanUrl = "https://www.nellobytesystems.com/APIDatabundlePlansV2.asp?UserID=";
-
-export async function GET(req) {
+export async function GET() {
     try {
-        const res = await fetch(dataPlanUrl + process.env.CLUBKONNECT_USERID);
+        const res = await fetch(process.env.DATA_PLAN);
         const data = await res.json();
         return NextResponse.json({ success: true, message: "Data plan", data }, { status: 200 });
     } catch (error) {

@@ -32,7 +32,7 @@ const Page = () => {
 
   return (
     <div className='px-6 py-10 bg-gradient-to-br from-blue-50 to-white'>
-      <div className="overflow-hidden mb-6 whitespace-nowrap bg-white p-2 rounded-lg shadow">
+      <div className="overflow-hidden w-full mb-6 whitespace-nowrap bg-white p-2 rounded-lg shadow">
         <div className="animate-scroll text-sm text-gray-700 inline-block">
           👥 Active Users: {allData.users} &nbsp;·&nbsp;
           📱 Airtime Purchases : {allData.airtime} &nbsp;·&nbsp;
