@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from "next/image"
 import {
   Home,
   Wifi,
@@ -23,7 +24,7 @@ export default function Sidebar() {
       ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
     >
       <Link onClick={()=>setIsOpen(false)} href="/" className="text-2xl font-bold text-blue-600" onClick={()=>setIsOpen(false)}>
-        Chipsub
+        <Image src="/chipsub.png" alt='Chipsub' width={120} height={100}/>
       </Link>
       <div className="flex flex-col gap-6 pt-6">
         <Link onClick={()=>setIsOpen(false)} href="/" className="flex items-center gap-2 text-gray-600 hover:text-blue-600">

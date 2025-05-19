@@ -53,6 +53,8 @@ const Dashboard = () => {
     };
   };
 
+  const [index, setIndex] = useState(5)
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <ToastContainer />
@@ -130,7 +132,7 @@ const Dashboard = () => {
               {
                 transactionHistory.length > 0 ? (
                   <>
-                    {transactionHistory.map((transaction) => (
+                    {[...transactionHistory].reverse().slice(0, index).map((transaction) => (
                       <div key={transaction._id} className="flex cursor-pointer justify-between items-center">
                         <div>
                           <p className="text-sm text-gray-500">{new Date(transaction.createdAt).toISOString().replace("T", " ").split(".")[0]}</p>
@@ -138,30 +140,35 @@ const Dashboard = () => {
                         </div>
                         <div className='flex flex-col md:flex-row md:gap-4 justify-center'>
                           <p className={`text-sm ${transaction.status === 'success' ? 'text-green-600' : transaction.status === 'pending' ? 'text-yellow-700' : 'text-red-600'}`}>
-                            {transaction.status === 'success' ? `₦${transaction.amount}` : `₦${transaction.amount}`}
+                            ₦{transaction.amount}
                           </p>
                           <p className={`text-sm ${transaction.status === 'success' ? 'text-green-600' : transaction.status === 'pending' ? 'text-yellow-700' : 'text-red-600'}`}>
                             {transaction.type}
                           </p>
-                          <p
-                            className={`px-3 py-1 rounded-full text-sm font-semibold
-                             ${transaction.status === 'success'
-                                ? 'bg-green-100 text-green-700'
-                                : transaction.status === 'pending'
-                                  ? 'bg-yellow-100 text-yellow-700'
-                                  : 'bg-red-100 text-red-700'}
-                           `}
-                          >
-                            {transaction.status === 'success'
-                              ? 'Success'
+                          <p className={`text-sm font-semibold
+                      ${transaction.status === 'success'
+                              ? 'bg-green-100 text-green-700'
                               : transaction.status === 'pending'
-                                ? 'Pending'
-                                : 'Failed'}
+                                ? 'bg-yellow-100 text-yellow-700'
+                                : 'bg-red-100 text-red-700'}
+                    `}>
+                            {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
                           </p>
-
                         </div>
                       </div>
                     ))}
+
+                    {
+                      transactionHistory.length > 5 &&
+                      <div className="text-center mt-4">
+                        <button
+                          onClick={() => setIndex(index + 3)}
+                          className="text-blue-600 hover:underline font-medium text-sm"
+                        >
+                          See More →
+                        </button>
+                      </div>
+                    }
                   </>
                 ) :
                   <p className="text-gray-500 text-sm">No transaction history found.</p>
@@ -169,6 +176,7 @@ const Dashboard = () => {
             </div>
         }
       </div>
+
     </div>
   );
 };
