@@ -68,8 +68,6 @@ const BuyData = () => {
     }
   };
 
-  console.log("form:", form);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 

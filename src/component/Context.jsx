@@ -159,8 +159,6 @@ export const AppProvider = ({ children }) => {
     fetchDataPlan();
   }, []);
 
-  console.log("DataPlan:", dataPlan)
-
   // On every render, check if referral ID stored locally is still valid and load it
   useEffect(() => {
     if (typeof window !== "undefined") {
