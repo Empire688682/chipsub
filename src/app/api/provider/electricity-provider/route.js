@@ -62,9 +62,7 @@ export async function POST(req) {
 
     // Fetch with GET method
     const response = await fetch(electricityUrl, {
-      method: "GET", headers: {
-        Accept: "application/json"
-      }
+      method: "GET"
     });
     const result = await response.json();
 
