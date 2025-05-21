@@ -9,10 +9,10 @@ const Footer = () => {
           <div className="mb-8 md:mb-0">
             <h3 className="text-white font-bold text-lg mb-4">Company</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-white hover:text-blue-100 transition-colors">About Us</a></li>
+              <li><a href="/about" className="text-white hover:text-blue-100 transition-colors">About Us</a></li>
               <li><a href="#" className="text-white hover:text-blue-100 transition-colors">Our Team</a></li>
               <li><a href="#" className="text-white hover:text-blue-100 transition-colors">Careers</a></li>
-              <li><a href="#" className="text-white hover:text-blue-100 transition-colors">Contact</a></li>
+              <li><a href="/contact" className="text-white hover:text-blue-100 transition-colors">Contact</a></li>
             </ul>
           </div>
 
@@ -20,10 +20,10 @@ const Footer = () => {
           <div className="mb-8 md:mb-0">
             <h3 className="text-white font-bold text-lg mb-4">Services</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-white hover:text-blue-100 transition-colors">Data Plans</a></li>
-              <li><a href="#" className="text-white hover:text-blue-100 transition-colors">Bill Payments</a></li>
-              <li><a href="#" className="text-white hover:text-blue-100 transition-colors">Subscriptions</a></li>
-              <li><a href="#" className="text-white hover:text-blue-100 transition-colors">Enterprise Solutions</a></li>
+              <li><a href="/dashboard/buy-data" className="text-white hover:text-blue-100 transition-colors">Data Plans</a></li>
+              <li><a href="/dashboard" className="text-white hover:text-blue-100 transition-colors">Bill Payments</a></li>
+              <li><a href="/dashboard" className="text-white hover:text-blue-100 transition-colors">Subscriptions</a></li>
+              <li><a href="/dashboard" className="text-white hover:text-blue-100 transition-colors">Enterprise Solutions</a></li>
             </ul>
           </div>
 
@@ -31,8 +31,8 @@ const Footer = () => {
           <div className="mb-8 md:mb-0">
             <h3 className="text-white font-bold text-lg mb-4">Resources</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-white hover:text-blue-100 transition-colors">Help Center</a></li>
-              <li><a href="#" className="text-white hover:text-blue-100 transition-colors">Blog</a></li>
+              <li><a href="/contact" className="text-white hover:text-blue-100 transition-colors">Help Center</a></li>
+              <li><a href="/blog" className="text-white hover:text-blue-100 transition-colors">Blog</a></li>
               <li><a href="#" className="text-white hover:text-blue-100 transition-colors">Tutorials</a></li>
               <li><a href="#" className="text-white hover:text-blue-100 transition-colors">FAQs</a></li>
             </ul>

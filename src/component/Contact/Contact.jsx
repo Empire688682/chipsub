@@ -40,10 +40,10 @@ const Contact = () => {
               <Mail className="text-blue-500" size={18} /> support@example.com
             </p>
             <p className="flex items-center gap-2">
-              <Phone className="text-green-500" size={18} /> +234 801 234 5678
+              <Phone className="text-green-500" size={18} /> +234 9154 3581 2845
             </p>
             <p className="flex items-center gap-2">
-              <MapPin className="text-red-500" size={18} /> 21 Jump Street, Lagos, Nigeria
+              <MapPin className="text-red-500" size={18} /> 10 Koshebinu Street Ibeshe, Lagos, Nigeria
             </p>
           </div>
 

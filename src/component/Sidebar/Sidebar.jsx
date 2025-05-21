@@ -11,7 +11,8 @@ import {
   Wallet,
   Phone,
   Newspaper,
-  LogOut
+  LogOut,
+  Info 
 } from 'lucide-react';
 import { useGlobalContext } from '../Context';
 
@@ -55,6 +56,10 @@ export default function Sidebar() {
           <Link onClick={() => setIsOpen(false)} href="/contact" className="flex items-center gap-2 text-gray-600 hover:text-blue-600">
             <Phone size={18} className="hidden md:block" />
             Contact
+          </Link>
+          <Link onClick={() => setIsOpen(false)} href="/about" className="flex items-center gap-2 text-gray-600 hover:text-blue-600">
+            <Info size={18} className="hidden md:block" />
+            About
           </Link>
           <Link onClick={() => setIsOpen(false)} href="/blog" className="flex items-center gap-2 text-gray-600 hover:text-blue-600">
             <Newspaper size={18} className="hidden md:block" />
