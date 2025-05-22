@@ -124,7 +124,11 @@ const Dashboard = () => {
         </div>
         <div onClick={() => route.push("/dashboard/gift-card")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
           <Gift className="text-blue-600 mb-2" size={28} />
-          <p className="text-sm font-medium text-center">Gift Card</p>
+          <p className="text-sm font-medium text-center">Buy Gift Card</p>
+        </div>
+        <div onClick={() => route.push("/dashboard/gift-card")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
+          <Gift className="text-blue-600 mb-2" size={28} />
+          <p className="text-sm font-medium text-center">Sell Gift Card</p>
         </div>
       </div>
 

@@ -20,7 +20,7 @@ const GiftcardHelp = ({ data }) => {
         <div className="text-sm text-gray-800 space-y-2">
           <p><strong>Card Type:</strong> {data.cardType || "Not selected"}</p>
           <p><strong>Amount:</strong> {data.amount ? `₦${data.amount}` : "Not entered"}</p>
-          <p><strong>Card Code:</strong> {data.code ? "••••••••" : "Not entered"}</p>
+          <p><strong>Card Code:</strong> {data.pin ? "••••••••" : "Not entered"}</p>
         </div>
       </div>
 
