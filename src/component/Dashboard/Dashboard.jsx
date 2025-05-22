@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useGlobalContext } from '../Context';
 import { PiHandWithdraw } from "react-icons/pi";
-import { Wallet, Phone, Wifi, Zap, Bell, Heart, Copy, Tv, Gift } from "lucide-react";
+import { Wallet, Phone, Wifi, Zap, Bell, Heart, Copy, Tv, Gift, TrendingDown } from "lucide-react";
 import WalletBalance from '../WalletBalance/WalletBalance';
 import { FaSpinner } from 'react-icons/fa';
 import { toast, ToastContainer } from "react-toastify";
@@ -127,7 +127,7 @@ const Dashboard = () => {
           <p className="text-sm font-medium text-center">Gift Card</p>
         </div>
         <div onClick={() => route.push("/dashboard/crypto")} className="bg-white cursor-pointer p-4 rounded-lg shadow-md flex items-center justify-center flex-col">
-          <Gift className="text-blue-600 mb-2" size={28} />
+          <TrendingDown className="text-blue-600 mb-2" size={28} />
           <p className="text-sm font-medium text-center">Crypto</p>
         </div>
       </div>
