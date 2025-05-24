@@ -5,7 +5,9 @@ const giftcardSchema = new mongoose.Schema({
   cardType: { type: String, required: true },
   amount: { type: Number, required: true },
   code: { type: String, required: true },
-  image: { type: String }, // URL or base64 maybe
+  cardCountry : { type: String, required: true },
+  images: { type: [String], required: true },
+  phone: { type: String, required: true },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   status: { type: String, default: 'pending' },
   createdAt: { type: Date, default: Date.now }
