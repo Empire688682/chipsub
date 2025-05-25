@@ -8,14 +8,14 @@ import { FaSpinner } from "react-icons/fa";
 import { useGlobalContext } from '../Context';
 
 const BuyElectricity = () => {
-  const {getUserRealTimeData} = useGlobalContext();
+  const { getUserRealTimeData, electricityMerchants } = useGlobalContext();
   const [electricityCompany, setElectricityCompany] = useState({});
   const [loading, setLoading] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [verifyingMeter, setVerifyingMeter] = useState(false);
   const [purchasedToken, setPurchasedToken] = useState(null);
 
-  const electricityUrl = "https://www.nellobytesystems.com/APIElectricityDiscosV1.asp"
+  const electricityUrl = "https://vtpass.com/api/merchant-verify"
 
   useEffect(() => {
     const getElectricityCompany = async () => {
@@ -38,6 +38,7 @@ const BuyElectricity = () => {
   const [formData, setFormData] = useState({
     disco: '',
     meterNumber: '',
+    meterType: '',
     amount: '',
     phone: '',
     pin: '',
@@ -47,27 +48,27 @@ const BuyElectricity = () => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const verifyMeterNumber = async (meterNumber, disco) => {
+  const verifyMeterNumber = async (meterNumber, disco, meterType) => {
 
-    if (meterNumber.length === 11 && disco) {
+    if (meterNumber.length && disco && meterType) {
       setVerifyingMeter(true);
       try {
         const response = await axios.post('/api/verify-meter-number',
-          { meterNumber, disco },
+          { meterNumber, disco, meterType },
         );
 
         if (response.data.success) {
           setCustomerName(response.data.data);
           return true
         }
-        else{
+        else {
           return false
         }
       } catch (error) {
         console.log("Verify Meter Number Error:", error);
         setCustomerName("Invalid provider or meter number");
       }
-      finally{
+      finally {
         setVerifyingMeter(false);
       }
     }
@@ -77,7 +78,7 @@ const BuyElectricity = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { disco, meterNumber, amount, phone, pin } = formData;
+    const { disco, meterNumber, meterType, amount, phone, pin } = formData;
 
     if (!disco || !meterNumber || !amount || !phone || !pin) {
       return toast.error("All fields are required!");
@@ -87,13 +88,13 @@ const BuyElectricity = () => {
       return toast.error("Minimum amount is ₦100");
     }
 
-    if(pin.length < 4){
+    if (pin.length < 4) {
       return toast.error("Pin most be 4 digit");
     }
 
-   const isMeterVerified = await verifyMeterNumber(meterNumber, disco);
+    const isMeterVerified = await verifyMeterNumber(meterNumber, disco);
 
-    if(!isMeterVerified){
+    if (!isMeterVerified) {
       return toast.error("Meter verification failed");
     }
 
@@ -101,7 +102,7 @@ const BuyElectricity = () => {
     try {
       const response = await axios.post("/api/provider/electricity-provider", formData);
       console.log("Response:", response);
-      if(response.data.success){
+      if (response.data.success) {
         getUserRealTimeData()
         console.log("Response:", response.data.data);
         setPurchasedToken(response.data.data);
@@ -110,13 +111,13 @@ const BuyElectricity = () => {
       console.log("Elect-Error:", error)
       toast.error(error.response.data.message);
     }
-    finally{
+    finally {
       setLoading(false);
     }
   };
 
-  useEffect(()=>{
-    if(loading){
+  useEffect(() => {
+    if (loading) {
       toast.info("Proccessing....")
     }
   })
@@ -146,11 +147,25 @@ const BuyElectricity = () => {
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option disabled value="">-- Choose Provider --</option>
-                  {
-                    electricityCompany && Object.keys(electricityCompany)?.map((company, index) => (
-                      <option key={index} value={company}>{company}</option>
-                    ))
-                  }
+                  {electricityMerchants.map((merchant) => (
+                    <option key={merchant.serviceID} value={merchant.serviceID}>
+                      {merchant.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Select Meter Type</label>
+                <select
+                  name="meterType"
+                  onChange={handleChange}
+                  value={formData.meterType}
+                  required
+                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option disabled value="">-- Choose Meter Type --</option>
+                 <option  value="prepaid">Prepaid</option>
+                 <option  value="postpaid">Postpaid</option>
                 </select>
               </div>
 
@@ -169,13 +184,13 @@ const BuyElectricity = () => {
                 />
                 {
                   verifyingMeter && <span className="absolute right-[10px] top-[40px]">
-                    <FaSpinner className="animate-spin text-blue-600 text-2xl"/>
+                    <FaSpinner className="animate-spin text-blue-600 text-2xl" />
                   </span>
                 }
                 {
-                  customerName && customerName !== "Invalid provider or meter number"? <p className='text-xs pt-2 font-bold text-green-500'>{customerName}</p>
-                  :
-                  <p className='text-xs pt-2 font-bold text-red-500'>{customerName}</p>
+                  customerName && customerName !== "Invalid provider or meter number" ? <p className='text-xs pt-2 font-bold text-green-500'>{customerName}</p>
+                    :
+                    <p className='text-xs pt-2 font-bold text-red-500'>{customerName}</p>
                 }
               </div>
 
@@ -228,7 +243,7 @@ const BuyElectricity = () => {
                 className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-blue-700 cursor-pointer transition duration-300"
               >
                 {
-                  loading ? "Proccessing..." :"Buy Now"
+                  loading ? "Proccessing..." : "Buy Now"
                 }
               </button>
             </form>
