@@ -5,6 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Image from 'next/image';
 import { useGlobalContext } from '../Context';
+import axios from "axios";
 
 const Profile = () => {
   const [notify, setNotify] = useState(true);
@@ -28,18 +29,52 @@ const Profile = () => {
   };
 
   const [pwdForm, setPwdForm] = useState({
-    currentPwd:"",
-    newPwd:""
+    currentPwd: "",
+    newPwd: "",
+    repeatPwd: "",
   });
 
-  const handleOnchange = (e) =>{
-    const {name, value} = e.target;
-    setPwdForm((prev)=>({...prev, [name]:value}));
+  const handleOnchange = (e) => {
+    const { name, value } = e.target;
+    setPwdForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  const handlePasswordChange = (e) => {
+  const [postLoading, setPostLoading] = useState(false)
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
-    toast.success('Password updated!');
+    const { currentPwd, newPwd, repeatPwd } = pwdForm;
+    if (!currentPwd || !newPwd || !repeatPwd) {
+      toast.error("All field required");
+      return
+    }
+
+    if(newPwd.length < 8){
+      toast.error("Password too short");
+      return
+    }
+
+    if (newPwd !== repeatPwd) {
+      toast.error("Password did not match");
+    };
+
+    setPostLoading(true)
+    try {
+      const response = await axios.post("/api/auth/password-reset", pwdForm);
+      if (response.data.success) {
+        toast.success('Password updated!');
+        setPwdForm({
+          currentPwd: "",
+          newPwd: "",
+          repeatPwd: ""
+        })
+      }
+    } catch (error) {
+      console.log("PwdResetError:", error);
+      toast.error(error.response.data.message)
+    }
+    finally{
+      setPostLoading(false)
+    }
   };
 
   return (
@@ -121,6 +156,7 @@ const Profile = () => {
             <form onSubmit={handlePasswordChange} className="space-y-4">
               <input
                 onChange={handleOnchange}
+                name='currentPwd'
                 value={pwdForm.currentPwd}
                 type="password"
                 placeholder="Current Password"
@@ -129,15 +165,26 @@ const Profile = () => {
               <input
                 onChange={handleOnchange}
                 value={pwdForm.newPwd}
+                name='newPwd'
                 type="password"
                 placeholder="New Password"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+              <input
+                onChange={handleOnchange}
+                value={pwdForm.repeatPwd}
+                type="password"
+                name='repeatPwd'
+                placeholder="Repeat Password"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               />
               <button
                 type="submit"
                 className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 text-sm"
               >
-                Update Password
+                {
+                  postLoading? "Updating....." : "Update Password"
+                }
               </button>
             </form>
           </div>
