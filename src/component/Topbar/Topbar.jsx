@@ -42,12 +42,18 @@ const Topbar = () => {
                 }
                 {
                     userData && isHomePage && (
-                        <Image src="/profile-img.png" alt="profile" width={35} height={50} className="rounded-full cursor-pointer" onClick={() => route.push("/dashboard")} />
+                        <div className='flex gap-2 items-center cursor-pointer' onClick={() => route.push("/dashboard")}>
+                            <p className='text-[13px] font-bold text-white'>{userData.name}</p>
+                            <Image src="/profile-img.png" alt="profile" width={30} height={50} className="rounded-full cursor-pointer" />
+                        </div>
                     )
                 }
                 {
                     userData && !isHomePage && !isProfile && (
-                        <Image onClick={() => route.push("/profile")} src="/profile-img.png" alt="profile" width={35} height={50} className="rounded-full cursor-pointer" />
+                        <div className='flex gap-2 items-center cursor-pointer' onClick={() => route.push("/profile")}>
+                            <p className='text-[13px] font-bold text-white'>{userData.name}</p>
+                            <Image src="/profile-img.png" alt="profile" width={30} height={50} className="rounded-full cursor-pointer" />
+                        </div>
                     )
                 }
                 {

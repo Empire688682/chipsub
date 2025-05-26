@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LogOut, ShieldAlert, ShieldCheck, Bell, Moon, History, Pencil } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,15 +8,34 @@ import { useGlobalContext } from '../Context';
 
 const Profile = () => {
   const [notify, setNotify] = useState(true);
-  const { userData, logoutUser, setPinModal, transactionHistory } = useGlobalContext();
+  const { userData, logoutUser, setPinModal, transactionHistory, getUserRealTimeData } = useGlobalContext();
+
+  useEffect(() => {
+    getUserRealTimeData();
+    if (transactionHistory) {
+      setLoading(false);
+    }
+  }, []);
+
+  const [loading, setLoading] = useState(true);
 
   const user = {
-    name: `${userData.name}`|| "",
+    name: `${userData.name}` || "",
     email: `${userData.email}` || "",
     phone: `${userData.number}` || "",
     bvnVerified: userData.bvnVerify,
     avatar: '/profile-img.png',
   };
+
+  const [pwdForm, setPwdForm] = useState({
+    currentPwd:"",
+    newPwd:""
+  });
+
+  const handleOnchange = (e) =>{
+    const {name, value} = e.target;
+    setPwdForm((prev)=>({...prev, [name]:value}));
+  }
 
   const handlePasswordChange = (e) => {
     e.preventDefault();
@@ -34,7 +53,7 @@ const Profile = () => {
               src={user.avatar}
               alt="Profile"
               fill
-              style={{objectFit:"cover"}}
+              style={{ objectFit: "cover" }}
             />
           </div>
           <h2 className="text-xl font-bold text-blue-700">{user.name}</h2>
@@ -70,7 +89,7 @@ const Profile = () => {
             </button>
 
             <button
-              onClick={()=>setPinModal(true)}
+              onClick={() => setPinModal(true)}
               className="w-full flex items-center justify-center gap-2 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
             >
               <Pencil size={16} /> Set Pin
@@ -101,11 +120,15 @@ const Profile = () => {
             <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">Change Password</h3>
             <form onSubmit={handlePasswordChange} className="space-y-4">
               <input
+                onChange={handleOnchange}
+                value={pwdForm.currentPwd}
                 type="password"
                 placeholder="Current Password"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               />
               <input
+                onChange={handleOnchange}
+                value={pwdForm.newPwd}
                 type="password"
                 placeholder="New Password"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
@@ -125,17 +148,26 @@ const Profile = () => {
           <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4 flex items-center gap-2">
             <History size={20} /> Transaction History
           </h3>
-          <ul className="space-y-3 text-sm text-gray-700 max-h-72 overflow-y-auto">
-            {transactionHistory.map((tx) => (
-              <li key={tx.id} className="border-b pb-2">
-                <p className="font-medium">{tx.type}</p>
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>{tx.amount}</span>
-                  <span>{tx.date}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
+          {
+            loading ? "Loading......." :
+              <ul className="space-y-3 text-sm text-gray-700 max-h-72 overflow-y-auto">
+                {transactionHistory.map((tx, id) => (
+                  <li key={id} className="border-b pb-2 flex justify-between">
+                    <div>
+                      <p className="font-medium">{tx.type}</p>
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>{tx.amount}</span>
+                        <span>{tx.date}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className={`${tx.status === "success" ? "text-green-600" : "text-red-500"}`}>{tx.status}</p>
+                      <span>Id: {tx._id}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+          }
         </div>
       </div>
     </div>
