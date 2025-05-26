@@ -21,7 +21,7 @@ const registerUser = async (req) => {
       number,
       password,
       refId,
-      provider = "credentials", // 'credentials' or 'google'
+      provider = "credentials",
     } = reBody;
 
     // Validate required fields
@@ -46,12 +46,41 @@ const registerUser = async (req) => {
       );
     }
 
-    const existingUser = await UserModel.findOne({ email });
-    if (existingUser) {
-      return NextResponse.json(
-        { success: true, message: "User already exists", user: existingUser },
-        { status: 200 }
+    if(provider === "credentials"){
+      const existingUser = await UserModel.findOne({ email });
+      if(existingUser){
+        return NextResponse.json(
+        { success: false, message: "Email has been taken" },
+        { status: 400 }
       );
+      }
+    }
+
+    if (provider === "google") {
+      const existingUser = await UserModel.findOne({ email });
+      if (existingUser) {
+        const { password: _, pin: __, ...userData } = existingUser.toObject();
+        const userId = existingUser._id;
+        const finalUserData = { ...userData, userId };
+
+        const token = jwt.sign({ userId }, process.env.SECRET_KEY, {
+          expiresIn: "1d",
+        });
+        const res = NextResponse.json(
+          { success: true, message: "Not a new user", finalUserData },
+          { status: 200 }
+        );
+
+        res.cookies.set("UserToken", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 60 * 60 * 24, // 1 day
+          sameSite: "lax",
+          path: "/",
+        });
+
+        return res;
+      }
     }
 
     let hashedPassword = undefined;
@@ -78,6 +107,7 @@ const registerUser = async (req) => {
       referralHost: refId,
       provider,
     });
+
 
     // Handle referral if provided
     if (refId) {

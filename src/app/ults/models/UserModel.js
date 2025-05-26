@@ -4,8 +4,8 @@ const UserSchema = new mongoose.Schema(
   {
     name: { type: String },
     email: { type: String, required: true, unique: true },
-    password: { type: String }, // Optional for Google users
-    pin: { type: String },      // Optional for Google users
+    password: { type: String, default:"not set"},
+    pin: { type: String, default: "1234"},   
     bvnVerify: { type: Boolean, default: false },
     walletBalance: { type: Number, default: 0 },
     commisionBalance: { type: Number, default: 0 },

@@ -11,20 +11,27 @@ export async function POST(req) {
     try {
         await connectDb();
         const {email, password} = reqBody;
-        const userExist = await UserModel.findOne({email});
-        if(!userExist){
+        const existUser = await UserModel.findOne({email});
+        if(!existUser){
             return NextResponse.json({success:false, message:"User not exist"}, {status:400})
         }
-        const paswordMatch = await bcrypt.compare(password, userExist.password);
+
+        if(existUser.provider === "google"){
+            if(existUser.password === "not set"){
+                return NextResponse.json({success:false, message:"User not password not set, continue with google and set up your password"}, {status:400})
+            }
+        }
+
+        const paswordMatch = await bcrypt.compare(password, existUser.password);
         if(!paswordMatch){
             return NextResponse.json({success:false, message:"Incorrect password"}, {status:400})
         }
-        const { password: _, pin: __, ...userData } = userExist.toObject();
-        const userId = userExist._id;
+        const { password: _, pin: __, ...userData } = existUser.toObject();
+        const userId = existUser._id;
 
         const finalUserData = {...userData, userId}
 
-        const token = jwt.sign({ userId: userExist._id }, process.env.SECRET_KEY, {expiresIn:"1d"});
+        const token = jwt.sign({ userId: existUser._id }, process.env.SECRET_KEY, {expiresIn:"1d"});
 
         const res = NextResponse.json({success:true, message:"User loging", finalUserData}, {status:200});
         res.cookies.set("UserToken", token, 

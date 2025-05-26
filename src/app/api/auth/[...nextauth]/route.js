@@ -22,9 +22,9 @@ const handler = NextAuth({
               name: user.name,
               email: user.email,
               number: "",
-              password: "",
+              password: "not set",
               refId: refId,
-              fromGoogle: true 
+              provider: "google" 
             }),
           });
         } catch (err) {
