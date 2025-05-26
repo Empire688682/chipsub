@@ -5,23 +5,22 @@ dotenv.config();
 
 
 export async function POST(req) {
-    const {disco, meterNumber, meterType} = await req.json();
-   /// const availableDiscos = {
-    //    "EKO_ELECTRIC": "01",
-    //    "IKEJA_ELECTRIC": "02",
-    //    "ABUJA_ELECTRIC": "03",
-   //     "KANO_ELECTRIC": "04",
-   //     "PORTHACOURT_ELECTRIC": "05",
-   //     "JOS_ELECTRIC": "06",
-   //     "IBADAN_ELECTRIC": "07",
-   //     "KADUNA_ELECTRIC": "08",
-   //     "ENUGU_ELECTRIC": "09",
-    //    "BENIN_ELECTRIC": "10",
-   //     "YOLA_ELECTRIC": "11",
-    //    "ABA_ELECTRIC": "12",
-     // };
+    const {disco, meterNumber} = await req.json();
+    const availableDiscos = {
+        "EKO_ELECTRIC": "01",
+        "IKEJA_ELECTRIC": "02",
+        "ABUJA_ELECTRIC": "03",
+        "KANO_ELECTRIC": "04",
+        "PORTHACOURT_ELECTRIC": "05",
+        "JOS_ELECTRIC": "06",
+        "IBADAN_ELECTRIC": "07",
+        "KADUNA_ELECTRIC": "08",
+        "ENUGU_ELECTRIC": "09",
+        "BENIN_ELECTRIC": "10",
+        "YOLA_ELECTRIC": "11",
+        "ABA_ELECTRIC": "12",
+     };
 
-    //const verifyUrl = `https://www.nellobytesystems.com/APIVerifyElectricityV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&ElectricCompany=${availableDiscos[disco]}&MeterNo=${meterNumber}`
     const verifyUrl = `https://www.nellobytesystems.com/APIVerifyElectricityV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&ElectricCompany=${availableDiscos[disco]}&MeterNo=${meterNumber}`
     try {
         const res = await fetch(verifyUrl, {

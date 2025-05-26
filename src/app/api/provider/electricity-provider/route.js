@@ -12,11 +12,11 @@ dotenv.config();
 export async function POST(req) {
   await connectDb();
   const body = await req.json();
-  const { disco, meterNumber, amount, phone, pin } = body;
+  const { disco, meterNumber, meterType, amount, phone, pin } = body;
 
   try {
     // Validate request
-    if (!disco || !meterNumber || !amount || !phone || !pin) {
+    if (!disco || !meterNumber || !meterType || !amount || !phone || !pin) {
       return NextResponse.json({ success: false, message: "All fields required" }, { status: 400 });
     }
 
@@ -36,6 +36,11 @@ export async function POST(req) {
       "ABA_ELECTRIC": "12",
     };
 
+    const allmeterType ={
+      "Prepaid" : "01",
+      "Postpaid" : "02"
+    }
+   
     // Auth and funds check
     const userId = await verifyToken(req);
     const user = await UserModel.findById(userId);
@@ -58,7 +63,7 @@ export async function POST(req) {
     const requestId = crypto.randomUUID();
 
     // Construct URL
-    const electricityUrl = `https://www.nellobytesystems.com/APIElectricityV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&ElectricCompany=${availableDiscos[disco]}&MeterType=01&MeterNo=${meterNumber}&Amount=${saveAmount}&PhoneNo=${phone}&RequestID=${requestId}`;
+    const electricityUrl = `https://www.nellobytesystems.com/APIElectricityV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&ElectricCompany=${availableDiscos[disco]}&MeterType=${allmeterType[meterType]}&MeterNo=${meterNumber}&Amount=${saveAmount}&PhoneNo=${phone}&RequestID=${requestId}`;
 
     // Fetch with GET method
     const response = await fetch(electricityUrl, {

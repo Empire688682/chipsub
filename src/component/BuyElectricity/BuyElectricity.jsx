@@ -8,14 +8,14 @@ import { FaSpinner } from "react-icons/fa";
 import { useGlobalContext } from '../Context';
 
 const BuyElectricity = () => {
-  const { getUserRealTimeData, electricityMerchants } = useGlobalContext();
+  const { getUserRealTimeData } = useGlobalContext();
   const [electricityCompany, setElectricityCompany] = useState({});
   const [loading, setLoading] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [verifyingMeter, setVerifyingMeter] = useState(false);
   const [purchasedToken, setPurchasedToken] = useState(null);
 
-  const electricityUrl = "https://vtpass.com/api/merchant-verify"
+  const electricityUrl = "https://www.nellobytesystems.com/APIElectricityDiscosV1.asp"
 
   useEffect(() => {
     const getElectricityCompany = async () => {
@@ -48,13 +48,13 @@ const BuyElectricity = () => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const verifyMeterNumber = async (meterNumber, disco, meterType) => {
+  const verifyMeterNumber = async (meterNumber, disco) => {
 
-    if (meterNumber.length && disco && meterType) {
+    if (meterNumber.length && disco) {
       setVerifyingMeter(true);
       try {
         const response = await axios.post('/api/verify-meter-number',
-          { meterNumber, disco, meterType },
+          { meterNumber, disco },
         );
 
         if (response.data.success) {
@@ -80,7 +80,7 @@ const BuyElectricity = () => {
 
     const { disco, meterNumber, meterType, amount, phone, pin } = formData;
 
-    if (!disco || !meterNumber || !amount || !phone || !pin) {
+    if (!disco || !meterNumber || !meterType || !amount || !phone || !pin) {
       return toast.error("All fields are required!");
     }
 
@@ -147,9 +147,9 @@ const BuyElectricity = () => {
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option disabled value="">-- Choose Provider --</option>
-                  {electricityMerchants.map((merchant) => (
-                    <option key={merchant.serviceID} value={merchant.serviceID}>
-                      {merchant.name}
+                  {Object.keys(electricityCompany).map((merchant, id) => (
+                    <option key={id} value={merchant}>
+                      {merchant}
                     </option>
                   ))}
                 </select>
@@ -164,8 +164,8 @@ const BuyElectricity = () => {
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option disabled value="">-- Choose Meter Type --</option>
-                 <option  value="prepaid">Prepaid</option>
-                 <option  value="postpaid">Postpaid</option>
+                 <option  value="Prepaid">Prepaid</option>
+                 <option  value="Postpaid">Postpaid</option>
                 </select>
               </div>
 
