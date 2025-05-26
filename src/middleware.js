@@ -31,6 +31,10 @@ export function middleware(req) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
+  if(token && (path === "/" || path === "")){
+    return NextResponse.redirect(new URL('/dashboard', req.url));
+  }
+
   return NextResponse.next();
   
 }
