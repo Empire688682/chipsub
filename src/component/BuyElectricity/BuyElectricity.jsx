@@ -98,6 +98,9 @@ const BuyElectricity = () => {
       return toast.error("Meter verification failed");
     }
 
+    toast.error("We are sorry Electricity currently not available");
+    return;
+
     setLoading(true)
     try {
       const response = await axios.post("/api/provider/electricity-provider", formData);
