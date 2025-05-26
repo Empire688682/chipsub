@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import { useGlobalContext } from '../Context';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { signIn } from "next-auth/react"
 
 export default function SignupPage() {
     const {
@@ -27,7 +28,7 @@ export default function SignupPage() {
     const userAuthHandler = async () => {
         setLoading(true);
         try {
-            const response = await axios.post(baseUrl, {...data, refId:refHostId});
+            const response = await axios.post(baseUrl, { ...data, refId: refHostId });
             const { success, message, finalUserData } = response.data;
 
             if (!success) {
@@ -36,7 +37,7 @@ export default function SignupPage() {
             }
 
             const now = new Date().getTime();
-            const userDataWithTimestamp = {...finalUserData, timestamp:now};
+            const userDataWithTimestamp = { ...finalUserData, timestamp: now };
             localStorage.setItem("userData", JSON.stringify(userDataWithTimestamp));
             setData({
                 name: "",
@@ -49,7 +50,7 @@ export default function SignupPage() {
             window.location.reload();
         } catch (error) {
             console.error("Auth Error:", error);
-        setError(error?.response?.data?.message);
+            setError(error?.response?.data?.message);
         }
         finally {
             setLoading(false)
@@ -154,10 +155,13 @@ export default function SignupPage() {
                             <hr className="w-full border-t border-gray-500" />
                         </div>
 
-                        <button className="w-full mt-4 flex items-center justify-center gap-3 border border-gray-500 py-2 rounded-lg hover:bg-gray-100">
-                            <FcGoogle size={22} />
+                        <button
+                            onClick={() => signIn('google')}
+                            className="w-full mt-4 flex items-center justify-center gap-3 border border-gray-500 py-2 rounded-lg hover:bg-gray-100">
+                            <FcGoogle size={22}/>
                             <span className="text-sm">Continue with Google</span>
                         </button>
+
                     </div>
                 </div>
             )}
