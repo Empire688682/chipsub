@@ -11,7 +11,7 @@ import axios from "axios";
 
 const Dashboard = () => {
   const { userData, userCommision, getUserRealTimeData, route, transactionHistory, loading } = useGlobalContext();
-  const referralLink = `https://chipsub.vercel.app?ref=${userData.userId}`;
+  const referralLink = `https://chipsub.vercel.app?ref=${userData._id}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink)
@@ -32,7 +32,7 @@ const Dashboard = () => {
 
   const [withdrawLoading, setWithrawLoading] = useState(false);
   const withdrawCommision = async () => {
-    if (!userData.userId) {
+    if (!userData._id) {
       toast.error("No Id found")
       return
     }

@@ -61,7 +61,7 @@ const registerUser = async (req) => {
       if (existingUser) {
         const { password: _, pin: __, ...userData } = existingUser.toObject();
         const userId = existingUser._id;
-        const finalUserData = { ...userData, userId };
+        const finalUserData = userData;
 
         const token = jwt.sign({ userId }, process.env.SECRET_KEY, {
           expiresIn: "1d",
@@ -122,7 +122,7 @@ const registerUser = async (req) => {
 
     const { password: _, pin: __, ...userData } = newUser.toObject();
     const userId = newUser._id;
-    const finalUserData = { ...userData, userId };
+    const finalUserData = userData;
 
     const token = jwt.sign({ userId }, process.env.SECRET_KEY, {
       expiresIn: "1d",

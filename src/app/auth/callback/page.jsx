@@ -2,8 +2,10 @@
 
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useGlobalContext } from "@/component/Context";
 
 export default function CallbackPage() {
+  const {refHostId} = useGlobalContext();
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -15,17 +17,22 @@ export default function CallbackPage() {
           body: JSON.stringify({
             name: session.user.name,
             email: session.user.email,
-            number: "",
-            password: "not set",
+            refId: refHostId,
             provider: "google",
           }),
         });
+
         const data = await res.json();
-        const finalUserData = data.finalUserData
-        const now = new Date().getTime();
-        const userDataWithTimestamp = { ...finalUserData, timestamp: now };
-        localStorage.setItem("userData", JSON.stringify(userDataWithTimestamp));
-        window.location.reload();
+        if (data.success) {
+          const finalUserData = data.finalUserData
+          const now = new Date().getTime();
+          const userDataWithTimestamp = { ...finalUserData, timestamp: now };
+          localStorage.setItem("userData", JSON.stringify(userDataWithTimestamp));
+          window.location.reload();
+        }
+        else{
+          window.location.pathname = "/"
+        }
       }
     };
 
