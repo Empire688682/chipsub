@@ -156,9 +156,9 @@ export default function SignupPage() {
                         </div>
 
                         <button
-                            onClick={() => signIn('google')}
+                            onClick={() => signIn("google", { callbackUrl: "/auth/callback" })}
                             className="w-full mt-4 flex items-center justify-center gap-3 border border-gray-500 py-2 rounded-lg hover:bg-gray-100">
-                            <FcGoogle size={22}/>
+                            <FcGoogle size={22} />
                             <span className="text-sm">Continue with Google</span>
                         </button>
 

@@ -22,7 +22,7 @@ export function middleware(req) {
     "/api-docs",
     "/profile",
     "/notifications",
-    "/payment-success"
+    "/payment-success",
   ];
   const isProtected = protectedPaths.some((protectedPath)=>
    path.startsWith(protectedPath));
@@ -31,7 +31,7 @@ export function middleware(req) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
-  if(token && (path === "/" || path === "")){
+  if(token && (path === "/" || path === "" || path === "/auth/callback")){
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
@@ -59,6 +59,7 @@ export const config = {
     "/api-docs",
     "/profile",
     "/notifications",
-    "/payment-success"
+    "/payment-success",
+    "/auth/callback"
   ],
 }

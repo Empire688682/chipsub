@@ -9,30 +9,9 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
-      if (account.provider === "google") {
-        try {
-          // Optional: get referral ID from cookie or pass a dummy one
-          const refId = ""; // You can customize this
-
-          await fetch(`${process.env.NEXTAUTH_URL}/api/auth/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: user.name,
-              email: user.email,
-              number: "",
-              password: "not set",
-              refId: refId,
-              provider: "google" 
-            }),
-          });
-        } catch (err) {
-          console.error("Error registering Google user:", err);
-        }
-      }
-
-      return true;
+    async signIn({ user, account }) {
+      // Remove the server-side fetch
+      return true; // Let the sign-in proceed
     },
 
     async session({ session, token }) {

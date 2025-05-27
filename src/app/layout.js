@@ -1,9 +1,7 @@
-import Sidebar from "@/component/Sidebar/Sidebar";
+// app/layout.js
 import "./globals.css";
-import { AppProvider } from "@/component/Context";
-import Footer from "@/component/Footer/Footer";
-import Topbar from "@/component/Topbar/Topbar";
 import Script from "next/script";
+import ClientWrapper from "./ClientWrapper";
 
 export const metadata = {
   title: "ChipSub",
@@ -15,7 +13,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <AppProvider>
+        <ClientWrapper>
           {/* Tawk.to Live Chat Script */}
           <Script
             id="tawk-to-live-chat"
@@ -35,17 +33,8 @@ export default function RootLayout({ children }) {
               `,
             }}
           />
-
-          <div className="flex items-center bg-white shadow-md justify-start w-full">
-            <Sidebar />
-            <div className="w-full">
-              <Topbar />
-              {children}
-            </div>
-          </div>
-
-          <Footer />
-        </AppProvider>
+          {children}
+        </ClientWrapper>
       </body>
     </html>
   );

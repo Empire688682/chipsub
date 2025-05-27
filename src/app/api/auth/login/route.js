@@ -18,7 +18,7 @@ export async function POST(req) {
 
         if(existUser.provider === "google"){
             if(existUser.password === "not set"){
-                return NextResponse.json({success:false, message:"User not password not set, continue with google and set up your password"}, {status:400})
+                return NextResponse.json({success:false, message:"User password not set, continue with google and set up your password"}, {status:400})
             }
         }
 
