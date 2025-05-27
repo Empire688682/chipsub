@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useGlobalContext } from "@/component/Context";
+import LoadingSpinner from "@/component/LoadingSpinner/LoadingSpinner";
 
 export default function CallbackPage() {
   const {refHostId} = useGlobalContext();
@@ -39,5 +40,7 @@ export default function CallbackPage() {
     registerGoogleUser();
   }, [session]);
 
-  return <p>Setting things up...</p>;
+  return <div>
+    <LoadingSpinner />
+    </div>;
 }

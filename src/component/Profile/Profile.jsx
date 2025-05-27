@@ -83,7 +83,7 @@ const Profile = () => {
       <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
         {/* Left: Profile Overview */}
         <div className="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-blue-100 flex flex-col items-center text-center">
-          <div className="relative w-25 h-25 rounded-full overflow-hidden shadow-lg mb-4">
+          <div className="relative w-20 h-20 rounded-full overflow-hidden shadow-lg mb-4">
             <Image
               src={user.avatar}
               alt="Profile"
@@ -154,6 +154,7 @@ const Profile = () => {
           <div>
             <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">Change Password</h3>
             <form onSubmit={handlePasswordChange} className="space-y-4">
+              <p className='text-sm font-bold text-center'>If not set before enter 123456789 as Current Password </p>
               <input
                 onChange={handleOnchange}
                 name='currentPwd'

@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
-          <div className="mb-8 md:mb-0">
+          <div className="mb-8 md:mb-0 text-center md:text-start text-center md:text-start">
             <h3 className="text-white font-bold text-lg mb-4">Company</h3>
             <ul className="space-y-2">
               <li><a href="/about" className="text-white hover:text-blue-100 transition-colors">About Us</a></li>
@@ -17,7 +17,7 @@ const Footer = () => {
           </div>
 
           {/* Services */}
-          <div className="mb-8 md:mb-0">
+          <div className="mb-8 md:mb-0 text-center md:text-start">
             <h3 className="text-white font-bold text-lg mb-4">Services</h3>
             <ul className="space-y-2">
               <li><a href="/dashboard/buy-data" className="text-white hover:text-blue-100 transition-colors">Data Plans</a></li>
@@ -28,7 +28,7 @@ const Footer = () => {
           </div>
 
           {/* Resources */}
-          <div className="mb-8 md:mb-0">
+          <div className="mb-8 md:mb-0 text-center md:text-start">
             <h3 className="text-white font-bold text-lg mb-4">Resources</h3>
             <ul className="space-y-2">
               <li><a href="/contact" className="text-white hover:text-blue-100 transition-colors">Help Center</a></li>
@@ -39,7 +39,7 @@ const Footer = () => {
           </div>
 
           {/* Newsletter */}
-          <div>
+          <div className='text-center md:text-start'>
             <h3 className="text-white font-bold text-lg mb-4">Stay Updated</h3>
             <p className="text-white mb-4">Subscribe to our newsletter for the latest updates and offers.</p>
             <form className="flex flex-col sm:flex-row gap-2">

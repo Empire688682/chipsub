@@ -21,10 +21,10 @@ export async function POST(req) {
         if (!user) {
             return NextResponse.json({ success: false, message: "User not Authenticated" }, { status: 400 })
         }
-        if (user.provider === "credentials") {
+        if (user.provider === "credentials" || user.password !== "not set") {
             const isPasswordMatch = await bcrypt.compare(currentPwd, user.password);
             if (!isPasswordMatch) {
-                return NextResponse.json({ success: false, message: "Password did not match" }, { status: 400 })
+                return NextResponse.json({ success: false, message: `Incorect current password @${user.name.split(" ")[0]} `}, { status: 400 })
             }
         }
         const hashedPassword = await bcrypt.hash(newPwd, 10);
