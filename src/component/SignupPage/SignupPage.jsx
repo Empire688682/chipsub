@@ -12,6 +12,7 @@ export default function SignupPage() {
         isModalOpen,
         setIsModalOpen,
         authType,
+        setAuthType,
         openModal,
         data,
         setData,
@@ -81,7 +82,14 @@ export default function SignupPage() {
                         </button>
 
                         <h2 className="text-2xl font-bold mb-4 text-blue-600">
-                            {authType === 'register' ? 'Create Account' : 'Login to Chipsub'}
+                            {authType === 'register'
+                                ? 'Create Account'
+                                : authType === 'login'
+                                    ? 'Login to Chipsub'
+                                    : authType === 'reset password'
+                                        ? 'Reset Password'
+                                        : ''
+                            }
                         </h2>
 
                         <form onSubmit={handleFormSubmission} className="space-y-4">
@@ -117,20 +125,29 @@ export default function SignupPage() {
                                     className="w-full border rounded-lg outline-none border-gray-500 px-4 py-2"
                                 />
                             }
-                            <input
-                                onChange={handleOnchange}
-                                value={data.password}
-                                name="password"
-                                type="password"
-                                required
-                                placeholder="Password"
-                                className="w-full border rounded-lg outline-none border-gray-500 px-4 py-2"
-                            />
+                            {
+                                authType !== "reset password" && (
+                                    <input
+                                        onChange={handleOnchange}
+                                        value={data.password}
+                                        name="password"
+                                        type="password"
+                                        required
+                                        placeholder="Password"
+                                        className="w-full border rounded-lg outline-none border-gray-500 px-4 py-2"
+                                    />
+                                )
+                            }
                             {
                                 error && <p className='text-red-600 text-center'>
                                     {error}
                                 </p>
                             }
+
+                            {authType === 'login' && (
+                                <p onClick={() => setAuthType("reset password")} className='cursor-pointer underline text-center'>Forgot Password</p>
+                            )}
+
                             <button
                                 disabled={loading}
                                 type="submit"
@@ -139,9 +156,9 @@ export default function SignupPage() {
                                 {
                                     loading ? "Processing"
                                         :
-                                        <>
-                                            {authType === 'register' ? 'Register' : 'Login'}
-                                        </>
+                                        <p className='capitalize'>
+                                            {authType}
+                                        </p>
                                 }
                             </button>
                             {
@@ -149,18 +166,25 @@ export default function SignupPage() {
                             }
                         </form>
 
-                        <div className="mt-6 flex items-center justify-between">
-                            <hr className="w-full border-t border-gray-500" />
-                            <span className="mx-2 text-gray-400 text-sm">OR</span>
-                            <hr className="w-full border-t border-gray-500" />
-                        </div>
-
-                        <button
-                            onClick={() => signIn("google", { callbackUrl: "/auth/callback" })}
-                            className="w-full mt-4 flex items-center justify-center gap-3 border border-gray-500 py-2 rounded-lg hover:bg-gray-100">
-                            <FcGoogle size={22} />
-                            <span className="text-sm">Continue with Google</span>
-                        </button>
+                        {
+                            authType !== "reset password" && (
+                                <div className="mt-6 flex items-center justify-between">
+                                    <hr className="w-full border-t border-gray-500" />
+                                    <span className="mx-2 text-gray-400 text-sm">OR</span>
+                                    <hr className="w-full border-t border-gray-500" />
+                                </div>
+                            )
+                        }
+                        {
+                            authType !== "reset password" && (
+                                <button
+                                    onClick={() => signIn("google", { callbackUrl: "/auth/callback" })}
+                                    className="w-full mt-4 flex items-center justify-center gap-3 border border-gray-500 py-2 rounded-lg hover:bg-gray-100">
+                                    <FcGoogle size={22} />
+                                    <span className="text-sm">Continue with Google</span>
+                                </button>
+                            )
+                        }
 
                     </div>
                 </div>

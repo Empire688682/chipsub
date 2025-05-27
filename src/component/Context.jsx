@@ -206,6 +206,7 @@ export const AppProvider = ({ children }) => {
         isModalOpen,
         setIsModalOpen,
         authType,
+        setAuthType,
         openModal,
         userData,
         data,
