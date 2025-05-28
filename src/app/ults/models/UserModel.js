@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema(
     bvnVerify: { type: Boolean, default: false },
     walletBalance: { type: Number, default: 0 },
     commisionBalance: { type: Number, default: 0 },
+    isAdmin: {type: Boolean, default: false},
     number: { type: String, default: "" }, 
     referralHost: { type: String , default: "" }, // Add this for referrals
     provider: { type: String, default: "credentials" },
