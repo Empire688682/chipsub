@@ -6,6 +6,7 @@ import { connectDb } from "@/app/ults/db/ConnectDb";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import TransactionModel from "@/app/ults/models/TransactionModel";
+import ProviderModel from "@/app/ults/models/ProviderModel";
 
 dotenv.config();
 
@@ -54,42 +55,42 @@ export async function POST(req) {
 
     console.log("Response:", result);
 
-    if (result?.status === "ORDER_RECEIVED") {
-      await UserModel.findByIdAndUpdate(
-        userId,
-        { walletBalance: user.walletBalance - savedAmount },
-        { new: true }
-      );
-
-      await TransactionModel.create({
-        userId,
-        type: "tv",
-        amount: savedAmount,
-        status: "success",
-        reference: requestId,
-        metadata: {
-          network: provider,
-          number: smartcardNumber,
-        },
-      });
-
-      return NextResponse.json({ success: true, message: "Order successful", data: result }, { status: 200 });
-    } else {
-      await TransactionModel.create({
-        userId,
-        type: "tv",
-        amount: savedAmount,
-        status: "failed",
-        reference: requestId,
-        metadata: {
-          network: provider,
-          number: smartcardNumber,
-        },
-      });
-
+    if (result?.status !== "ORDER_RECEIVED") {
       return NextResponse.json({ success: false, message: "Order failed", data: result }, { status: 400 });
     }
 
+    // ✅ Update Provider balance
+    const provider = await ProviderModel.findOneAndUpdate(
+      { name: "ClubConnect" },
+      {
+        lastUser: userId,
+        lastAction: "debit",
+        note: `Debited for Tv`,
+        amount: result.walletbalance
+      },
+      { new: true, upsert: true }
+    );
+
+
+    await UserModel.findByIdAndUpdate(
+      userId,
+      { walletBalance: user.walletBalance - savedAmount },
+      { new: true }
+    );
+
+    await TransactionModel.create({
+      userId,
+      type: "tv",
+      amount: savedAmount,
+      status: "success",
+      reference: requestId,
+      metadata: {
+        network: provider,
+        number: smartcardNumber,
+      },
+    });
+
+    return NextResponse.json({ success: true, message: "Order successful", data: result }, { status: 200 });
   } catch (error) {
     console.error("Tv-ERROR:", error);
     return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 });

@@ -6,6 +6,7 @@ import { connectDb } from "@/app/ults/db/ConnectDb";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import TransactionModel from "@/app/ults/models/TransactionModel";
+import ProviderModel from "@/app/ults/models/ProviderModel";
 
 dotenv.config();
 
@@ -36,11 +37,11 @@ export async function POST(req) {
       "ABA_ELECTRIC": "12",
     };
 
-    const allmeterType ={
-      "Prepaid" : "01",
-      "Postpaid" : "02"
+    const allmeterType = {
+      "Prepaid": "01",
+      "Postpaid": "02"
     }
-   
+
     // Auth and funds check
     const userId = await verifyToken(req);
     const user = await UserModel.findById(userId);
@@ -73,43 +74,41 @@ export async function POST(req) {
 
     console.log("Response:", result);
 
-    if (result?.status === "ORDER_RECEIVED") {
-      // Deduct wallet balance
-      await UserModel.findByIdAndUpdate(
-        userId,
-        { walletBalance: user.walletBalance - saveAmount },
-        { new: true }
-      );
-
-      await TransactionModel.create({
-        userId,
-        type: "electricity",
-        amount: saveAmount,
-        status: "success",
-        reference: requestId,
-        metadata: {
-          network: disco,
-          number: meterNumber
-        }
-      });
-
-      return NextResponse.json({ success: true, message: "Order successful", data: result }, { status: 200 });
-    } else {
-      await TransactionModel.create({
-        userId,
-        type: "electricity",
-        amount: saveAmount,
-        status: "failed",
-        reference: requestId,
-        metadata: {
-          network: disco,
-          number: meterNumber
-        }
-      });
-
+    if (result?.status !== "ORDER_RECEIVED") {
       return NextResponse.json({ success: false, message: "Order failed", data: result }, { status: 400 });
-    }
+    };
 
+    // ✅ Update Provider balance
+    await ProviderModel.findOneAndUpdate(
+      { name: "ClubConnect" },
+      {
+        lastUser: userId,
+        lastAction: "debit",
+        note: `Debited for Electricity`,
+        amount: result.walletbalance
+      },
+      { new: true, upsert: true }
+    );
+
+    // Deduct wallet balance
+    await UserModel.findByIdAndUpdate(
+      userId,
+      { walletBalance: user.walletBalance - saveAmount },
+      { new: true }
+    );
+
+    await TransactionModel.create({
+      userId,
+      type: "electricity",
+      amount: saveAmount,
+      status: "success",
+      reference: requestId,
+      metadata: {
+        network: disco,
+        number: meterNumber
+      }
+    });
+    return NextResponse.json({ success: true, message: "Order successful", data: result }, { status: 200 });
   } catch (error) {
     console.error("Electricity-ERROR:", error);
     return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 });

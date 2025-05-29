@@ -33,7 +33,7 @@ export async function GET(req) {
 
        const walletsTotal = successfulFunding[0]?.total || 0
 
-        const [users, allTransactions, airtime, data, tv, electricity, wallet] = await Promise.all([
+        const [users, allTransactions, airtime, data, tv, electricity] = await Promise.all([
             UserModel.countDocuments(),
             TransactionModel.countDocuments(),
             TransactionModel.countDocuments({ type: "airtime" }),

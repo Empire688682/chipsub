@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { connectDb } from "@/app/ults/db/ConnectDb";
 import { verifyToken } from "../../helper/VerifyToken";
+import ProviderModel from "@/app/ults/models/ProviderModel";
 
 dotenv.config();
 
@@ -114,7 +115,19 @@ export async function POST(req) {
         { success: false, message: "API Transaction Failed", details: result },
         { status: 500 }
       );
-    }
+    };
+
+    // ✅ Update Provider balance
+    await ProviderModel.findOneAndUpdate(
+      { name: "ClubConnect" },
+      {
+        lastUser: userId,
+        lastAction: "debit",
+        note: `Debited for Data`,
+        amount: result.walletbalance
+      },
+      { new: true, upsert: true }
+    );
 
     // ✅ Deduct wallet and log transaction (within session)
     verifyUser.walletBalance -= Number(amount);
