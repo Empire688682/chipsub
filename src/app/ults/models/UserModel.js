@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema(
     commisionBalance: { type: Number, default: 0 },
     isAdmin: {type: Boolean, default: false},
     number: { type: String, default: "" }, 
+    forgettenPasswordToken: { type: String, default: "" }, 
     referralHost: { type: String , default: "" }, // Add this for referrals
     provider: { type: String, default: "credentials" },
   },
