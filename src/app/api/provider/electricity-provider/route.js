@@ -75,9 +75,8 @@ export async function POST(req) {
     console.log("Response:", result);
 
     if (result?.status !== "ORDER_RECEIVED") {
-      return NextResponse.json({ success: false, message: "Order failed", data: result }, { status: 400 });
+      return NextResponse.json({ success: false, message: "We are sorry Electricity currently not available", data: result }, { status: 400 });
     };
-
     // ✅ Update Provider balance
     await ProviderModel.findOneAndUpdate(
       { name: "ClubConnect" },

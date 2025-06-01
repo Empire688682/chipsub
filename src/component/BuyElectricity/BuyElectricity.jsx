@@ -96,10 +96,7 @@ const BuyElectricity = () => {
 
     if (!isMeterVerified) {
       return toast.error("Meter verification failed");
-    }
-
-    toast.error("We are sorry Electricity currently not available");
-    return;
+    };
 
     setLoading(true)
     try {
@@ -111,7 +108,7 @@ const BuyElectricity = () => {
         setPurchasedToken(response.data.data);
       }
     } catch (error) {
-      console.log("Elect-Error:", error)
+      console.log("Elect-Error:", error);
       toast.error(error.response.data.message);
     }
     finally {

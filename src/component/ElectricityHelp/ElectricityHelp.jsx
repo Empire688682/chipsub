@@ -43,7 +43,7 @@ const ElectricityHelp = ({ data}) => {
 
       {/* Support */}
       <div className="text-sm text-gray-600">
-        Need help? Reach us at <a href="mailto:support@chipsub.com" className="text-yellow-700 font-medium underline">support@chipsub.com</a>
+        Need help? Reach us at <a href="mailto:usechipsub@gmail.com" className="text-yellow-700 font-medium underline">usechipsub@gmail.com</a>
       </div>
 
       {/* Optional Promo */}
