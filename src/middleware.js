@@ -31,7 +31,7 @@ export function middleware(req) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
-  if(token && (path === "/" || path === "" || path === "/auth/callback")){
+  if(token && (path === "/" || path === "" || path === "/auth/callback" || "/reset-password")){
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
@@ -60,6 +60,7 @@ export const config = {
     "/profile",
     "/notifications",
     "/payment-success",
-    "/auth/callback"
+    "/auth/callback",
+    "/reset-password"
   ],
 }

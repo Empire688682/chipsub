@@ -25,8 +25,12 @@ export default function SignupPage() {
         setData((prev) => ({ ...prev, [name]: value }));
     }
 
-    const baseUrl = authType === "login" ? "/api/auth/login" : "/api/auth/register"
-    const userAuthHandler = async () => {
+    const baseUrl = authType === "login" ? "/api/auth/login" : authType === "register" ? "/api/auth/register": ""
+    const userAuthHandler = async (e) => {
+        if(authType === "reset password"){
+           handlePasswordReset();
+           return;
+        }
         setLoading(true);
         try {
             const response = await axios.post(baseUrl, { ...data, refId: refHostId });
@@ -67,7 +71,24 @@ export default function SignupPage() {
         setTimeout(() => {
             setError("");
         }, 3000);
-    }, [error])
+    }, [error]);
+
+    const handlePasswordReset = async () => {
+        try {
+          setLoading(true);
+          const response = await axios.post("api/auth/forgettenPwd", { email:data.email });
+          console.log("response:", response)
+          if (response.data.success) {
+            console.log("response:", response)
+            alert("Password reset link sent to: " + data.email);
+            setIsModalOpen(false)
+          }
+        } catch (error) {
+          console.log("ERROR sending email:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
 
     return (
         <div className="min-h-screen absolute w-full flex items-center justify-center text-black px-4">

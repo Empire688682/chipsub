@@ -32,7 +32,15 @@ export async function POST(req) {
     );
 
     const resetingPwdLink = `${process.env.BASE_URL}/reset-password?Emailtoken=${forgettenPasswordToken}&username=${user._id}`;
-    await sendPasswordResettingEmail(email, resetingPwdLink);
+    const sendingStatus = await sendPasswordResettingEmail(email, resetingPwdLink);
+
+    if(sendingStatus.status === 500){
+      return NextResponse.json(
+      { success: false, message: "An error occured" },
+      { status: 400 },
+    );
+    }
+
     return NextResponse.json(
       { success: true, message: "Email sent" },
       { status: 200 },
