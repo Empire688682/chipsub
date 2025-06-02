@@ -3,9 +3,10 @@ import React, { useState } from "react";
 import styles from "./ResetPasswordPage.module.css";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import { useGlobalContext } from "@/Component/Context";
+import { useGlobalContext } from "../Context";
 
 const ResetPasswordPage = () => {
+  const{setIsModalOpen} =useGlobalContext
   const searchParams = useSearchParams();
   const token = searchParams.get("Emailtoken");
   const [loading, setLoading] = useState(false);
@@ -16,39 +17,42 @@ const ResetPasswordPage = () => {
     confirmPassword: "",
   });
 
+  console.log("Token:", token);
+
   const handleOnchange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const resetPassword = async () => {
-    const formData = new FormData();
-    formData.append("password", data.password);
-    formData.append("confirmPassword", data.confirmPassword);
-    formData.append("token", token);
-    try {
-      setLoading(true);
-      const response = await axios.post("api/auth/resetPassword", formData);
-      if (response.data.success) {
-        setSuccessMsg(response.data.message);
-        setErrorMsg("");
-        setData({
-          password: "",
-          confirmPassword: "",
-        });
-        setTimeout(() => {
-          setResetPwd(false);
-          setShowSignup(true);
-          setFormPhase("login");
-        }, 2000);
-      }
-    } catch (error) {
-      console.log("Error resetingPwd:", error);
-      setErrorMsg(error.response.data.message || "Something went wrong");
-    } finally {
-      setLoading(false);
+ const resetPassword = async () => {
+  try {
+    setLoading(true);
+    const response = await axios.post("/api/auth/resetForgettingPassword", {
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+      token: token,
+    });
+
+    if (response.data.success) {
+     setErrorMsg("");
+      setSuccessMsg("Password changed redirecting to login page.........");
+      setIsModalOpen(true);
+      setData({ 
+        password: "", 
+        confirmPassword: "" 
+      });
+      setTimeout(() => {
+        setShowSignup(true);
+        setFormPhase("login");
+      }, 2000);
     }
-  };
+  } catch (error) {
+    console.log("Error resetingPwd:", error);
+    setErrorMsg(error.response?.data?.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   function handleFormSubmission(e) {
     e.preventDefault();
