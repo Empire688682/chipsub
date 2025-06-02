@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./ResetPasswordPage.module.css";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
@@ -42,7 +42,6 @@ const ResetPasswordPage = () => {
       });
       setIsModalOpen(true);
       setAuthType("login");
-      return
     }
   } catch (error) {
     console.log("Error resetingPwd:", error);
@@ -63,7 +62,13 @@ const ResetPasswordPage = () => {
       return;
     }
     resetPassword();
-  }
+  };
+
+  useEffect(()=>{
+    if(!token){
+      routeModule.push("/");
+    }
+  }, []);
 
   return (
     <div className={styles.resetPassword }>
