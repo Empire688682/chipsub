@@ -1,4 +1,5 @@
-import ResetPasswordWrapper from "@/Component/ResetPasswordPageWrapper/ResetPasswordPageWrapper";
+import ResetPasswordWrapper from "@/component/ResetPasswordPageWrapper/ResetPasswordPageWrapper";
+
 
 export default function Page() {
   return (
