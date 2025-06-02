@@ -1,6 +1,5 @@
 import { connectDb } from "@/app/ults/db/ConnectDb";
 import UserModel from "@/app/ults/models/UserModel";
-import { verifyToken } from "../../helper/VerifyToken";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";

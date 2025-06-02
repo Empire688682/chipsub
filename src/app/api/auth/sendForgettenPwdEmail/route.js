@@ -17,12 +17,31 @@ export const sendPasswordResettingEmail = async (toEmail, resetingPwdLink) => {
         rejectUnauthorized: false,
       },
     });
+
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      subject: "Password reset",
       to: toEmail,
-      html: `<p>Please click the link to reset your password: <a href=${resetingPwdLink}>Password reset</a> </p>`,
+      subject: "Password Reset Request",
+      html: `
+    <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
+      <h2>Password Reset</h2>
+      <p>We received a request to reset your password. Click the button below to choose a new password:</p>
+      <p>
+        <a href="${resetingPwdLink}" style="color: white; background-color: #007BFF; padding: 10px 15px; text-decoration: none; border-radius: 5px; display: inline-block;">
+          Reset Password
+        </a>
+      </p>
+      <p>If the button above doesn't work, copy and paste the link below into your browser:</p>
+      <p style="word-break: break-all;">
+        <a href="${resetingPwdLink}">${resetingPwdLink}</a>
+      </p>
+      <p>If you didn't request this, you can safely ignore this email.</p>
+      <p>Thanks,<br/>The Team</p>
+    </div>
+  `,
     };
+
+
     await transporter.sendMail(mailOptions);
     return NextResponse.json(
       { success: true, message: "Email sent" },

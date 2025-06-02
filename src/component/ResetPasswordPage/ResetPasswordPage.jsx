@@ -6,7 +6,7 @@ import axios from "axios";
 import { useGlobalContext } from "../Context";
 
 const ResetPasswordPage = () => {
-  const{setIsModalOpen} =useGlobalContext
+  const{setIsModalOpen, setAuthType} =useGlobalContext();
   const searchParams = useSearchParams();
   const token = searchParams.get("Emailtoken");
   const [loading, setLoading] = useState(false);
@@ -16,8 +16,6 @@ const ResetPasswordPage = () => {
     password: "",
     confirmPassword: "",
   });
-
-  console.log("Token:", token);
 
   const handleOnchange = (e) => {
     const { name, value } = e.target;
@@ -33,18 +31,18 @@ const ResetPasswordPage = () => {
       token: token,
     });
 
+    console.log("response:", response);
+
     if (response.data.success) {
-     setErrorMsg("");
-      setSuccessMsg("Password changed redirecting to login page.........");
-      setIsModalOpen(true);
+      setSuccessMsg("Password changed please login");
+      setErrorMsg("")
       setData({ 
         password: "", 
         confirmPassword: "" 
       });
-      setTimeout(() => {
-        setShowSignup(true);
-        setFormPhase("login");
-      }, 2000);
+      setIsModalOpen(true);
+      setAuthType("login");
+      return
     }
   } catch (error) {
     console.log("Error resetingPwd:", error);
