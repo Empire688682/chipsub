@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { connectDb } from "@/app/ults/db/ConnectDb";
 import UserModel from "@/app/ults/models/UserModel";
-import { sendPasswordResettingEmail } from "../sendForgettenPwdEmail/route";
+import { sendPasswordResettingEmail } from "../sendForgottenPwdEmail/route.js";
 dotenv.config();
 
 export async function POST(req) {
@@ -23,22 +23,25 @@ export async function POST(req) {
         { success: false, message: "User not found" },
         { status: 400 },
       );
-    }
-    const forgettenPasswordToken = jwt.sign({ email }, process.env.SECRET_KEY);
+    };
+
+    const forgottenPasswordToken = jwt.sign({ email }, process.env.SECRET_KEY, {
+      expiresIn: "15m", // or "1h", adjust as needed
+    });
     await UserModel.findOneAndUpdate(
       { email },
-      { forgettenPasswordToken },
+      { forgottenPasswordToken },
       { new: true },
     );
 
-    const resetingPwdLink = `${process.env.BASE_URL}/reset-password?Emailtoken=${forgettenPasswordToken}&userId=${user._id}`;
+    const resetingPwdLink = `${process.env.BASE_URL}/reset-password?Emailtoken=${forgottenPasswordToken}&userId=${user._id}`;
     const sendingStatus = await sendPasswordResettingEmail(email, resetingPwdLink);
 
-    if(sendingStatus.status === 500){
+    if (sendingStatus.status === 500) {
       return NextResponse.json(
-      { success: false, message: "An error occured" },
-      { status: 400 },
-    );
+        { success: false, message: "An error occured" },
+        { status: 400 },
+      );
     }
 
     return NextResponse.json(

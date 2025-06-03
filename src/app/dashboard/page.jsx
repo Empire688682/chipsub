@@ -2,10 +2,14 @@
 import DashboardLayout from '@/component/Dashboard/Dashboard'
 import React, { useState, useEffect } from 'react'
 import axios from "axios"
+import { useGlobalContext } from '@/component/Context';
+import LoadingSpinner from '@/component/LoadingSpinner/LoadingSpinner';
 
 const Page = () => {
-
+  const {userData} = useGlobalContext();
    const [allData, setAllData] = useState({});
+   const [loading, setLoading] = useState(true);
+
     const fetchAllData = async () =>{
       try {
         const response = await axios.get("/api/all-data");
@@ -18,7 +22,6 @@ const Page = () => {
     };
   
     useEffect(()=>{
-  
       const interval = setInterval(()=>{
         fetchAllData();
       },180000);
@@ -28,10 +31,20 @@ const Page = () => {
 
     useEffect(()=>{
       fetchAllData();
+      if(!userData){
+        window.location.reload();
+      }
+      else{
+        setLoading(false);
+      }
     }, []);
 
   return (
-    <div className='px-6 py-10 bg-gradient-to-br from-blue-50 to-white'>
+    <>
+    {
+      loading ? <LoadingSpinner />
+      :
+          <div className='px-6 py-10 bg-gradient-to-br from-blue-50 to-white'>
       <div className="overflow-hidden w-full mb-6 whitespace-nowrap bg-white p-2 rounded-lg shadow">
         <div className="animate-scroll text-sm text-gray-700 inline-block">
           👥 Active Users: {allData.users} &nbsp;·&nbsp;
@@ -45,6 +58,8 @@ const Page = () => {
       </div>
       <DashboardLayout />
     </div>
+    }
+    </>
   )
 }
 

@@ -4,14 +4,14 @@ import styles from "./ResetPasswordPage.module.css";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { useGlobalContext } from "../Context";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ResetPasswordPage = () => {
-  const{setIsModalOpen, setAuthType} =useGlobalContext();
+  const{setIsModalOpen, setAuthType, route} =useGlobalContext();
   const searchParams = useSearchParams();
   const token = searchParams.get("Emailtoken");
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
   const [data, setData] = useState({
     password: "",
     confirmPassword: "",
@@ -25,7 +25,7 @@ const ResetPasswordPage = () => {
  const resetPassword = async () => {
   try {
     setLoading(true);
-    const response = await axios.post("/api/auth/resetForgettingPassword", {
+    const response = await axios.post("/api/auth/resetForgottenPassword", {
       password: data.password,
       confirmPassword: data.confirmPassword,
       token: token,
@@ -34,8 +34,7 @@ const ResetPasswordPage = () => {
     console.log("response:", response);
 
     if (response.data.success) {
-      setSuccessMsg("Password changed please login");
-      setErrorMsg("")
+      toast.success("Password changed please login");
       setData({ 
         password: "", 
         confirmPassword: "" 
@@ -45,7 +44,7 @@ const ResetPasswordPage = () => {
     }
   } catch (error) {
     console.log("Error resetingPwd:", error);
-    setErrorMsg(error.response?.data?.message || "Something went wrong");
+    toast.error(error.response?.data?.message || "Something went wrong");
   } finally {
     setLoading(false);
   }
@@ -54,11 +53,11 @@ const ResetPasswordPage = () => {
   function handleFormSubmission(e) {
     e.preventDefault();
     if (data.password.length < 8) {
-      alert("Password too short");
+      toast.error("Password too short");
       return;
     }
     if (data.password !== data.confirmPassword) {
-      alert("Password did not match");
+      toast.error("Password did not match");
       return;
     }
     resetPassword();
@@ -66,12 +65,13 @@ const ResetPasswordPage = () => {
 
   useEffect(()=>{
     if(!token){
-      routeModule.push("/");
+      route.push("/");
     }
   }, []);
 
   return (
     <div className={styles.resetPassword }>
+      <ToastContainer />
         <div className={styles.card}>
           <h2 className={styles.title}>Reset Your Password</h2>
           <p className={styles.subtitle}>
@@ -105,8 +105,6 @@ const ResetPasswordPage = () => {
             <button disabled={loading} type="submit" className={styles.button}>
               {loading ? "Loading..." : "Reset Password"}
             </button>
-            {errorMsg && <p className={styles.errorMsg}>{errorMsg}</p>}
-            {successMsg && <p className={styles.successMsg}>{successMsg}</p>}
           </form>
         </div>
     </div>

@@ -35,6 +35,9 @@ export const sendPasswordResettingEmail = async (toEmail, resetingPwdLink) => {
       <p style="word-break: break-all;">
         <a href="${resetingPwdLink}">${resetingPwdLink}</a>
       </p>
+     <p style="color: red; font-weight: bold;">
+       Please note that the link expires in 15 minutes.
+     </p>
       <p>If you didn't request this, you can safely ignore this email.</p>
       <p>Thanks,<br/>The Team</p>
     </div>

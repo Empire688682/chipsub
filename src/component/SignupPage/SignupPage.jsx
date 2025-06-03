@@ -6,6 +6,8 @@ import { useGlobalContext } from '../Context';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { signIn } from "next-auth/react"
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function SignupPage() {
     const {
@@ -76,14 +78,17 @@ export default function SignupPage() {
     const handlePasswordReset = async () => {
         try {
           setLoading(true);
-          const response = await axios.post("api/auth/forgettenPwd", { email:data.email });
+          const response = await axios.post("api/auth/forgottenPwd", { email:data.email });
           console.log("response:", response)
           if (response.data.success) {
             console.log("response:", response)
-            alert("Password reset link sent to: " + data.email);
-            setIsModalOpen(false)
+            toast.success("Password reset link sent to: " + data.email);
+            setInterval(()=>{
+                setIsModalOpen(false);
+            },3000);
           }
         } catch (error) {
+          toast.error("Error sending email to: " + data.email);
           console.log("ERROR sending email:", error);
         } finally {
           setLoading(false);
@@ -92,6 +97,7 @@ export default function SignupPage() {
 
     return (
         <div className="min-h-screen absolute w-full flex items-center justify-center text-black px-4">
+        <ToastContainer />
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center px-6 z-70">
                     <div className="bg-white rounded-xl shadow-lg w-full md:max-w-md max-w:[300px] p-8 relative">
