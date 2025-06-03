@@ -31,7 +31,7 @@ export function middleware(req) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
-  if(token && (path === "/" || path === "" || path === "/auth/callback" || "/reset-password")){
+  if(token && (path === "/" || path === "" || path === "/auth/callback" || path === "/reset-password")){
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
