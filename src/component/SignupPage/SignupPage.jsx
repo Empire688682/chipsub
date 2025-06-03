@@ -85,7 +85,7 @@ export default function SignupPage() {
             toast.success("Password reset link sent to: " + data.email);
             setInterval(()=>{
                 setIsModalOpen(false);
-            },3000);
+            },5000);
           }
         } catch (error) {
           toast.error("Error sending email to: " + data.email);

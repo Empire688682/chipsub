@@ -26,7 +26,7 @@ export const AppProvider = ({ children }) => {
   });
 
   // Holds currently logged-in user's data (from localStorage or API)
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState("");
 
   // Next.js router for programmatic navigation
   const route = useRouter();
