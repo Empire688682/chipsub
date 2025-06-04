@@ -6,7 +6,7 @@ import { useGlobalContext } from '@/component/Context';
 import LoadingSpinner from '@/component/LoadingSpinner/LoadingSpinner';
 
 const Page = () => {
-  const { userData } = useGlobalContext();
+  const { userData, route } = useGlobalContext();
   const [allData, setAllData] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +33,7 @@ const Page = () => {
     if (userData === null) return; // Wait for context to load
 
     if (!userData) {
-      router.push('/'); // Or wherever you want to send unauthenticated users
+      route.push('/'); // Or wherever you want to send unauthenticated users
     } else {
       fetchAllData();
       setLoading(false);
