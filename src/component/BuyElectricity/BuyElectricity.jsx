@@ -100,7 +100,7 @@ const BuyElectricity = () => {
 
     setLoading(true)
     try {
-      const response = await axios.post("/api/provider/electricity-provider", formData);
+      const response = await axios.post("/api/provider/flutterwaveElect-provider", formData);
       console.log("Response:", response);
       if (response.data.success) {
         getUserRealTimeData()

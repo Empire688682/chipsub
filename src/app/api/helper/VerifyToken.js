@@ -5,7 +5,7 @@ export const verifyToken = (req) => {
     try {
         const token = req.cookies.get("UserToken")?.value || "";
         if (!token) {
-            retun
+            return
         }
         const decodedId = jwt.verify(token, process.env.SECRET_KEY);
         return decodedId.userId
