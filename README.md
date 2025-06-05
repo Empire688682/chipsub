@@ -2,7 +2,7 @@
 
 **Chipsub** is a fast, secure, and user-friendly utility service platform built with [Next.js](https://nextjs.org). It allows users to easily purchase **airtime**, **data bundles**, **electricity tokens**, **TV subscriptions**, and more — all in one place. Chipsub is designed for speed, mobile responsiveness, and a seamless payment experience.
 
-![Chipsub Screenshot](public/preview.png)
+![Chipsub Screenshot](public/Screenshot (9).png)
 
 ---
 
