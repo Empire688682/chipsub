@@ -22,7 +22,7 @@ export const sendPasswordResettingEmail = async (toEmail, resetingPwdLink, mailT
         <p>Thanks,<br/>The Team</p>
       </div>
     `,
-    "EmailSubcriber": `
+    "EmailSubscriber": `
       <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9;">
         <h2>Welcome to Our Newsletter!</h2>
         <p>Thank you for subscribing to our newsletter. We're excited to keep you updated with our latest news, updates, and exclusive offers.</p>
@@ -34,7 +34,7 @@ export const sendPasswordResettingEmail = async (toEmail, resetingPwdLink, mailT
 
   const subjectMap = {
     "PasswordReset": "Password Reset Request",
-    "EmailSubcriber": "Thanks for Subscribing!",
+    "EmailSubscriber": "Thanks for Subscribing!",
   };
 
   try {
@@ -58,8 +58,16 @@ export const sendPasswordResettingEmail = async (toEmail, resetingPwdLink, mailT
       return NextResponse.json({ success: false, message: "Invalid email type." }, { status: 400 });
     }
 
+    const senderName =
+      mailType === "PasswordReset"
+        ? "Chipsub Team Support"
+        : mailType === "EmailSubscriber"
+          ? "Chipsub Newsletter"
+          : "Chipsub";
+
+
     const mailOptions = {
-      from: `"Team Support" <${process.env.EMAIL_USER}>`,
+      from: `"${senderName}" <${process.env.EMAIL_USER}>`,
       to: toEmail,
       subject,
       html: htmlData,

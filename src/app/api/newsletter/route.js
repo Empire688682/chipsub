@@ -7,8 +7,6 @@ export async function POST(req) {
   try {
     const { email } = await req.json();
 
-    console.log("email:", email);
-
     if (!email || !email.includes("@")) {
       return NextResponse.json({ message: "Invalid email" }, { status: 400 });
     }
@@ -23,8 +21,7 @@ export async function POST(req) {
     const newSubscriber = new EmailSubscriber({ email });
     await newSubscriber.save();
 
-     const sendingStatus = await sendPasswordResettingEmail(email, resetingPwdLink, "EmailSubcriber");
-    
+     const sendingStatus = await sendPasswordResettingEmail(email, "", "EmailSubscriber");
         if (sendingStatus.status === 500) {
           return NextResponse.json(
             { success: false, message: "An error occured" },
