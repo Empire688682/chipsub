@@ -35,7 +35,7 @@ export async function POST(req) {
     );
 
     const resetingPwdLink = `${process.env.BASE_URL}/reset-password?Emailtoken=${forgottenPasswordToken}&userId=${user._id}`;
-    const sendingStatus = await sendPasswordResettingEmail(email, resetingPwdLink);
+    const sendingStatus = await sendPasswordResettingEmail(email, resetingPwdLink, "PasswordReset");
 
     if (sendingStatus.status === 500) {
       return NextResponse.json(
