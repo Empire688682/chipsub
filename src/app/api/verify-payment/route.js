@@ -49,16 +49,14 @@ export async function POST(req) {
       await existingPayment.save();
 
       const newTransaction = await TransactionModel.create(
-      [{
-        userId,
-        type: "Wallet funding",
-        amount,
-        status: "success",
-        reference: existingPayment._id,
-      }],
-    );
-
-    console.log("newTransaction:", newTransaction);
+        [{
+          userId,
+          type: "Wallet funding",
+          amount,
+          status: "success",
+          reference: existingPayment._id,
+        }],
+      );
 
       const cleanAmount = Number(amount);
       if (isNaN(cleanAmount)) throw new Error('Invalid amount');
