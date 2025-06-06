@@ -60,7 +60,7 @@ export async function POST(req) {
     }
 
     // ✅ Update Provider balance
-    const provider = await ProviderModel.findOneAndUpdate(
+    await ProviderModel.findOneAndUpdate(
       { name: "ClubConnect" },
       {
         lastUser: userId,
