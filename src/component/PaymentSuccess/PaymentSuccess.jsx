@@ -12,12 +12,6 @@ export default function PaymentSuccess() {
   const { route } = useGlobalContext();
   const [loading, setLoading] = useState(true);
 
-  useEffect(()=>{
-    if(transactionStatus === "cancelled");
-    setStatus('❌ Verification failed');
-    setLoading(false);
-  },[]);
-
   useEffect(() => {
     if (transaction_id) {
       setLoading(true);
@@ -30,6 +24,9 @@ export default function PaymentSuccess() {
       })
         .then(res => res.json())
         .then(data => {
+          if (!data.success) {
+            setStatus("❌ " + data.message);
+          }
           if (data.success) {
             setStatus("✅ " + data.message);
           }
@@ -40,6 +37,8 @@ export default function PaymentSuccess() {
         });
     }
   }, [transaction_id]);
+
+  console.log("Status:", status)
 
 
   return (

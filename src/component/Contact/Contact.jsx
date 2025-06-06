@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { toast, ToastContainer } from 'react-toastify';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram } from 'lucide-react';
 import 'react-toastify/dist/ReactToastify.css';
+import SocialIcons from '../SocialIcons/SocialIcons';
 
 const Contact = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
@@ -47,11 +48,7 @@ const Contact = () => {
             </p>
           </div>
 
-          <div className="flex gap-4 pt-4">
-            <a href="#"><Facebook className="text-blue-700 hover:scale-110 transition" /></a>
-            <a href="#"><Twitter className="text-sky-500 hover:scale-110 transition" /></a>
-            <a href="#"><Instagram className="text-pink-500 hover:scale-110 transition" /></a>
-          </div>
+          <SocialIcons />
 
           <div className="relative w-full h-64 mt-6 rounded-2xl overflow-hidden shadow-xl">
             <Image
