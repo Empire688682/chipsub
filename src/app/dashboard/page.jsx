@@ -1,5 +1,5 @@
 "use client";
-import DashboardLayout from '@/component/Dashboard/Dashboard'
+import Dashboard from '@/component/Dashboard/Dashboard'
 import React, { useState, useEffect } from 'react'
 import axios from "axios"
 import { useGlobalContext } from '@/component/Context';
@@ -58,7 +58,7 @@ const Page = () => {
                 🎁 Commissions Paid: ₦{allData.totalReward}
               </div>
             </div>
-            <DashboardLayout />
+            <Dashboard />
           </div>
       }
     </>

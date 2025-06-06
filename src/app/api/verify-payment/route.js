@@ -6,6 +6,7 @@ import PaymentModel from '../../ults/models/PaymentModel';
 import UserModel from '../../ults/models/UserModel';
 import ReferralModel from '../../ults/models/ReferralModel'; // ✅ import this
 import { verifyToken } from '../helper/VerifyToken';
+import TransactionModel from '@/app/ults/models/TransactionModel';
 
 dotenv.config();
 
@@ -46,6 +47,18 @@ export async function POST(req) {
 
       existingPayment.status = 'PAID';
       await existingPayment.save();
+
+      const newTransaction = await TransactionModel.create(
+      [{
+        userId,
+        type: "Wallet funding",
+        amount,
+        status: "success",
+        reference: existingPayment._id,
+      }],
+    );
+
+    console.log("newTransaction:", newTransaction);
 
       const cleanAmount = Number(amount);
       if (isNaN(cleanAmount)) throw new Error('Invalid amount');
