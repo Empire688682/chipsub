@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import TransactionModel from "@/app/ults/models/TransactionModel";
 import ProviderModel from "@/app/ults/models/ProviderModel";
+import { verifyCustomer } from "../../helper/FlutterWaveBillerVerification";
 
 dotenv.config();
 
@@ -14,8 +15,6 @@ export async function POST(req) {
   await connectDb();
   const body = await req.json();
   const { disco, meterNumber, meterType, amount, phone, pin } = body;
-
-  console.log("Incoming request body:", body);
 
   try {
     if (!disco || !meterNumber || !meterType || !amount || !phone || !pin) {
@@ -38,77 +37,81 @@ export async function POST(req) {
       return NextResponse.json({ success: false, message: "Insufficient funds" }, { status: 400 });
     }
 
-    console.log("meterType:", `"${meterType}"`)
+    //const customerData = await verifyCustomer(meterNumber);
 
-    // Correct mapping using item_code (not biller_code)
-    const itemCodes = {
-      ABUJA_ELECTRIC: {
+    const billerConfig = {
+       EKO_ELECTRIC: {
+        BillerCode: "BIL111",
+        Prepaid: "UB136",
+        Postpaid: "UB136"
+      },
+        ABUJA_ELECTRIC: {
         BillerCode: "BIL204",
+        Prepaid: "UB136",
         Postpaid: "UB585"
+      },
+       KADUNA_ELECTRIC: {
+        BillerCode: "BIL112",
+        Prepaid: "UB157",
+        Postpaid: "UB158"
       },
       IKEJA_ELECTRIC: {
         BillerCode: "BIL113",
-        Postpaid: "UB587"
+        Prepaid: "UB159",
+        Postpaid: "UB160"
       },
-      EKO_ELECTRIC: {
-        BillerCode: "BIL112",
-        Postpaid: "UB589"
-      },
-      ENUGU_ELECTRIC: {
-        BillerCode: "BIL115",
-        Postpaid: "UB591"
-      },
-      IBADAN_ELECTRIC: {
+       PORTHACOURT_ELECTRIC: {
         BillerCode: "BIL114",
-        Postpaid: "UB593"
-      },
-      KADUNA_ELECTRIC: {
-        BillerCode: "BIL119",
-        Postpaid: "UB595"
+        Prepaid: "UB162",
+        Postpaid: "UB161"
       },
       KANO_ELECTRIC: {
-        BillerCode: "BIL120",
-        Postpaid: "UB597"
+        BillerCode: "BIL115",
+        Prepaid: "UB163",
+        Postpaid: "UB164"
       },
-      JOS_ELECTRIC: {
-        BillerCode: "UB598",
-        Postpaid: "UB599"
-      },
-      PORTHACOURT_ELECTRIC: {
+      IBADAN_ELECTRIC: {
         BillerCode: "BIL116",
-        Postpaid: "UB601"
+        Postpaid: "UB593"
       },
-      YOLA_ELECTRIC: {
-        BillerCode: "BIL118",
-        Postpaid: "UB603"
+      ENUGU_ELECTRIC: {
+        BillerCode: "BIL117",
+        Prepaid: "UB166",
+        Postpaid: "UB167"
       },
       BENIN_ELECTRIC: {
-        BillerCode: "BIL117",
-        Postpaid: "UB605"
+        BillerCode: "BIL118",
+        Prepaid: "UB160",
+        Postpaid: "UB161"
       },
-      AEDC: {
-        BillerCode: "UB606",
-        Postpaid: "UB607"
-      }
-    };
+   };
 
-    const requestId = crypto.randomUUID();
+    const selectedBiller = billerConfig[disco];
+    if (!selectedBiller) {
+    return NextResponse.json({ success: false, message: "Invalid disco provider" }, { status: 400 });
+    }
 
-    const flutterwaveRes = await fetch("https://api.flutterwave.com/v3/bills", {
+    const billerCode = selectedBiller.BillerCode;
+    const productCode = selectedBiller[meterType];
+
+    const requestId = crypto.randomUUID() + "-chipsub";
+
+    // Updated API call using the correct endpoint structure
+    const flutterwaveUrl = `https://api.flutterwave.com/v3/billers/${billerCode}/items/${productCode}/payment`;
+
+    const flutterwaveRes = await fetch(flutterwaveUrl, {
       method: "POST",
       headers: {
+        accept: "application/json",
         Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
+        amount:"1000",
         country: "NG",
-        customer: meterNumber,
+        biller_code: billerCode,
         customer_id: meterNumber,
-        amount: saveAmount,
-        recurrence: "ONCE",
-        type: meterType,
-        reference: requestId,
-        biller_code: disco[itemCodes.BillerCode]
+        reference:requestId
       })
     });
 
