@@ -38,64 +38,59 @@ export async function POST(req) {
       return NextResponse.json({ success: false, message: "Insufficient funds" }, { status: 400 });
     }
 
+    console.log("meterType:", `"${meterType}"`)
+
     // Correct mapping using item_code (not biller_code)
     const itemCodes = {
-  ABUJA_ELECTRIC: {
-    Prepaid: "UB584",
-    Postpaid: "UB585"
-  },
-  IKEJA_ELECTRIC: {
-    Prepaid: "UB586",
-    Postpaid: "UB587"
-  },
-  EKO_ELECTRIC: {
-    Prepaid: "UB588",
-    Postpaid: "UB589"
-  },
-  ENUGU_ELECTRIC: {
-    Prepaid: "UB590",
-    Postpaid: "UB591"
-  },
-  IBADAN_ELECTRIC: {
-    Prepaid: "UB592",
-    Postpaid: "UB593"
-  },
-  KADUNA_ELECTRIC: {
-    Prepaid: "UB594",
-    Postpaid: "UB595"
-  },
-  KANO_ELECTRIC: {
-    Prepaid: "UB596",
-    Postpaid: "UB597"
-  },
-  JOS_ELECTRIC: {
-    Prepaid: "UB598",
-    Postpaid: "UB599"
-  },
-  PORTHACOURT_ELECTRIC: {
-    Prepaid: "UB600",
-    Postpaid: "UB601"
-  },
-  YOLA_ELECTRIC: {
-    Prepaid: "UB602",
-    Postpaid: "UB603"
-  },
-  BENIN_ELECTRIC: {
-    Prepaid: "UB604",
-    Postpaid: "UB605"
-  },
-  AEDC: {
-    Prepaid: "UB606",
-    Postpaid: "UB607"
-  }
-};
-
-
-    const itemCode = itemCodes?.[disco]?.[meterType];
-
-    if (!itemCode) {
-      return NextResponse.json({ success: false, message: "Unsupported disco or meter type" }, { status: 400 });
-    }
+      ABUJA_ELECTRIC: {
+        BillerCode: "BIL204",
+        Postpaid: "UB585"
+      },
+      IKEJA_ELECTRIC: {
+        BillerCode: "BIL113",
+        Postpaid: "UB587"
+      },
+      EKO_ELECTRIC: {
+        BillerCode: "BIL112",
+        Postpaid: "UB589"
+      },
+      ENUGU_ELECTRIC: {
+        BillerCode: "BIL115",
+        Postpaid: "UB591"
+      },
+      IBADAN_ELECTRIC: {
+        BillerCode: "BIL114",
+        Postpaid: "UB593"
+      },
+      KADUNA_ELECTRIC: {
+        BillerCode: "BIL119",
+        Postpaid: "UB595"
+      },
+      KANO_ELECTRIC: {
+        BillerCode: "BIL120",
+        Postpaid: "UB597"
+      },
+      JOS_ELECTRIC: {
+        BillerCode: "UB598",
+        Postpaid: "UB599"
+      },
+      PORTHACOURT_ELECTRIC: {
+        BillerCode: "BIL116",
+        Postpaid: "UB601"
+      },
+      YOLA_ELECTRIC: {
+        BillerCode: "BIL118",
+        Postpaid: "UB603"
+      },
+      BENIN_ELECTRIC: {
+        BillerCode: "BIL117",
+        Postpaid: "UB605"
+      },
+      AEDC: {
+        BillerCode: "UB606",
+        Postpaid: "UB607"
+      }
+    };
 
     const requestId = crypto.randomUUID();
 
@@ -108,11 +103,12 @@ export async function POST(req) {
       body: JSON.stringify({
         country: "NG",
         customer: meterNumber,
+        customer_id: meterNumber,
         amount: saveAmount,
         recurrence: "ONCE",
-        type: itemCode,
+        type: meterType,
         reference: requestId,
-        biller_name: phone // optional — used as reference name
+        biller_code: disco[itemCodes.BillerCode]
       })
     });
 
