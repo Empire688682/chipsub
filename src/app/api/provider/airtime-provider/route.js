@@ -70,11 +70,12 @@ export async function POST(req) {
     });
 
     const result = await res.json();
+    console.log("result:", result)
 
     if (result.status !== "ORDER_RECEIVED") {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
-        { success: false, message: "API Transaction Failed", details: result },
+        { success: false, message: result.status || "Api transaction failed", details: result },
         { status: 500 }
       );
     };
