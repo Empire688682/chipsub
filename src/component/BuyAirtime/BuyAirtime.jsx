@@ -102,8 +102,8 @@ const BuyAirtime = () => {
                   <option disabled value="">-- Choose Network --</option>
                   <option value="01">MTN</option>
                   <option value="02">GLO</option>
-                  <option value="03">Airtel</option>
-                  <option value="04">9Mobile</option>
+                  <option value="04">Airtel</option>
+                  <option value="03">9Mobile</option>
                 </select>
               </div>
 

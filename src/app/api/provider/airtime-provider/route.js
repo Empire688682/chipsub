@@ -62,7 +62,7 @@ export async function POST(req) {
         { success: false, message: "Incorrect PIN provided!" },
         { status: 400 }
       );
-    }
+    };
 
     // 👉 Call external API
     const res = await fetch(`https://www.nellobytesystems.com/APIAirtimeV1.asp?UserID=${process.env.CLUBKONNECT_USERID}&APIKey=${process.env.CLUBKONNECT_APIKEY}&MobileNetwork=${network}&Amount=${amount}&MobileNumber=${number}`, {
