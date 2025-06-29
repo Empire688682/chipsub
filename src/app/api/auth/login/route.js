@@ -4,17 +4,10 @@ import UserModel from "@/app/ults/models/UserModel";
 import dotenv from "dotenv";
 import { NextResponse } from "next/server";
 import { connectDb } from "@/app/ults/db/ConnectDb";
+import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
 
 dotenv.config();
 
-// CORS headers function
-function corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  };
-}
 
 // Handle preflight OPTIONS request
 export async function OPTIONS() {

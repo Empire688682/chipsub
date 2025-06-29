@@ -6,17 +6,23 @@ import { connectDb } from "@/app/ults/db/ConnectDb";
 import PaymentModel from "@/app/ults/models/PaymentModel";
 import ReferralModel from "@/app/ults/models/ReferralModel";
 
+
+export async function OPTIONS() {
+    return new NextResponse(null, {status:200, headers:corsHeader});
+}
+
 export async function GET(req) {
+    const {userMobleId} = await req.json();
     await connectDb();
-    const userId = await verifyToken(req);
+    const userId =  userMobleId || await verifyToken(req);
     if (!userId || typeof userId !== "string") {
-        return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 401 });
+        return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 401, headers:corsHeader });
     }
 
     try {
         const user = await UserModel.findById(userId);
         if (!user) {
-            return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 401 });
+            return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 401, headers:corsHeader  });
         }
 
         const refRewardedSum = await ReferralModel.aggregate([
