@@ -8,8 +8,13 @@ import { NextResponse } from "next/server";
 import { connectDb } from "@/app/ults/db/ConnectDb";
 import { verifyToken } from "../../helper/VerifyToken";
 import ProviderModel from "@/app/ults/models/ProviderModel";
+import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
 
 dotenv.config();
+
+export async function OPTIONS() {
+    return new NextResponse(null, {status:200, headers:corsHeaders});
+}
 
 export async function POST(req) {
   await connectDb();
@@ -19,24 +24,24 @@ export async function POST(req) {
   session.startTransaction(); // 👈 Begin the transaction
 
   try {
-    const { network, plan, planId, number, amount, pin } = reqBody;
+    const { network, plan, planId, number, amount, pin, mobileUserId } = reqBody;
 
     if (!network || !plan || !planId || !number || !amount || !pin) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "All fields are required" },
-        { status: 400 }
+        { status: 400, headers:corsHeaders }
       );
     }
 
-    const userId = await verifyToken(req);
+    const userId = mobileUserId || await verifyToken(req);
     const verifyUser = await UserModel.findById(userId).session(session);
 
     if (!verifyUser) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "User not authenticated" },
-        { status: 401 }
+        { status: 401, headers:corsHeaders }
       );
     }
 
@@ -44,7 +49,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "1234 is not allowed" },
-        { status: 400 }
+        { status: 400, headers:corsHeaders }
       );
     }
 
@@ -52,7 +57,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "Insufficient balance" },
-        { status: 400 }
+        { status: 400, headers:corsHeaders }
       );
     }
 
@@ -61,7 +66,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "Incorrect PIN provided!" },
-        { status: 400 }
+        { status: 400, headers:corsHeaders }
       );
     };
 
@@ -78,7 +83,7 @@ export async function POST(req) {
 
     const availablePlan = await dataRes.json();
     if (!availablePlan) {
-      return NextResponse.json({ success: false, message: "Invalid Data plan" }, { status: 401 })
+      return NextResponse.json({ success: false, message: "Invalid Data plan" }, { status: 401, headers:corsHeaders })
     }
 
     const networkPlans = availablePlan?.MOBILE_NETWORK[network]?.[0]?.PRODUCT;
@@ -86,7 +91,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "No data plans found for selected network" },
-        { status: 400 }
+        { status: 400, headers:corsHeaders }
       );
     };
 
@@ -95,7 +100,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "Invalid data plan ID" },
-        { status: 400 }
+        { status: 400, headers:corsHeaders }
       );
     };
 
@@ -113,7 +118,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "API Transaction Failed", details: result },
-        { status: 500 }
+        { status: 500, headers:corsHeaders }
       );
     };
 
@@ -153,7 +158,7 @@ export async function POST(req) {
 
     return NextResponse.json(
       { success: true, message: "Data Purchase Successful", transaction: newTransaction[0] },
-      { status: 200 }
+      { status: 200, headers:corsHeaders }
     );
 
   } catch (error) {
@@ -163,7 +168,7 @@ export async function POST(req) {
 
     return NextResponse.json(
       { success: false, message: "Something went wrong", error: error.message },
-      { status: 500 }
+      { status: 500, headers:corsHeaders }
     );
   }
 }

@@ -7,18 +7,23 @@ import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import TransactionModel from "@/app/ults/models/TransactionModel";
 import ProviderModel from "@/app/ults/models/ProviderModel";
+import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
 
 dotenv.config();
+
+export async function OPTIONS() {
+    return new NextResponse(null, {status:200, headers:corsHeaders});
+}
 
 export async function POST(req) {
   await connectDb();
   const body = await req.json();
-  const { disco, meterNumber, meterType, amount, phone, pin } = body;
+  const { disco, meterNumber, meterType, amount, phone, pin, mobileUserId } = body;
 
   try {
     // Validate request
     if (!disco || !meterNumber || !meterType || !amount || !phone || !pin) {
-      return NextResponse.json({ success: false, message: "All fields required" }, { status: 400 });
+      return NextResponse.json({ success: false, message: "All fields required" }, { status: 400, headers:corsHeaders });
     }
 
     // Disco codes
@@ -43,21 +48,21 @@ export async function POST(req) {
     }
 
     // Auth and funds check
-    const userId = await verifyToken(req);
+    const userId = mobileUserId || await verifyToken(req);
     const user = await UserModel.findById(userId);
 
     if (!user) {
-      return NextResponse.json({ success: false, message: "User not authorized" }, { status: 401 });
+      return NextResponse.json({ success: false, message: "User not authorized" }, { status: 401, headers:corsHeaders });
     }
 
     const isPinMatch = await bcrypt.compare(pin, user.pin);
     if (!isPinMatch) {
-      return NextResponse.json({ success: false, message: "Pin not correct" }, { status: 401 });
+      return NextResponse.json({ success: false, message: "Pin not correct" }, { status: 401, headers:corsHeaders });
     }
 
     const saveAmount = Number(amount);
     if (user.walletBalance < saveAmount) {
-      return NextResponse.json({ success: false, message: "Insufficient funds" }, { status: 400 });
+      return NextResponse.json({ success: false, message: "Insufficient funds" }, { status: 400, headers:corsHeaders });
     }
 
     // Generate request ID
@@ -75,7 +80,7 @@ export async function POST(req) {
     console.log("Response:", result);
 
     if (result?.status !== "ORDER_RECEIVED") {
-      return NextResponse.json({ success: false, message: "We are sorry Electricity currently not available", data: result }, { status: 400 });
+      return NextResponse.json({ success: false, message: "We are sorry Electricity currently not available", data: result }, { status: 400, headers:corsHeaders });
     };
     // ✅ Update Provider balance
     await ProviderModel.findOneAndUpdate(
@@ -107,9 +112,9 @@ export async function POST(req) {
         number: meterNumber
       }
     });
-    return NextResponse.json({ success: true, message: "Order successful", data: result }, { status: 200 });
+    return NextResponse.json({ success: true, message: "Order successful", data: result }, { status: 200, headers:corsHeaders });
   } catch (error) {
     console.error("Electricity-ERROR:", error);
-    return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 });
+    return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500, headers:corsHeaders });
   }
 }

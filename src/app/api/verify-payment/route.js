@@ -7,14 +7,19 @@ import UserModel from '../../ults/models/UserModel';
 import ReferralModel from '../../ults/models/ReferralModel'; // ✅ import this
 import { verifyToken } from '../helper/VerifyToken';
 import TransactionModel from '@/app/ults/models/TransactionModel';
+import { corsHeaders } from '@/app/ults/corsHeaders/corsHeaders';
 
 dotenv.config();
 
+export async function OPTIONS() {
+    return new NextResponse(null, {status:200, headers:corsHeaders});
+}
+
 export async function POST(req) {
-  const { transaction_id } = await req.json();
+  const { transaction_id, mobileUserId } = await req.json();
 
   if (!transaction_id) {
-    return NextResponse.json({ success: false, message: 'No transaction ID provided' }, { status: 400 });
+    return NextResponse.json({ success: false, message: 'No transaction ID provided' }, { status: 400, headers:corsHeaders });
   }
 
   try {
@@ -27,9 +32,9 @@ export async function POST(req) {
       },
     });
 
-    const userId = await verifyToken(req);
+    const userId = mobileUserId || await verifyToken(req);
     if (!userId) {
-      return NextResponse.json({ success: false, message: 'User not authorized' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'User not authorized' }, { status: 401, headers:corsHeaders });
     }
 
     const { status, amount, tx_ref } = response.data.data;
@@ -38,11 +43,11 @@ export async function POST(req) {
       const existingPayment = await PaymentModel.findOne({ reference: tx_ref });
 
       if (!existingPayment) {
-        return NextResponse.json({ success: false, message: 'Payment not found in DB' }, { status: 404 });
+        return NextResponse.json({ success: false, message: 'Payment not found in DB' }, { status: 404, headers:corsHeaders });
       }
 
       if (existingPayment.status === 'PAID') {
-        return NextResponse.json({ success: true, message: 'Payment already verified' }, { status: 200 });
+        return NextResponse.json({ success: true, message: 'Payment already verified' }, { status: 200, headers:corsHeaders });
       }
 
       existingPayment.status = 'PAID';
@@ -74,12 +79,12 @@ export async function POST(req) {
         await referral.save();
       }
 
-      return NextResponse.json({ success: true, message: 'Payment verified and wallet updated' }, { status: 200 });
+      return NextResponse.json({ success: true, message: 'Payment verified and wallet updated' }, { status: 200, headers:corsHeaders });
     } else {
-      return NextResponse.json({ success: false, message: 'Transaction not successful' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Transaction not successful' }, { status: 400, headers:corsHeaders });
     }
   } catch (err) {
     console.error(err.response?.data || err.message);
-    return NextResponse.json({ success: false, message: 'Verification failed' }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'Verification failed' }, { status: 500, headers:corsHeaders });
   }
 }
