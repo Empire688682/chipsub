@@ -3,7 +3,16 @@ import TransactionModel from "@/app/ults/models/TransactionModel";
 import { connectDb } from "@/app/ults/db/ConnectDb";
 import { verifyToken } from "../helper/VerifyToken";
 import { NextResponse } from "next/server";
-import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
+
+
+function corsHeaders(){
+    return {
+    "Access-Control-Allow-Origin":"*",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+  };
+};
 
 export async function OPTIONS() {
     return new NextResponse(null, {status:200, headers:corsHeaders});
