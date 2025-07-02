@@ -9,7 +9,7 @@ import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
 dotenv.config();
 
 export async function OPTIONS() {
-    return new NextResponse(null, {status:200, headers:corsHeaders});
+    return new NextResponse(null, {status:200, headers:corsHeaders()});
 }
 
 export async function POST(req) {
@@ -22,7 +22,7 @@ export async function POST(req) {
     if (!password || !token) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
-        { status: 400, headers:corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
     }
 
@@ -37,7 +37,7 @@ export async function POST(req) {
             success: false,
             message: "Token has expired. Please request a new password reset.",
           },
-          { status: 400, headers:corsHeaders }
+          { status: 400, headers:corsHeaders() }
         );
       }
       return NextResponse.json(
@@ -45,7 +45,7 @@ export async function POST(req) {
           success: false,
           message: "Invalid token. Please request a new password reset.",
         },
-        { status: 400, headers:corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
     }
 
@@ -55,7 +55,7 @@ export async function POST(req) {
     if (!user) {
       return NextResponse.json(
         { success: false, message: "User not authenticated" },
-        { status: 401, headers:corsHeaders }
+        { status: 401, headers:corsHeaders() }
       );
     }
 
@@ -66,7 +66,7 @@ export async function POST(req) {
           message:
             "Token mismatch. Please check your latest email or request a new reset link.",
         },
-        { status: 400, headers:corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
     };
 
@@ -77,7 +77,7 @@ export async function POST(req) {
           success: false,
           message: "You cannot reuse your old password.",
         },
-        { status: 400, headers:corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
     }
 
@@ -94,7 +94,7 @@ export async function POST(req) {
     console.error("Error:", error);
     return NextResponse.json(
       { success: false, message: "An error occurred" },
-      { status: 500, headers:corsHeaders }
+      { status: 500, headers:corsHeaders() }
     );
   }
 }

@@ -6,7 +6,7 @@ import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
 dotenv.config();
 
 export async function OPTIONS() {
-    return new NextResponse(null, {status:200, headers:corsHeaders});
+    return new NextResponse(null, {status:200, headers:corsHeaders()});
 }
 
 export const sendPasswordResettingEmail = async (toEmail, resetingPwdLink, mailType) => {
@@ -60,7 +60,7 @@ export const sendPasswordResettingEmail = async (toEmail, resetingPwdLink, mailT
     const subject = subjectMap[mailType] || "Notification";
 
     if (!htmlData) {
-      return NextResponse.json({ success: false, message: "Invalid email type." }, { status: 400, headers:corsHeaders });
+      return NextResponse.json({ success: false, message: "Invalid email type." }, { status: 400, headers:corsHeaders() });
     }
 
     const senderName =
@@ -79,10 +79,10 @@ export const sendPasswordResettingEmail = async (toEmail, resetingPwdLink, mailT
     };
 
     await transporter.sendMail(mailOptions);
-    return NextResponse.json({ success: true, message: "Email sent" }, { status: 200, headers:corsHeaders });
+    return NextResponse.json({ success: true, message: "Email sent" }, { status: 200, headers:corsHeaders() });
 
   } catch (error) {
     console.error("ERROR Sending Email:", error);
-    return NextResponse.json({ success: false, message: "Unable to send message" }, { status: 500, headers:corsHeaders });
+    return NextResponse.json({ success: false, message: "Unable to send message" }, { status: 500, headers:corsHeaders() });
   }
 };

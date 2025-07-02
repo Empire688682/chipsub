@@ -18,18 +18,18 @@ export async function POST(req) {
 
         const { currentPwd, newPwd } = reqBody;
         if (!currentPwd || !newPwd) {
-            return NextResponse.json({ success: false, message: "All field required" }, { status: 400, headers: corsHeaders })
+            return NextResponse.json({ success: false, message: "All field required" }, { status: 400, headers:corsHeaders() })
         }
 
         const userId = await verifyToken(req);
         const user = await UserModel.findById(userId);
         if (!user) {
-            return NextResponse.json({ success: false, message: "User not Authenticated" }, { status: 400, headers: corsHeaders })
+            return NextResponse.json({ success: false, message: "User not Authenticated" }, { status: 400, headers:corsHeaders() })
         }
         if (user.provider === "credentials" || user.password !== "not set") {
             const isPasswordMatch = await bcrypt.compare(currentPwd, user.password);
             if (!isPasswordMatch) {
-                return NextResponse.json({ success: false, message: `Incorect current password @${user.name.split(" ")[0]} `}, { status: 400, headers: corsHeaders })
+                return NextResponse.json({ success: false, message: `Incorect current password @${user.name.split(" ")[0]} `}, { status: 400, headers:corsHeaders() })
             }
         }
         const hashedPassword = await bcrypt.hash(newPwd, 10);

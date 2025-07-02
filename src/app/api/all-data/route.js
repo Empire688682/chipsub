@@ -9,7 +9,7 @@ import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
 
 
 export async function OPTIONS() {
-    return new NextResponse(null, {status:200, headers:corsHeaders});
+    return new NextResponse(null, {status:200, headers:corsHeaders()});
 }
 
 export async function GET(req) {
@@ -17,13 +17,13 @@ export async function GET(req) {
     await connectDb();
     const userId =  userMobleId || await verifyToken(req);
     if (!userId || typeof userId !== "string") {
-        return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 401, headers:corsHeaders });
+        return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 401, headers:corsHeaders() });
     }
 
     try {
         const user = await UserModel.findById(userId);
         if (!user) {
-            return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 401, headers:corsHeaders  });
+            return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 401, headers:corsHeaders()  });
         }
 
         const refRewardedSum = await ReferralModel.aggregate([
@@ -62,10 +62,10 @@ export async function GET(req) {
                 totalReward
             },
             message: "All data fetched"
-        }, { status: 200, headers:corsHeaders });
+        }, { status: 200, headers:corsHeaders() });
 
     } catch (error) {
         console.log("AlldataError:", error);
-        return NextResponse.json({ success: false, message: "An error occurred" }, { status: 500, headers:corsHeaders });
+        return NextResponse.json({ success: false, message: "An error occurred" }, { status: 500, headers:corsHeaders() });
     }
 }

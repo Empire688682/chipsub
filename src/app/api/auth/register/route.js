@@ -11,7 +11,7 @@ import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
 dotenv.config();
 
 export async function OPTIONS() {
-  return new NextResponse(null, {status:200, headers: corsHeaders})
+  return new NextResponse(null, {status:200, headers:corsHeaders()})
 };
 
 
@@ -35,21 +35,21 @@ const registerUser = async (req) => {
     if (!name || !email) {
       return NextResponse.json(
         { success: false, message: "Name and email are required" },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
     }
 
     if (provider === "credentials" && (!password || !number)) {
       return NextResponse.json(
         { success: false, message: "Password and number are required" },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
     }
 
     if (!validator.isEmail(email)) {
       return NextResponse.json(
         { success: false, message: "Invalid email format" },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
     }
 
@@ -58,7 +58,7 @@ const registerUser = async (req) => {
       if(existingUser){
         return NextResponse.json(
         { success: false, message: "Email has been taken" },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
       }
     }
@@ -75,7 +75,7 @@ const registerUser = async (req) => {
         });
         const res = NextResponse.json(
           { success: true, message: "Not a new user", finalUserData },
-          { status: 200, headers: corsHeaders }
+          { status: 200, headers:corsHeaders() }
         );
 
         res.cookies.set("UserToken", token, {
@@ -97,7 +97,7 @@ const registerUser = async (req) => {
       if (password.length < 8) {
         return NextResponse.json(
           { success: false, message: "Password must be at least 8 characters" },
-          { status: 400, headers: corsHeaders }
+          { status: 400, headers:corsHeaders() }
         );
       }
 
@@ -137,7 +137,7 @@ const registerUser = async (req) => {
 
     const res = NextResponse.json(
       { success: true, message: "User created", finalUserData },
-      { status: 200, headers: corsHeaders }
+      { status: 200, headers:corsHeaders() }
     );
 
     res.cookies.set("UserToken", token, {
@@ -153,7 +153,7 @@ const registerUser = async (req) => {
     console.error("Register Error:", error);
     return NextResponse.json(
       { success: false, message: "Something went wrong" },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers:corsHeaders() }
     );
   }
 };

@@ -13,7 +13,7 @@ import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
 dotenv.config();
 
 export async function OPTIONS() {
-    return new NextResponse(null, {status:200, headers:corsHeaders});
+    return new NextResponse(null, {status:200, headers:corsHeaders()});
 }
 
 export async function POST(req) {
@@ -23,23 +23,23 @@ export async function POST(req) {
 
   try {
     if (!disco || !meterNumber || !meterType || !amount || !phone || !pin) {
-      return NextResponse.json({ success: false, message: "All fields are required" }, { status: 400, headers:corsHeaders });
+      return NextResponse.json({ success: false, message: "All fields are required" }, { status: 400, headers:corsHeaders() });
     }
 
     const userId = mobileUserId || await verifyToken(req);
     const user = await UserModel.findById(userId);
     if (!user) {
-      return NextResponse.json({ success: false, message: "User not authorized" }, { status: 401, headers:corsHeaders });
+      return NextResponse.json({ success: false, message: "User not authorized" }, { status: 401, headers:corsHeaders() });
     }
 
     const isPinMatch = await bcrypt.compare(pin, user.pin);
     if (!isPinMatch) {
-      return NextResponse.json({ success: false, message: "Pin not correct" }, { status: 401, headers:corsHeaders });
+      return NextResponse.json({ success: false, message: "Pin not correct" }, { status: 401, headers:corsHeaders() });
     }
 
     const saveAmount = Number(amount);
     if (user.walletBalance < saveAmount) {
-      return NextResponse.json({ success: false, message: "Insufficient funds" }, { status: 400, headers:corsHeaders });
+      return NextResponse.json({ success: false, message: "Insufficient funds" }, { status: 400, headers:corsHeaders() });
     }
 
     //const customerData = await verifyCustomer(meterNumber);
@@ -93,7 +93,7 @@ export async function POST(req) {
 
     const selectedBiller = billerConfig[disco];
     if (!selectedBiller) {
-    return NextResponse.json({ success: false, message: "Invalid disco provider" }, { status: 400, headers:corsHeaders });
+    return NextResponse.json({ success: false, message: "Invalid disco provider" }, { status: 400, headers:corsHeaders() });
     }
 
     const billerCode = selectedBiller.BillerCode;
@@ -124,7 +124,7 @@ export async function POST(req) {
     console.log("🧾 Flutterwave Response:", result);
 
     if (result.status !== "success") {
-      return NextResponse.json({ success: false, message: "Transaction failed", data: result }, { status: 400, headers:corsHeaders });
+      return NextResponse.json({ success: false, message: "Transaction failed", data: result }, { status: 400, headers:corsHeaders() });
     }
 
     await ProviderModel.findOneAndUpdate(
@@ -159,10 +159,10 @@ export async function POST(req) {
       }
     });
 
-    return NextResponse.json({ success: true, message: "Payment successful", data: result.data }, { status: 200, headers:corsHeaders });
+    return NextResponse.json({ success: true, message: "Payment successful", data: result.data }, { status: 200, headers:corsHeaders() });
 
   } catch (error) {
     console.error("💥 Electricity-FLW-ERROR:", error);
-    return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500, headers:corsHeaders });
+    return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500, headers:corsHeaders() });
   }
 }

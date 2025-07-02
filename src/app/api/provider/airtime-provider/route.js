@@ -12,7 +12,7 @@ import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
 dotenv.config();
 
 export async function OPTIONS() {
-    return new NextResponse(null, {status:200, headers:corsHeaders});
+    return new NextResponse(null, {status:200, headers:corsHeaders()});
 }
 
 export async function POST(req) {
@@ -29,7 +29,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "All fields are required" },
-        { status: 400, headers:corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
     }
 
@@ -40,7 +40,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "User not authenticated" },
-        { status: 401, headers:corsHeaders }
+        { status: 401, headers:corsHeaders() }
       );
     }
 
@@ -48,7 +48,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "1234 is not allowed" },
-        { status: 400, headers:corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
     }
 
@@ -56,7 +56,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "Insufficient balance" },
-        { status: 400, headers:corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
     }
 
@@ -65,7 +65,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: "Incorrect PIN provided!" },
-        { status: 400, headers:corsHeaders }
+        { status: 400, headers:corsHeaders() }
       );
     };
 
@@ -81,7 +81,7 @@ export async function POST(req) {
       await session.abortTransaction(); session.endSession();
       return NextResponse.json(
         { success: false, message: result.status || "Api transaction failed", details: result },
-        { status: 500, headers:corsHeaders }
+        { status: 500, headers:corsHeaders() }
       );
     };
 
@@ -121,7 +121,7 @@ export async function POST(req) {
 
     return NextResponse.json(
       { success: true, message: "Airtime Purchase Successful", transaction: newTransaction[0] },
-      { status: 200, headers:corsHeaders }
+      { status: 200, headers:corsHeaders() }
     );
 
   } catch (error) {
@@ -131,7 +131,7 @@ export async function POST(req) {
 
     return NextResponse.json(
       { success: false, message: "Something went wrong", error: error.message },
-      { status: 500, headers:corsHeaders }
+      { status: 500, headers:corsHeaders() }
     );
   }
 }

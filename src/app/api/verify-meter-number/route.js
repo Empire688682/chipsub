@@ -5,7 +5,7 @@ import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
 dotenv.config();
 
 export async function OPTIONS() {
-    return new NextResponse(null, {status:200, headers:corsHeaders});
+    return new NextResponse(null, {status:200, headers:corsHeaders()});
 }
 
 export async function POST(req) {
@@ -37,12 +37,12 @@ export async function POST(req) {
         const data = await res.json();
 
         if(data.status !== "00") {
-            return NextResponse.json({ success: false, message: "An error occurred" }, { status: 500, headers:corsHeaders });
+            return NextResponse.json({ success: false, message: "An error occurred" }, { status: 500, headers:corsHeaders() });
         } else {
-            return NextResponse.json({ success: true, message: "Meter Number Verified", data:data.customer_name }, { status: 200, headers:corsHeaders });
+            return NextResponse.json({ success: true, message: "Meter Number Verified", data:data.customer_name }, { status: 200, headers:corsHeaders() });
         }
     } catch (error) {
         console.log("Verify-Error:", error);
-        return NextResponse.json({ success: false, message: "An error occurred" }, { status: 500, headers:corsHeaders });
+        return NextResponse.json({ success: false, message: "An error occurred" }, { status: 500, headers:corsHeaders() });
     }
 }

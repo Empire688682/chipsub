@@ -9,7 +9,7 @@ dotenv.config();
 
 
 export async function OPTIONS() {
-  return new NextResponse(null, {status:200, headers: corsHeaders})
+  return new NextResponse(null, {status:200, headers:corsHeaders()})
 };
 
 export async function POST(req) {
@@ -20,14 +20,14 @@ export async function POST(req) {
     if (!email) {
       return NextResponse.json(
         { success: false, message: "Email required" },
-        { status: 400, headers: corsHeaders },
+        { status: 400, headers:corsHeaders() },
       );
     }
     const user = await UserModel.findOne({ email });
     if (!user) {
       return NextResponse.json(
         { success: false, message: "User not found" },
-        { status: 400, headers: corsHeaders },
+        { status: 400, headers:corsHeaders() },
       );
     };
 
@@ -46,19 +46,19 @@ export async function POST(req) {
     if (sendingStatus.status === 500) {
       return NextResponse.json(
         { success: false, message: "An error occured" },
-        { status: 400, headers: corsHeaders },
+        { status: 400, headers:corsHeaders() },
       );
     }
 
     return NextResponse.json(
       { success: true, message: "Email sent" },
-      { status: 200, headers: corsHeaders },
+      { status: 200, headers:corsHeaders() },
     );
   } catch (error) {
     console.log("ERROR:", error);
     return NextResponse.json(
       { success: false, message: "Unable to send email" },
-      { status: 500, headers: corsHeaders },
+      { status: 500, headers:corsHeaders() },
     );
   }
 }

@@ -6,7 +6,7 @@ import { verifyToken } from "../../helper/VerifyToken";
 import { corsHeaders } from "@/app/ults/corsHeaders/corsHeaders";
 
 export async function OPTIONS() {
-    return new NextResponse(null, {status:200, headers:corsHeaders});
+    return new NextResponse(null, {status:200, headers:corsHeaders()});
 }
 
 export async function POST(req){
@@ -17,7 +17,7 @@ export async function POST(req){
         const userId = mobileUserId || await verifyToken(req);
 
         if (!userId) {
-            return NextResponse.json({ success: false, message: "User not authorized" }, { status: 401, headers:corsHeaders });
+            return NextResponse.json({ success: false, message: "User not authorized" }, { status: 401, headers:corsHeaders() });
         }
 
         const hashedPin = await bcrypt.hash(pin, 10);
@@ -29,13 +29,13 @@ export async function POST(req){
         );
 
         if (!updatedUser) {
-            return NextResponse.json({ success: false, message: "User not found" }, { status: 404, headers:corsHeaders });
+            return NextResponse.json({ success: false, message: "User not found" }, { status: 404, headers:corsHeaders() });
         }
 
-        return NextResponse.json({ success: true, message: "PIN set successfully" }, { status: 200, headers:corsHeaders });
+        return NextResponse.json({ success: true, message: "PIN set successfully" }, { status: 200, headers:corsHeaders() });
 
     } catch (error) {
         console.error("Set PIN Error:", error);
-        return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500, headers:corsHeaders});
+        return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500, headers:corsHeaders()});
     }
 }
