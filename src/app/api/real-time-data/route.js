@@ -11,7 +11,8 @@ export async function OPTIONS() {
 }
 
 export async function GET(req) {
-    const {mobileUserId} = await req.json()
+    const {searchParams} = new URL(req.url);
+    const mobileUserId = searchParams.get('mobileUserId');
     await connectDb();
     try {
         const userId = mobileUserId || await verifyToken(req);

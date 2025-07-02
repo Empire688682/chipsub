@@ -121,7 +121,8 @@ export const AppProvider = ({ children }) => {
   const getUserRealTimeData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("/api/real-time-data");
+       const res = await axios.get("/api/real-time-data");
+      console.log("res:", res)
       if (res.data.success) {
         setTransactionHistory(res.data.data.transactions);
         setUserWallet(res.data.data.walletBalance);

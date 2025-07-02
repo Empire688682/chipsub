@@ -21,9 +21,8 @@ export async function POST(req) {
 
   const session = await mongoose.startSession(); // 👈 Start a session
   session.startTransaction(); // 👈 Begin the transaction
-
   try {
-    const { network, amount, number, pin, mobileUserId } = reqBody;
+    const { network, amount, number, pin, mobileUserId } = reqBody.data;
 
     if (!network || !amount || !number || !pin) {
       await session.abortTransaction(); session.endSession();
