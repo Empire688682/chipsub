@@ -45,8 +45,8 @@ const FundWallet = () => {
         toast.success("Redirecting to Flutterwave...");
         window.location.href = response.link;
       } else {
-        console.log(data);
-        toast.error(data.message || "Payment failed");
+        console.log(response?.data);
+        toast.error(response?.data?.message || "Payment failed");
       }
     } catch (err) {
       console.error(err);

@@ -57,7 +57,7 @@ export async function POST(req) {
       amount,
       currency: "NGN",
       reference: tx_ref,
-      status: "PENDING",
+      status: mobileUserId? "success" : "PENDING",
       paymentMethod: "FLUTTERWAVE",
       checkoutLink,
       initResponse: {
